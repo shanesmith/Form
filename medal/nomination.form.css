@@ -1,0 +1,5 @@
+.top_fieldset { background:#EEE; margin-bottom: 5px; padding: 5px; border:1px solid #AAA; }
+
+#documents .form-field .panel { display: none; }
+#documents .form-field .status-uploaded .options,
+#documents .form-field .status-no-file .field { display: block; }
