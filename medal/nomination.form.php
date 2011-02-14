@@ -52,7 +52,7 @@ class NOMINATION_FORM extends FORM {
 
 		// Nominator fieldset
 		$fieldset_nominator
-			->text('nominator[constit_id]', 'constit_id', $this->nominator('constit_id'))->required('A nominator is required!')->parent()
+			->text('nominator[constit_id]', 'constit_id', $this->nominator('constit_id'))->parent()
 			->info('nominator[name]', 'name', $this->nominator('name'))->parent()
 			->info('nominator[email]', 'email', $this->nominator('email'));
 

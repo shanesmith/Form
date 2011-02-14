@@ -6,45 +6,17 @@ require_once "Form.utils.php";
 
 abstract class FORM_FIELD extends FORM_ELEMENT {
 
-	protected $default_value;
-
-	protected $value, $post_value, $session_value;
-
 	protected $field_attributes = array();
 
-	protected static $base_renderer 	  	= array('self', '_default_renderer'),
-					 $base_field_renderer 	= array('self', '_default_field_renderer');
+	protected $value;
+
+	protected static $base_renderer = array('self', '_default_renderer');
+	protected static $base_field_renderer = array('self', '_default_field_renderer');
 
 	public function __construct($parent, $name, $label='', $default=null) {
 		parent::__construct($parent, $name, $label);
 		$this->default_value = $default;
 	}
-
-	public function loadPostedValue() {
-		$trim = (bool)$this->form()->option('trim');
-
-		$this->post_value = $this->form()->loadPostedValue($this->name());
-
-		if ($trim && $this->post_value !== null) $this->post_value = trim($this->post_value);
-
-		return $this;
-	}
-
-	public function loadSessionedValue() {
-		$trim = (bool)$this->form()->option('trim');
-
-		$this->session_value = $this->form()->loadSessionedValue($this->name());
-
-		if ($trim && $this->session_value !== null) $this->session_value = trim($this->session_value);
-
-		return $this;
-	}
-
-	public function postValue() { return $this->post_value; }
-
-	public function sessionValue() { return $this->session_value; }
-
-	public function defaultValue() { return $this->default_value; }
 
 	public function value($value=null) {
 		if (isset($value)) {
@@ -52,21 +24,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 			return $this;
 		}
 
-		$this->loadPostedValue();
-		if ($this->loadFromSession()) $this->loadSessionedValue();
-
-		switch ($this->form()->useValue()) {
-			case 'value': return $this->value;
-			case 'post': return $this->post_value;
-			case 'session': return $this->session_value;
-			case 'default': return $this->default_value;
-			default: {
-				if (isset($this->value)) return $this->value;
-				elseif (isset($this->post_value)) return $this->post_value;
-				elseif (isset($this->session_value)) return $this->session_value;
-				else return $this->default_value;
-			}
-		}
+		return $this->value;
 	}
 
 	public function field_attributes(array $attributes=null) {
@@ -152,7 +110,6 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 		$type = $element->type();
 
 		$element->addClasses(array('form-element-container', 'form-field-container', "form-field-container-{$type}"));
-		if ($element->getError()) $element->addClasses(array('form-element-error', 'form-field-error'));
 
 		$attributes = $element->attr2str();
 		$s  = "<div {$attributes}>";
@@ -190,11 +147,5 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	}
 
 	public static function _default_field_renderer($element) { return $element->html(); }
-
-	public function required($text) { $this->validator(array('FORM_FIELD', '_required'), array(), $text); return $this; }
-	public static function _required($element) { return (bool)strlen($element->value()); }
-
-	public function required_not($value, $text) { $this->validator(array('FORM_FIELD', '_required_not'), array($value), $text); return $this; }
-	public static function _required_not($element, $value) { return $element->value() != $value; }
 
 }

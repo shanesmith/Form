@@ -11,7 +11,7 @@ class FORM_BUTTOM extends FORM_FIELD {
 
 	public function __construct($parent, $name, $text='button') {
 		parent::__construct($parent, $name, '', $text);
-		$this->post_value = $this->session_value = null;
+		$this->value($text);
 	}
 
 	public function html() {
@@ -88,7 +88,7 @@ class FORM_SUBMIT_BUTTOM extends FORM_FIELD {
 
 	public function __construct($parent, $name, $text='Submit') {
 		parent::__construct($parent, $name, '', $text);
-		$this->post_value = $this->session_value = null;
+		$this->value($text);
 	}
 
 	public function html() {
@@ -172,6 +172,7 @@ class FORM_RESET_BUTTOM extends FORM_FIELD {
 
 	public function __construct($parent, $name, $text='Reset') {
 		parent::__construct($parent, $name, '', $text);
+		$this->value($text);
 	}
 
 	public function html() {

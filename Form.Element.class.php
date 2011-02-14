@@ -8,10 +8,6 @@ abstract class FORM_ELEMENT {
 
 	protected $name, $label, $parent, $form, $renderer, $attributes=array();
 
-	protected $saveToSession, $loadFromSession;
-
-	protected $validators = array();
-
 	function __construct($parent, $name, $label=null) {
 		$this->parent = $parent;
 		$this->name = $name;
@@ -154,25 +150,7 @@ abstract class FORM_ELEMENT {
 	* @return FORM_ELEMENT
 	*/
 	public function addClass($class) {
-		if (!isset($this->attributes['class'])) {
-			$this->attributes['class'] = array();
-		} elseif (is_string($this->attributes['class'])) {
-			$this->attributes['class'] = explode(" ", $this->attributes['class']);
-		}
-
-		$this->attributes['class'][] = $class;
-
-		return $this;
-	}
-
-	/**
-	* Iteritavely adds each class in $classes to the element's class attribute
-	*
-	* @param mixed $classes
-	* @return FORM_ELEMENT
-	*/
-	public function addClasses(array $classes) {
-		foreach ($classes as $class) $this->addClass($class);
+		$this->attributes['class'] .= $class;
 		return $this;
 	}
 
@@ -182,7 +160,8 @@ abstract class FORM_ELEMENT {
 	* @param mixed $id
 	* @return FORM_ELEMENT
 	*/
-	public function id($id) { $this->attr('id', $id); return $this; }
+	public function id($id=null) { return $this->attr('id', $id); }
+
 
 	/**
 	* Returns the element's attributes converted into and html attributes string
@@ -190,60 +169,5 @@ abstract class FORM_ELEMENT {
 	* @return string
 	*/
 	public function attr2str() { return attr2str($this->attributes); }
-
-	public function setError($message) {
-		$this->form()->setError($message, $this);
-	}
-
-	public function getError() {
-		return $this->form()->getError($this->name());
-	}
-
-	/**
-	* Set a validator for the element.
-	*
-	* @param callback $validator A function which returns whether or not the element is valid.
-	* @param array $args Arguments to pass to the validator
-	* @param string $errortext Text to display in case the element is invalid
-	*/
-	public function validator($validator, $args=array(), $errortext='') { $this->validators[] = array($validator, $args, $errortext); return $this; }
-
-	public function validate() {
-		$valid = true;
-		foreach ($this->validators as $validator) {
-			$function = $validator[0];
-			if (is_callable($function)) {
-				$error_text = $validator[2];
-				$arguments = array_merge(array($this), (array)$validator[1]);
-				$ok = call_user_func_array($function, $arguments);
-				if (!$ok) {
-					$valid = false;
-					if (is_array($error_text)) {
-						$error_text = ($this->form()->lang()=='fr' ? $error_text[1] : $error_text[0]);
-					}
-					$this->setError($error_text);
-				}
-			} else {
-				user_error("{$function} is not callable!", E_USER_WARNING );
-			}
-		}
-		return $valid;
-	}
-
-	public function loadFromSession($set=null) {
-		if (isset($set)) {
-			$this->loadFromSession = (bool) $set;
-			return $this;
-		}
-		return isset($this->loadFromSession) ? $this->loadFromSession : $this->parent()->loadFromSession();
-	}
-
-	public function saveToSession($set=null) {
-		if (isset($set)) {
-			$this->saveToSession = (bool) $set;
-			return $this;
-		}
-		return isset($this->saveToSession) ? $this->saveToSession : $this->parent()->saveToSession();
-	}
 
 }

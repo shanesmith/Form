@@ -11,7 +11,6 @@ class FORM_INFO extends FORM_FIELD {
 
 	public function __construct($parent, $name, $label='', $value=null) {
 		parent::__construct($parent, $name, $label, '');
-		$this->value($value);
 	}
 
 	public function html() {

@@ -4,7 +4,7 @@ require_once "Form.Element.class.php";
 
 require_once "Form.utils.php";
 
-class FORM_FIELDSET extends FORM_ELEMENT implements ArrayAccess {
+class FORM_FIELDSET extends FORM_ELEMENT {
 
 	static private $type = 'fieldset';
 
@@ -195,77 +195,6 @@ class FORM_FIELDSET extends FORM_ELEMENT implements ArrayAccess {
 	public function getElement($name) { return $this->elements[$name]; }
 
 	/**
-	* Recursively returns an array of element $name=>$value of element found inside the fieldset and child fieldsets
-	*
-	* If parameters are passed to this function, only values with those names are returned.
-	*
-	* @param $element_name
-	* @param $...
-	* @return array
-	*/
-	public function values(){
-		$values = array();
-
-		foreach ($this->elements as $elem) {
-			if ($elem instanceof FORM_FIELDSET) {
-				$values = array_merge_recursive($values, $elem->values());
-			} else {
-				$arr = array();
-
-				if ( $elem instanceof FORM_CHECKBOX && $elem->value()=='' ) continue;
-
-				parse_str("{$elem->name()}={$elem->value()}", $arr);
-				$values = array_merge_recursive($values, $arr);
-
-			}
-		}
-
-/*		$names = func_get_args();
-
-		foreach ($this->elements as $elem) {
-			if ($elem instanceof FORM_FIELDSET) {
-				$values = array_merge_recursive($values, $elem->values());
-			} else {
-				if (preg_match_all('/\[([^\]]+)\]/', $elem->name(), $matches)) {
-					$first = substr($elem->name(), 0, strpos($elem->name(), '['));
-					if (!isset($values[$first])) $values[$first] = array();
-					$tmp_values =& $values[$first];
-					foreach($matches[1] as $m) {
-						if (!isset($tmp_values[$m])) $tmp_values[$m] = array();
-						$tmp_values =& $tmp_values[$m];
-					}
-					$tmp_values = $elem->value();
-				} else {
-					$values[$elem->name()] = $elem->value();
-				}
-			}
-		}
-
-		if (!empty($names)) {
-			foreach ($names as $n) $tmp[$n] = $values[$n];
-			$values = $tmp;
-		}*/
-
-		return $values;
-	}
-
-	public function session_save_values() {
-		$values = array();
-
-		foreach ($this->elements as $elem) {
-			if ($elem instanceof FORM_FIELDSET) {
-				$values = array_merge_recursive($values, $elem->session_save_values());
-			} elseif ($elem->saveToSession()) {
-				$arr = array();
-				parse_str("{$elem->name()}={$elem->value()}", $arr);
-				$values = array_merge_recursive($values, $arr);
-			}
-		}
-
-		return $values;
-	}
-
-	/**
 	* First concatenates all element renderings, and then passes the rendering to the first available renderer, which returns the fieldset's rendering
 	*
 	* @param callback $renderer
@@ -303,23 +232,6 @@ class FORM_FIELDSET extends FORM_ELEMENT implements ArrayAccess {
 	}
 
 	/**
-	* Returns the ANDed validation of all sub element
-	*
-	* @return boolean
-	*/
-	public function validate() {
-		$valid = true;
-
-		$valid &= parent::validate();
-
-		foreach ($this->elements as $elem) {
-			$valid &= $elem->validate();
-		}
-
-		return $valid;
-	}
-
-	/**
 	* @param mixed $name
 	* @return FORM_FIELD
 	*/
@@ -353,27 +265,6 @@ class FORM_FIELDSET extends FORM_ELEMENT implements ArrayAccess {
 		return null;
 	}
 
-	public function processFileFields($folder=null) {
-
-		$success = true;
-
-		foreach ($this->elements as $elem) {
-			switch ($elem->type()) {
-				case 'fieldset': {
-					$success &= $elem->processFileFields($folder);
-					break;
-				}
-				case 'file': {
-					$success &= $elem->process($folder);
-				}
-			}
-
-		}
-
-		return $success;
-
-	}
-
 	/**
 	* A default renderer for fieldsets
 	*
@@ -384,7 +275,6 @@ class FORM_FIELDSET extends FORM_ELEMENT implements ArrayAccess {
 		$label = $fieldset->label();
 
 		$fieldset->addClasses(array('form-element-container', 'form-fieldset-container'));
-		if ($fieldset->getError()) $fieldset->addClasses(array('form-element-error', 'form-fieldset-error'));
 
 		$attributes = $fieldset->attr2str();
 
@@ -419,8 +309,4 @@ class FORM_FIELDSET extends FORM_ELEMENT implements ArrayAccess {
 
 	public function __toString() { return $this->render(); }
 
-	public function offsetExists($offset) { return !is_null($this->getElement($offset)); }
-	public function offsetGet($offset) { return $this->getElement($offset); }
-	public function offsetSet($offset, $value) { die("Cannot set elements through array access."); }
-	public function offsetUnset($offset) { $this->removeElement($offset); }
 }
