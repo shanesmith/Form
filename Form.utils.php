@@ -8,3 +8,7 @@ function attr2str(array $attributes) {
 	}
 	return $s;
 }
+
+function form_valid_lang($lang) {
+	return in_array($lang, array('en', 'fr'));
+}

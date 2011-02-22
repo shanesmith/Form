@@ -1,18 +1,98 @@
 <?php
+require_once dirname(__FILE__) . "/Form.class.php";
 
-require_once "Form.utils.php";
-
+/**
+*
+* FORM_ELEMENT
+*
+*
+* A Form Element represents an html element that is related to html forms.
+*
+* Form Elements can be Fieldsets (or a Form, which is a subclass of Fieldset)
+* or Fields (of which there are Text, Select, File, etc...)
+*
+*/
 abstract class FORM_ELEMENT {
 
+	/**
+	* The element's type (fieldset, text, file, submit, etc...)
+	*
+	* @var string
+	*/
 	static private $type;
 
-	protected $name, $label, $parent, $form, $renderer, $attributes=array();
+	/**
+	* A reference to the element's parent Fieldset
+	*
+	* Set to null if this element is Form
+	*
+	* @var FORM_FIELDSET
+	*/
+	protected $parent;
 
-	function __construct($parent, $name, $label=null) {
-		$this->parent = $parent;
+	/**
+	* A reference all the way back to the containing Form
+	*
+	* @var FORM
+	*/
+	protected $form;
+
+	/**
+	* The element's name
+	*
+	* @var string
+	*/
+	protected $name;
+
+	/**
+	* A descriptive label for rendering
+	*
+	* @var array
+	*/
+	protected $label = array();
+
+	/**
+	* An array of attributes for rendering
+	* with name and value pairs matching
+	* attribute names and values
+	*
+	* @var array
+	*/
+	protected $attributes = array();
+
+	/**
+	* An optional renderer for this element
+	*
+	* @var callable
+	*/
+	protected $renderer;
+
+
+	/*******************
+	 **  CONSTRUCTOR  **
+	 *******************/
+
+	/**
+	* Basic Constructor
+	*
+	*** Should not be called from FORM
+	*
+	* @param FORM_FIELDSET $parent
+	* @param string $name
+	* @param string $label
+	* @return FORM_ELEMENT
+	*/
+	public function __construct(&$parent, $name, $label=null) {
+		$this->parent =& $parent;
+		$this->form =& $parent->form();
 		$this->name = $name;
 		$this->label = $label;
 	}
+
+
+	/*************************
+	 **  GETTERS / SETTERS  **
+	 *************************/
 
 	/**
 	* Return the element's name
@@ -22,49 +102,11 @@ abstract class FORM_ELEMENT {
 	public function name() { return $this->name; }
 
 	/**
-	* If $label is set, then sets the label and returns the element,
-	* else the element's label is returned
-	*
-	* @param string $label
-	* @return string|FORM_ELEMENT
-	*/
-	public function label($label=null) { return isset($label) ? $this->setLabel($label) : $this->getLabel(); }
-
-	/**
-	* Set the element's label
-	*
-	* @param string|array $label the element's label
-	* @return FORM_ELEMENT
-	*/
-	public function setLabel($label) {
-		$this->label = $label;
-		return $this;
-	}
-
-	/**
-	* Return the element's label
-	*
-	* @return string
-	*/
-	public function getLabel($useLang=true) {
-		$label = $this->label;
-
-		/*if ($useLang) {
-			if (is_array($label)) {
-				$lang = $this->form()->lang();
-
-				$en = $label[0];
-				$fr = $label[1];
-
-				if ($lang=='both') $label = "<span class='label-lang label-lang-en'>{$en}"
-
-				$label = ($lang=='en') ? $en : $fr;
-			}
-		}*/
-
-		return $label;
-
-	}
+	 * Return the element's type
+	 *
+	 * @return string
+	 */
+	public function type() { return $this->late_static_get('type'); }
 
 	/**
 	* Return the element's parent
@@ -74,73 +116,119 @@ abstract class FORM_ELEMENT {
 	public function parent() { return $this->parent; }
 
 	/**
-	* Climbs up the parent hierarchy all the way to the root (ie: the form itself) and returns it
+	* Return the associated FORM
 	*
 	* @return FORM
 	*/
-	public function form() {
-		// Can't use static to remember form since there may be multiple forms...
+	public function form() { return $this->form; }
 
-		if (!isset($this->form)) {
-			$form =& $this;
-			while (!($form instanceof FORM)) $form = $form->parent();
-			$this->form = $form;
-		}
-		return $this->form;
+	/**
+	* Return the element's labels in an array
+	*
+	* @return array
+	*/
+	public function getLabels() {
+		return $this->label;
 	}
 
 	/**
-	* If $attributes is set, then sets the attributes and returns the element,
-	* else the element's attributes is returned
+	* Returns the label for the specified language
 	*
-	* @param mixed $attributes
+	* @param string $lang
 	*/
-	public function attributes(array $attributes=null) { return isset($attributes) ? $this->setAttributes($attributes) : $this->getAttributes(); }
+	public function getLabelByLang($lang) {
+		return $this->label[$lang];
+	}
 
 	/**
-	* Erases and sets the element's attributes
+	* Set the element's labels
 	*
-	* @param array $attributes
+	* @param string|array $label the element's label
 	* @return FORM_ELEMENT
 	*/
-	public function setAttributes(array $attributes) {
-		$this->attributes = $attributes;
+	public function setLabels($label_en, $label_fr) {
+		$this->label['en'] = $label_en;
+		$this->label['fr'] = $label_fr;
 		return $this;
 	}
 
 	/**
-	* Returns the element's attributes
+	* Sets the label for the specified language
+	*
+	* @param string $lang
+	* @param string $label
+	* @returns FORM_ELEMENT
+	*/
+	public function setLabelByLang($lang, $label) {
+		if (!form_valid_lang($lang)) {
+			throw new FormInvalidLanguageException(null, $lang);
+		}
+
+		$this->label[$lang] = $label;
+
+		return $this;
+	}
+
+
+	/**
+	* Returns all of the element's attributes in an array
 	*
 	* @return array
 	*/
-	public function getAttributes() { return $this->attributes; }
+	public function getAttributesArray() {
+		return $this->attributes;
+	}
 
 	/**
-	* Merges $attributes with the current set of the element's attributes
+	* Sets all attributes in the given array
 	*
 	* @param array $attributes
 	* @return FORM_ELEMENT
 	*/
-	public function addAttributes (array $attributes) {
+	public function setAttributesArray(array $attributes) {
 		$this->attributes = array_merge($this->attributes, $attributes);
 		return $this;
 	}
 
 	/**
-	* If $value is set, sets the attribute with key $key and returns the element,
-	* else return the attribute value at key $key
+	* Get the specified attribute
 	*
 	* @param string $key
-	* @param mixed $value
-	* @return mixed|FORM_ELEMENT
+	* @returns string
 	*/
-	public function attr($key, $value=null) {
-		if (isset($value)) {
-			$this->attributes[$key] = $value;
-			return $this;
-		} else {
-			return isset($this->attributes[$key]) ? $this->attributes[$key] : null;
-		}
+	public function getAttribute($key) {
+		return $this->attributes[$key];
+	}
+
+	/**
+	* Set the specified attribute to a given value
+	*
+	* @param string $key
+	* @param string $value
+	* @returns FORM_ELEMENT
+	*/
+	public function setAttribute($key, $value) {
+		$this->attributes[$key] = $value;
+		return $this;
+	}
+
+	/**
+	* Remove all attributes
+	*
+	* @return FORM_ELEMENT
+	*/
+	public function resetAttributes() {
+		$this->attributes = array();
+		return $this;
+	}
+
+	/**
+	* Get the element's class attribute
+	*
+	* @returns string
+	*/
+	public function getClass() {
+		return $this->getAttribute('class');
 	}
 
 	/**
@@ -150,17 +238,43 @@ abstract class FORM_ELEMENT {
 	* @return FORM_ELEMENT
 	*/
 	public function addClass($class) {
-		$this->attributes['class'] .= $class;
-		return $this;
+		return $this->setClass($this->getClass() . " " . $class);
 	}
 
 	/**
-	* Sets the element's id attribute
+	* Remove the given class from the element
 	*
-	* @param mixed $id
+	* @param string $class
 	* @return FORM_ELEMENT
 	*/
-	public function id($id=null) { return $this->attr('id', $id); }
+	public function removeClass($class) {
+		$class = preg_quote($class);
+		return $this->setClass(preg_replace("/\\b{$class}\\b/i", '', $this->getClass()));
+	}
+
+	/**
+	* Get the element's ID attribute
+	*
+	* @return string
+	*/
+	public function getID() {
+		return $this->getAttribute('id');
+	}
+
+	/**
+	* Sets the element's ID attribute
+	*
+	* @param string $id
+	* @return FORM_ELEMENT
+	*/
+	public function setID($id) {
+		return $this->setAttribute('id', $class);
+	}
+
+
+	/***************
+	 **  HELPERS  **
+	 ***************/
 
 
 	/**
@@ -169,5 +283,27 @@ abstract class FORM_ELEMENT {
 	* @return string
 	*/
 	public function attr2str() { return attr2str($this->attributes); }
+
+	/**
+	 * Return the element's rendering
+	 *
+	 * @return string
+	 */
+	public function __toString() { return $this->render(); }
+
+	/**
+	 * A hack to get PHP 5.3's late static binding functionality
+	 *
+	 * Works only if $var is public or protected
+	 *
+	 * $var does not need to be static
+	 *
+	 * @param string $var
+	 * @return mixed
+	 */
+	protected function late_static_get($var) {
+		$class_vars = get_class_vars(get_class($this));
+		return $class_vars[$var];
+	}
 
 }
