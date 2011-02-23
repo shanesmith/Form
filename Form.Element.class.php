@@ -49,7 +49,7 @@ abstract class FORM_ELEMENT {
 	*
 	* @var array
 	*/
-	protected $label = array();
+	protected $labels = array();
 
 	/**
 	* An array of attributes for rendering
@@ -82,13 +82,14 @@ abstract class FORM_ELEMENT {
 	* @param string $label
 	* @return FORM_ELEMENT
 	*/
-	public function __construct(&$parent, $name, $label=null) {
+	public function __construct(&$parent, $name, $labels=null) {
 		$this->parent =& $parent;
 		$this->form =& $parent->form();
 		$this->name = $name;
-		$this->label = $label;
+		if (isset($labels)) {
+			$this->setLabels($labels);
+		}
 	}
-
 
 	/*************************
 	 **  GETTERS / SETTERS  **
@@ -128,7 +129,58 @@ abstract class FORM_ELEMENT {
 	* @return array
 	*/
 	public function getLabels() {
-		return $this->label;
+		return $this->labels;
+	}
+
+	/**
+	* Set this element's labels
+	*
+	* If a string, it is set to the form's first defined language
+	*
+	* If a numbered array, they are set in same sequence as the form's defined languages
+	*
+	* If an associative array, they are set to the keys
+	*
+	* @param string|array $labels
+	* @return FORM_ELEMENT
+	*/
+	public function setLabels($labels) {
+
+		if (!empty($labels)) {
+
+			$languages = $this->form()->getLanguages();
+
+			if (is_array($labels)) {
+
+				if (is_integer(array_shift(array_keys($labels)))) {
+					// sequencial
+
+					$languages = array_slice($languages, 0, count($labels));
+					$this->labels = array_combine($languages, $labels);
+
+				} else {
+					// associative
+
+					foreach (array_keys($labels) as $lang) {
+						if (!$this->form()->isValidLanguage()) {
+							throw new FormInvalidLanguageException(null, $lang, $this);
+						}
+					}
+
+					$this->labels = array_merge($this->labels, $labels);
+
+				}
+
+			} else {
+
+				$lang = $languages[0];
+				$this->labels[$lang] = $labels;
+
+			}
+
+		}
+
+		return $this;
 	}
 
 	/**
@@ -137,19 +189,11 @@ abstract class FORM_ELEMENT {
 	* @param string $lang
 	*/
 	public function getLabelByLang($lang) {
-		return $this->label[$lang];
-	}
+		if (!$this->form()->isValidLanguage($lang)) {
+			throw new FormInvalidLanguageException(null, $lang, $this);
+		}
 
-	/**
-	* Set the element's labels
-	*
-	* @param string|array $label the element's label
-	* @return FORM_ELEMENT
-	*/
-	public function setLabels($label_en, $label_fr) {
-		$this->label['en'] = $label_en;
-		$this->label['fr'] = $label_fr;
-		return $this;
+		return $this->labels[$lang];
 	}
 
 	/**
@@ -160,13 +204,7 @@ abstract class FORM_ELEMENT {
 	* @returns FORM_ELEMENT
 	*/
 	public function setLabelByLang($lang, $label) {
-		if (!form_valid_lang($lang)) {
-			throw new FormInvalidLanguageException(null, $lang, $this);
-		}
-
-		$this->label[$lang] = $label;
-
-		return $this;
+		return $this->setLabels(array($lang => $label));
 	}
 
 
@@ -238,7 +276,7 @@ abstract class FORM_ELEMENT {
 	* @return FORM_ELEMENT
 	*/
 	public function addClass($class) {
-		return $this->setClass($this->getClass() . " " . $class);
+		return $this->setAttribute('class', $this->getClass() . " " . $class);
 	}
 
 	/**
@@ -333,9 +371,9 @@ abstract class FORM_ELEMENT {
 	* @param FORM_ELEMENT $element
 	* @return string
 	*/
-	abstract public static function _default_renderer($element);
+	abstract public static function _default_renderer($element, array $languages);
 
-	
+
 	/***************
 	 **  HELPERS  **
 	 ***************/
