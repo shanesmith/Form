@@ -272,10 +272,73 @@ abstract class FORM_ELEMENT {
 	}
 
 
+	/*****************
+	 **  RENDERING  **
+	 *****************/
+
+	/**
+	* Sets the renderer for this specific element
+	*
+	* @param callback $renderer
+	* @return FORM_ELEMENT
+	*/
+	public function setRenderer($renderer) {
+		$this->renderer = $renderer;
+		return $this;
+	}
+
+	/**
+	* Get the renderer for this specific element,
+	* or null if none set
+	*
+	* @return callable
+	*/
+	public function getRenderer() {
+		return $this->renderer;
+	}
+
+	/**
+	* Set a renderer for all elements of this type
+	*
+	* @param callable $renderer
+	*/
+	abstract public static function setStaticRenderer($renderer);
+
+	/**
+	* Get the static renderer, or null if none set
+	*
+	* @return callable
+	*/
+	abstract public static function getStaticRenderer();
+
+	/**
+	* Resolve the rendering chain to return a renderer for this element
+	*
+	* @return callable
+	*/
+	abstract public function resolveRenderer();
+
+	/**
+	* Render this element, optionally passing a renderer
+	* that will override the renderer chain
+	*
+	* @param callable $renderer
+	* @return string
+	*/
+	abstract public function render($renderer=null);
+
+	/**
+	* A default renderer for this element type
+	*
+	* @param FORM_ELEMENT $element
+	* @return string
+	*/
+	abstract public static function _default_renderer($element);
+
+	
 	/***************
 	 **  HELPERS  **
 	 ***************/
-
 
 	/**
 	* Returns the element's attributes converted into and html attributes string
