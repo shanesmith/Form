@@ -161,7 +161,7 @@ abstract class FORM_ELEMENT {
 	*/
 	public function setLabelByLang($lang, $label) {
 		if (!form_valid_lang($lang)) {
-			throw new FormInvalidLanguageException(null, $lang);
+			throw new FormInvalidLanguageException(null, $lang, $this);
 		}
 
 		$this->label[$lang] = $label;
