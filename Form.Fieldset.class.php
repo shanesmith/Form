@@ -1,24 +1,50 @@
 <?php
+require_once dirname(__FILE__) . "/Form.class.php";
 
-require_once "Form.Element.class.php";
-
-require_once "Form.utils.php";
-
+/**
+*
+* FORM_FIELDSET
+*
+*
+* Represents a collection of Form Elements (minus Form itself).
+*
+*/
 class FORM_FIELDSET extends FORM_ELEMENT {
 
-	static private $type = 'fieldset';
+	/**
+	* Type of Form Element
+	*
+	* @var string
+	*/
+	static protected $type = 'fieldset';
 
-	protected $elements=array();
+	/**
+	* List of element _names_ that this fieldset contains
+	*
+	* @var array
+	*/
+	protected $children = array();
 
+
+	/**
+	 * Callable of renderers keyed by field type
+	 *
+	 * @var array
+	 */
+	protected $child_type_renderers = array();
+
+
+	/**
+	* Callable to the static renderer
+	*
+	* @var callable
+	*/
 	protected static $static_renderer = array('self', "_default_renderer");
+	
 
-	protected $field_renderers = array();
-
-	public function __construct($parent, $name, $label='') {
-		$this->parent = $parent;
-		$this->name = $name;
-		$this->label = $label;
-	}
+	/********************
+	 **  FIELD ADDERS  **
+	 ********************/
 
 	/**
 	* Creates a new fieldset, inserts it into the current fieldset, and return the new fieldset
@@ -27,8 +53,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string $label
 	* @return FORM_FIELDSET
 	*/
-	public function fieldset($name, $label='') {
-		return $this->addElement(new FORM_FIELDSET($this, $name, $label));
+	public function fieldset($name, $labels=null) {
+		return $this->addChild(new FORM_FIELDSET($this, $name, $labels));
 	}
 
 	/**
@@ -39,8 +65,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string $default
 	* @return FORM_TEXT
 	*/
-	public function text($name, $label='', $default=null) {
-		return $this->addElement(new FORM_TEXT($this, $name, $label, $default));
+	public function text($name, $labels=null, $default=null) {
+		return $this->addChild(new FORM_TEXT($this, $name, $labels, $default));
 	}
 
 	/**
@@ -51,8 +77,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string $default
 	* @return FORM_TEXTAREA
 	*/
-	public function textarea($name, $label='', $default=null) {
-		return $this->addElement(new FORM_TEXTAREA($this, $name, $label, $default));
+	public function textarea($name, $labels=null, $default=null) {
+		return $this->addChild(new FORM_TEXTAREA($this, $name, $labels, $default));
 	}
 
 	/**
@@ -63,7 +89,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @return FORM_HIDDEN
 	*/
 	public function hidden($name, $default=null) {
-		return $this->addElement(new FORM_HIDDEN($this, $name, $default));
+		return $this->addChild(new FORM_HIDDEN($this, $name, $default));
 	}
 
 	/**
@@ -74,8 +100,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string $default
 	* @return FORM_PASSWORD
 	*/
-	public function password($name, $label='', $default=null) {
-		return $this->addElement(new FORM_PASSWORD($this, $name, $label, $default));
+	public function password($name, $labels=null, $default=null) {
+		return $this->addChild(new FORM_PASSWORD($this, $name, $labels, $default));
 	}
 
 	/**
@@ -85,9 +111,10 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string $label
 	* @return FORM_FILE
 	*/
-	public function file($name, $label='') {
-		$this->form()->attr('enctype', FORM::ENCTYPE_FILE);
-		return $this->addElement(new FORM_FILE($this, $name, $label)); }
+	public function file($name, $labels=null) {
+		$this->form()->setAttribute('enctype', FORM::ENCTYPE_FILE);
+		return $this->addChild(new FORM_FILE($this, $name, $labels));
+	}
 
 	/**
 	* Creates a new select field, inserts it into the current fieldset, and returns the new select field
@@ -98,8 +125,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string $default
 	* @return FORM_SELECT
 	*/
-	public function select($name, $label='', $options=array(), $default=null) {
-		return $this->addElement(new FORM_SELECT($this, $name, $label, $options, $default));
+	public function select($name, $labels=null, $options=array(), $default=null) {
+		return $this->addChild(new FORM_SELECT($this, $name, $labels, $options, $default));
 	}
 
 	/**
@@ -110,8 +137,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string $default
 	* @return FORM_CHECKBOX
 	*/
-	public function checkbox($name, $label='', $default=null) {
-		return $this->addElement(new FORM_CHECKBOX($this, $name, $label, $default));
+	public function checkbox($name, $labels=null, $default=null) {
+		return $this->addChild(new FORM_CHECKBOX($this, $name, $labels, $default));
 	}
 
 	/**
@@ -122,8 +149,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string $default
 	* @return FORM_RADIO_LIST
 	*/
-	public function radio_list($name, $label='', $default=null) {
-		return $this->addElement(new FORM_RADIO_LIST($this, $name, $label, $default));
+	public function radio_list($name, $labels=null, $default=null) {
+		return $this->addChild(new FORM_RADIO_LIST($this, $name, $labels, $default));
 	}
 
 	/**
@@ -133,8 +160,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string $text
 	* @return FORM_BUTTOM
 	*/
-	public function button($name, $text='') {
-		return $this->addElement(new FORM_BUTTOM($this, $name, $text));
+	public function button($name, $texts=null) {
+		return $this->addChild(new FORM_BUTTOM($this, $name, $texts));
 	}
 
 	/**
@@ -144,8 +171,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string $text
 	* @return FORM_SUBMIT_BUTTOM
 	*/
-	public function submit_button($name, $text='Submit') {
-		return $this->addElement(new FORM_SUBMIT_BUTTOM($this, $name, $text));
+	public function submit_button($name, $texts=null) {
+		return $this->addChild(new FORM_SUBMIT_BUTTOM($this, $name, $texts));
 	}
 
 	/**
@@ -155,8 +182,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string $text
 	* @return FORM_RESET_BUTTON
 	*/
-	public function reset_button($name, $text='Reset') {
-		return $this->addElement(new FORM_RESET_BUTTOM($this, $name, $text));
+	public function reset_button($name, $texts=null) {
+		return $this->addChild(new FORM_RESET_BUTTOM($this, $name, $texts));
 	}
 
 	/**
@@ -167,102 +194,377 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string $text
 	* @return FORM_INFO
 	*/
-	public function info($name, $label, $text='') {
-		return $this->addElement(new FORM_INFO($this, $name, $label, $text));
+	public function info($name, $labels=null, $texts=null) {
+		return $this->addChild(new FORM_INFO($this, $name, $labels, $texts));
 	}
 
-	function elements() { return $this->elements; }
+	/****************
+	 **  CHILDREN  **
+	 ****************/
 
-	private function addElement(FORM_ELEMENT $elem) {
-		return $this->elements[$elem->name()] =& $elem;
+	/**
+	* Add the given element as a child of this fieldset
+	*
+	* @param FORM_ELEMENT $elem
+	* @returns FORM_ELEMENT
+	*/
+	private function addChild(FORM_ELEMENT $elem) {
+		$this->children[] = $elem->name();
+		return $this->form()->addElement($elem);
 	}
 
-	function removeElement($name) {
-		if (isset($this->elements[$name])) {
-			unset($this->elements[$name]);
-			return true;
+	/**
+	 * Returns whether this fieldset holds the named child
+	 *
+	 * @param string $name
+	 * @returns boolean
+	 */
+	public function hasChild($name) {
+		return in_array($name, $this->children);
+	}
+
+	/**
+	 * Remove and return the named element from this fieldset (and the form)
+	 *
+	 * If there are no child of the given name, then null is returned
+	 *
+	 * @param string $name
+	 * @returns FORM_ELEMENT
+	 */
+	public function removeChild($name) {
+		if (!$this->hasChild($name)) return null;
+
+		unset($this->children[$name]);
+
+		return $this->form()->removeElement($name);
+	}
+
+	/**
+	 * Return the named child element if it exists, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_ELEMENT
+	 */
+	public function getChild($name) {
+		if (!$this->hasChild($name)) return null;
+
+		return $this->form()->getElement($name);
+	}
+
+	/**
+	* Get all children, either only names or resolved to actual elements
+	*
+	* @return array(string|FORM_ELEMENT)
+	*/
+	public function getAllChildren($resolve=true) {
+		if (!$resolve) return $this->children;
+
+		$children = array();
+
+		foreach ($this->children as $name) {
+			$children[$name] = $this->getChild($name);
 		}
 
-		return false;
+		return $children;
 	}
 
 	/**
-	* Returns the element with the provided name
-	*
-	* @param string $name
-	* @return FORM_ELEMENT
-	*/
-	public function getElement($name) { return $this->elements[$name]; }
+	 * Returns the named child element if it exists
+	 * and if it matches the given type (class name), null otherwise
+	 *
+	 * @param string $name
+	 * @param string $type
+	 * @returns FORM_ELEMENT
+	 */
+	public function getChildWithTypeCheck($name, $type) {
+		$elem = $this->getChild($name);
+
+		if ($elem->type() != $type) return null;
+
+		return $elem;
+	}
 
 	/**
-	* First concatenates all element renderings, and then passes the rendering to the first available renderer, which returns the fieldset's rendering
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_FIELD, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_FIELD
+	 */
+	public function getField($name) {
+		return $this->getChildWithTypeCheck($name, 'field');
+	}
+
+	/**
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_FIELDSET, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_FIELDSET
+	 */
+	public function getFieldset($name) {
+		return $this->getChildWithTypeCheck($name, 'fieldset');
+	}
+
+	/**
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_TEXT, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_TEXT
+	 */
+	public function getText($name) {
+		return $this->getChildWithTypeCheck($name, 'text');
+	}
+
+	/**
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_BUTTON, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_BUTTON
+	 */
+	public function getButton($name) {
+		return $this->getChildWithTypeCheck($name, 'button');
+	}
+
+	/**
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_SUBMIT_BUTTON, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_SUBMIT_BUTTON
+	 */
+	public function getSubmitButton($name) {
+		return $this->getChildWithTypeCheck($name, 'submit_button');
+	}
+
+	/**
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_RESET_BUTTON, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_RESET_BUTTON
+	 */
+	public function getResetButton($name) {
+		return $this->getChildWithTypeCheck($name, 'reset_button');
+	}
+
+	/**
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_CHECKBOX, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_CHECKbOX
+	 */
+	public function getCheckbox($name) {
+		return $this->getChildWithTypeCheck($name, 'checkbox');
+	}
+
+	/**
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_FILE, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_FILE
+	 */
+	public function getFile($name) {
+		return $this->getChildWithTypeCheck($name, 'file');
+	}
+
+	/**
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_HIDDEN, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_HIDDEN
+	 */
+	public function getHidden($name) {
+		return $this->getChildWithTypeCheck($name, 'hidden');
+	}
+
+	/**
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_INFO, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_INFO
+	 */
+	public function getInfo($name) {
+		return $this->getChildWithTypeCheck($name, 'info');
+	}
+
+	/**
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_PASSWORD, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_PASSWORD
+	 */
+	public function getPassword($name) {
+		return $this->getChildWithTypeCheck($name, 'password');
+	}
+
+	/**
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_RADIO, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_RADIO
+	 */
+	public function getRadio($name) {
+		return $this->getChildWithTypeCheck($name, 'radio');
+	}
+
+	/**
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_SELECT, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_SELECT
+	 */
+	public function getSelect($name) {
+		return $this->getChildWithTypeCheck($name, 'select');
+	}
+
+	/**
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_TEXTAREA, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_TEXTAREA
+	 */
+	public function getTextarea($name) {
+		return $this->getChildWithTypeCheck($name, 'textarea');
+	}
+
+
+	/*****************
+	 **  RENDERING  **
+	 *****************/
+
+	/**
+	* Set a renderer for all elements of this type
+	*
+	* @param callable $renderer
+	*/
+	public static function setStaticRenderer($renderer) {
+		self::$static_renderer = $renderer;
+	}
+
+	/**
+	* Get the static renderer, or null if none set
+	*
+	* @return callable
+	*/
+	public static function getStaticRenderer() {
+		return self::$static_renderer;
+	}
+
+	/**
+	* Set a renderer for all child elements of the specified type
+	*
+	* @param string $type
+	* @param callable $renderer
+	*/
+	public function setChildTypeRenderer($type, $renderer) {
+		$this->child_type_renderers[$type] = $renderer;
+		return $this;
+	}
+
+	/**
+	* Get the renderer set for all children of the specified type.
+	*
+	* If $recurse is true and a renderer is not set, a recursive call
+	* to parent's getChildTypeRenderer() is made until one if found (or not)
+	*
+	* @param string $type
+	* @param boolean $recurse
+	*/
+	public function getChildTypeRenderer($type, $recurse=false) {
+		$renderer = $this->child_type_renderers[$type];
+
+		if (!$renderer && $recurse && $this->parent()) {
+			$renderer = $this->parent()->getChildTypeRenderer($type, true);
+		}
+
+		return $renderer;
+	}
+
+	/**
+	* Return an array of all renderers set for children, keyed by element type.
+	*
+	* If $recurse is true, recursive calls to the parent's getAllTypeRenderers()
+	* are done to
+	*
+	* @param boolean $recurse
+	* @return array
+	*/
+	public function getAllChildTypeRenderers($recurse=false) {
+		if ($recurse && $this->parent()) {
+			$parent_child_type_renderers = $this->parent()->getAllChildTypeRenderers(true);
+			return array_merge($parent_child_type_renderers, $this->child_type_renderers);
+		} else {
+			return $this->child_type_renderers;
+		}
+	}
+
+	/**
+	* Renders all children and return the concat
+	*
+	* @return string
+	*/
+	public function renderAllChildren($lang=null) {
+		$render = "";
+
+		/** @var FORM_ELEMENT $child */
+		foreach ($this->getAllChildren() as   $child) {
+			$render .= $child->render($lang);
+		}
+
+		return $render;
+	}
+
+	/**
+	* Step through renderer precedence until one is found, and returns it, null otherwise
+	*
+	* @return callable
+	*/
+	public function resolveRenderer() {
+		$parent_child_type_renderer = $this->parent() ? $this->parent()->getChildTypeRenderer($this->type(), true) : null;
+
+		if (is_callable($this->renderer)) return $this->renderer;
+		elseif (is_callable($parent_child_type_renderer)) return $parent_child_type_renderer;
+		elseif (is_callable(self::$static_renderer)) return self::$static_renderer;
+		else return null;
+	}
+
+	/**
+	* Uses the given renderer or, if not provided, a resolved renderer to render the element
 	*
 	* @param callback $renderer
 	* @return string
 	*/
-	public function render($renderer=null) {
-		$elements = "";
-		foreach ($this->elements as $elem) $elements .= $elem->render();
+	public function render($lang=null, $renderer=null) {
+		if (!isset($lang)) {
+			$lang = $this->form()->getLanguages();
+		} else{
+			if (is_string($lang)) $lang = array($lang);
 
-		if (is_callable($renderer)) return call_user_func($renderer, $this, $elements);
-		elseif (is_callable($this->renderer)) return call_user_func($this->renderer, $this, $elements);
-		elseif (is_callable(self::$static_renderer)) return call_user_func(self::$static_renderer, $this, $elements);
-		else return "";
-	}
-
-	/**
-	* Sets the appropiate renderer, depending on if the function was called in a dynamic or static context
-	*
-	* @param callback $renderer
-	*/
-	public function renderer($renderer) {
-		if (isset($this)) $this->renderer = $renderer;
-		else self::$static_renderer = $renderer;
-	}
-
-	public function field_renderer($field, $renderer=null) {
-		if (isset($renderer)) {
-			$this->field_renderers[$field] = $renderer;
-			return $this;
-		} else {
-			if (isset($this->field_renderers[$field])) return $this->field_renderers[$field];
-			elseif ($this->parent()) return $this->parent()->field_renderer($field);
-			else return null;
-		}
-	}
-
-	/**
-	* @param mixed $name
-	* @return FORM_FIELD
-	*/
-	public function findField($name) {
-		foreach ($this->elements as $elem) {
-			if ($elem instanceof FORM_FIELDSET) {
-				$found = $elem->findField($name);
-				if ($found !== null) return $found;
-			} else {
-				if ($elem->name() == $name) return $elem;
+			if (!$this->form()->areValidLanguages($lang, $invalid)) {
+				throw new FormInvalidLanguageException(null, $invalid, $this);
 			}
 		}
 
-		return null;
-	}
-
-	/**
-	* @param mixed $name
-	* @return FORM_ELEMENT
-	*/
-	public function findElement($name) {
-		foreach ($this->elements as $elem) {
-			if ($elem->name() == $name) {
-				return $elem;
-			} elseif ($elem instanceof FORM_FIELDSET) {
-				$found = $elem->findElement($name);
-				if ($found != null) return $found;
-			}
+		if (is_callable($renderer)) {
+			return call_user_func($renderer, $this, $lang);
 		}
-
-		return null;
+		elseif (is_callable($this->resolveRenderer())) {
+			return call_user_func($this->resolveRenderer(), $this, $lang);
+		}
+		else {
+			throw new FormNoRendererFound(null, $this);
+		}
 	}
 
 	/**
@@ -271,42 +573,31 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param FORM_FIELDSET $fieldset
 	* @param string $elements
 	*/
-	public static function _default_renderer($fieldset, $elements) {
-		$label = $fieldset->label();
+	public static function _default_renderer($fieldset, array $languages) {
+		$labels = $fieldset->getLabels();
 
-		$fieldset->addClasses(array('form-element-container', 'form-fieldset-container'));
+		$elements = $fieldset->renderAllChildren($languages);
+
+		$fieldset->addClass('form-element-container')->addClass('form-fieldset-container');
 
 		$attributes = $fieldset->attr2str();
 
-		$s  = "<div {$attributes}>";
 
-		if (!empty($label)) {
-			$s .= "<label class='form-element-label form-fieldset-label'>";
+		$str  = "<div {$attributes}>\n";
 
-			if (is_array($label)) {
-				$lang = $fieldset->form()->language();
-				$en = "<span class='form-fieldset-label-en'>{$label[0]}</span>";
-				$fr = "<span class='form-fieldset-label-fr'>{$label[1]}</span>";
+		$str .= "\t<label class='form-element-label form-fieldset-label'>\n";
 
-				if ($lang=='both') $s .= $en.$fr;
-				elseif ($lang=='fr') $s .= $fr;
-				else $s .= $en;
-			} else {
-				$s .= "<span class='form-fieldset-label-nolang'>{$label}</span>";
-			}
-
-			$s .= "</label>";
+		foreach ($languages as $lang) {
+			$str .= "\t\t<span class='form-fieldset-label-{$lang}'>{$labels[$lang]}</span>\n";
 		}
 
-		$s .= "		<div class='form-fieldset'>{$elements}</div>";
+		$str .= "\t</label>\n";
 
-		$s .= "</div>";
+		$str .= "\t<div class='form-fieldset'>{$elements}</div>\n";
 
-		return $s;
+		$str .= "</div>";
+
+		return $str;
 	}
-
-	public function type() { return self::$type; }
-
-	public function __toString() { return $this->render(); }
 
 }
