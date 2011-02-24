@@ -338,12 +338,23 @@ abstract class FORM_ELEMENT {
 	*
 	* @param callable $renderer
 	*/
+	/*
+	public static function setStaticRenderer($renderer) {
+		self::$static_renderer = $renderer;
+	}
+	*/
 	abstract public static function setStaticRenderer($renderer);
+
 
 	/**
 	* Get the static renderer, or null if none set
 	*
 	* @return callable
+	*/
+	/*
+	public static function getStaticRenderer() {
+		return self::$static_renderer;
+	}
 	*/
 	abstract public static function getStaticRenderer();
 
@@ -351,6 +362,16 @@ abstract class FORM_ELEMENT {
 	* Resolve the rendering chain to return a renderer for this element
 	*
 	* @return callable
+	*/
+	/*
+	public function resolveRenderer() {
+		$parent_child_type_renderer = $this->parent() ? $this->parent()->getChildTypeRenderer($this->type(), true) : null;
+
+		if (is_callable($this->renderer)) return $this->renderer;
+		elseif (is_callable($parent_child_type_renderer)) return $parent_child_type_renderer;
+		elseif (is_callable(self::$static_renderer)) return self::$static_renderer;
+		else return null;
+	}
 	*/
 	abstract public function resolveRenderer();
 
@@ -361,7 +382,32 @@ abstract class FORM_ELEMENT {
 	* @param callable $renderer
 	* @return string
 	*/
+	/*
+	public function render($lang=null, $renderer=null) {
+		if (!isset($lang)) {
+			$lang = $this->form()->getLanguages();
+		} else{
+			if (is_string($lang)) $lang = array($lang);
+
+			if (!$this->form()->areValidLanguages($lang, $invalid)) {
+				throw new FormInvalidLanguageException(null, $invalid, $this);
+			}
+		}
+
+		if (is_callable($renderer)) {
+			return call_user_func($renderer, $this, $lang);
+		}
+		elseif (is_callable($this->resolveRenderer())) {
+			return call_user_func($this->resolveRenderer(), $this, $lang);
+		}
+		else {
+			throw new FormNoRendererFound(null, $this);
+		}
+	}
+	*/
 	abstract public function render($renderer=null);
+
+
 
 	/**
 	* A default renderer for this element type
