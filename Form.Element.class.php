@@ -153,7 +153,7 @@ abstract class FORM_ELEMENT {
 			if (is_array($labels)) {
 
 				if (is_integer(array_shift(array_keys($labels)))) {
-					// sequencial
+					// sequential
 
 					$languages = array_slice($languages, 0, count($labels));
 					$this->labels = array_combine($languages, $labels);
@@ -161,10 +161,8 @@ abstract class FORM_ELEMENT {
 				} else {
 					// associative
 
-					foreach (array_keys($labels) as $lang) {
-						if (!$this->form()->isValidLanguage()) {
-							throw new FormInvalidLanguageException(null, $lang, $this);
-						}
+					if (!$this->form()->areValidLanguages(array_keys($labels), $invalid)) {
+						throw new FormInvalidLanguageException(null, $invalid, $this);
 					}
 
 					$this->labels = array_merge($this->labels, $labels);
@@ -287,7 +285,7 @@ abstract class FORM_ELEMENT {
 	*/
 	public function removeClass($class) {
 		$class = preg_quote($class);
-		return $this->setClass(preg_replace("/\\b{$class}\\b/i", '', $this->getClass()));
+		return $this->setAttribute('class', preg_replace("/\\b{$class}\\b/i", '', $this->getClass()));
 	}
 
 	/**
@@ -306,7 +304,7 @@ abstract class FORM_ELEMENT {
 	* @return FORM_ELEMENT
 	*/
 	public function setID($id) {
-		return $this->setAttribute('id', $class);
+		return $this->setAttribute('id', $id);
 	}
 
 
