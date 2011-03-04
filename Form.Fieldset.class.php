@@ -40,7 +40,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @var callable
 	*/
 	protected static $static_renderer = array('self', "_default_renderer");
-	
+
 
 	/********************
 	 **  FIELD ADDERS  **
@@ -578,9 +578,11 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 
 		$elements = $fieldset->renderAllChildren($languages);
 
-		$fieldset->addClass('form-element-container')->addClass('form-fieldset-container');
+		$attributes = $fieldset->getAttributesArray();
 
-		$attributes = $fieldset->attr2str();
+		$attributes['class'] .= " form-element-container form-fieldset-container";
+
+		$attributes = self::attr2str($attributes);
 
 
 		$str  = "<div {$attributes}>\n";

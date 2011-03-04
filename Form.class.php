@@ -14,14 +14,13 @@ require_once "Form.Field.Radio.class.php";
 require_once "Form.Field.Button.class.php";
 require_once "Form.Field.Info.class.php";*/
 require_once "Form.exceptions.php";
-require_once "Form.utils.php";
 restore_include_path();
 
 /**
- * 
+ *
  * FORM
- * 
- * 
+ *
+ *
  * The form.
  *
  * @TODO Are there Fieldset methods that should not be used in Form?
@@ -37,28 +36,28 @@ class FORM extends FORM_FIELDSET {
 
 	/**
 	 * The form's id
-	 * 
+	 *
 	 * @var string
 	 */
 	protected $id;
 
 	/**
 	 * Languages that this form supports
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $languages = array('en', 'fr');
 
 	/**
 	 * Various options
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $options = array();
 
 	/**
 	 * All elements found inside this form
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $elements = array();
@@ -69,40 +68,40 @@ class FORM extends FORM_FIELDSET {
 	* @var callable
 	*/
 	protected static $static_renderer = array('self', "_default_renderer");
-	
+
 
 	/*****************
 	 **  CONSTANTS  **
-	 *****************/	
+	 *****************/
 
 	/**
 	 * Value for the enctype attribute of a form tag when files are involved
-	 * 
+	 *
 	 * @var string
 	 */
 	const ENCTYPE_FILE = 'multipart/form-data';
 
 	/**
 	 * A prefix for special form fields
-	 * 
+	 *
 	 * @var string
 	 */
 	const FORM_ATTR_FIELD_PREFIX = '__form-';
 
-	
+
 	/*******************
 	 **  CONSTRUCTOR  **
 	 *******************/
-	
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param string $id
 	 * @param string $action
 	 * @param string $method
 	 * @param array $languages
 	 * @param array $options
-	 */	
+	 */
 	function __construct($id, $action=null, $method='post', $languages=array(), array $options=array()) {
 		$this->id = $id;
 
@@ -127,14 +126,14 @@ class FORM extends FORM_FIELDSET {
 
 	}
 
-	
+
 	/*************************
 	 **  GETTERS / SETTERS  **
 	 *************************/
 
 	/**
 	 * Get all supported languages for this form
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getLanguages() {
@@ -143,7 +142,7 @@ class FORM extends FORM_FIELDSET {
 
 	/**
 	 * Check a language against all supported languages
-	 * 
+	 *
 	 * @param string $lang
 	 * @return boolean
 	 */
@@ -153,9 +152,9 @@ class FORM extends FORM_FIELDSET {
 
 	/**
 	 * Checks several languages against all supported languages
-	 * 
-	 * Sets $invalid to first invalid language 
-	 * 
+	 *
+	 * Sets $invalid to first invalid language
+	 *
 	 * @param array $languages
 	 * @param string $invalid
 	 * @return boolean
@@ -173,7 +172,7 @@ class FORM extends FORM_FIELDSET {
 
 	/**
 	 * Get the value for a given option
-	 * 
+	 *
 	 * @param string $key
 	 * @return mixed
 	 */
@@ -183,7 +182,7 @@ class FORM extends FORM_FIELDSET {
 
 	/**
 	 * Return an array of all set options, keyed by option name
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getAllOptions() {
@@ -192,9 +191,9 @@ class FORM extends FORM_FIELDSET {
 
 	/**
 	 * Add the element to the set of all elements, then returns it
-	 * 
+	 *
 	 * Should only be called from a Fieldset's addChild()
-	 * 
+	 *
 	 * @param FORM_ELEMENT $elem
 	 * @return FORM_ELEMENT
 	 */
@@ -205,9 +204,9 @@ class FORM extends FORM_FIELDSET {
 
 	/**
 	 * Remove and return the named element
-	 * 
+	 *
 	 * Should only be called from a Fieldset's removeChild()
-	 * 
+	 *
 	 * @param string $name
 	 * @return FORM_ELEMENT
 	 */
@@ -223,7 +222,7 @@ class FORM extends FORM_FIELDSET {
 
 	/**
 	 * Return the named element
-	 * 
+	 *
 	 * @param string $name
 	 * @return FORM_ELEMENT
 	 */
@@ -235,7 +234,7 @@ class FORM extends FORM_FIELDSET {
 
 	/**
 	 * Return whether the named element exists
-	 * 
+	 *
 	 * @param string $name
 	 * @return boolean
 	 */
@@ -243,7 +242,7 @@ class FORM extends FORM_FIELDSET {
 		return isset($this->elements[$name]);
 	}
 
-	
+
 	/*****************
 	 **  RENDERING  **
 	 *****************/
@@ -297,7 +296,7 @@ class FORM extends FORM_FIELDSET {
 	* @param array $languages
 	*/
 	public static function _default_renderer($form, array $languages) {
-		$attributes = $form->attr2str();
+		$attributes = $form->getAttributesString();
 		return "<form {$attributes}>" . $form->renderAllChildren($languages) . "</form>";
 	}
 

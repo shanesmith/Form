@@ -259,6 +259,15 @@ abstract class FORM_ELEMENT {
 	}
 
 	/**
+	* Return a string of HTML this element's attributes
+	*
+	* @return string
+	*/
+	public function getAttributesString() {
+		return self::attr2str($this->getAttributesArray());
+	}
+
+	/**
 	* Get the element's class attribute
 	*
 	* @returns string
@@ -423,11 +432,18 @@ abstract class FORM_ELEMENT {
 	 ***************/
 
 	/**
-	* Returns the element's attributes converted into and html attributes string
+	* Returns the attributes array converted into and html attributes string
 	*
 	* @return string
 	*/
-	public function attr2str() { return attr2str($this->attributes); }
+	public static function attr2str(array $attributes) {
+		$str = "";
+		foreach($attributes as $key=>$value) {
+			if (is_array($value)) $value = implode(' ', $value);
+			$str .= " {$key}='{$value}' ";
+		}
+		return $s;
+	}
 
 	/**
 	 * Return the element's rendering
