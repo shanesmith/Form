@@ -1,151 +1,208 @@
 <?php
+require_once dirname(__FILE__) . "/Form.class.php";
 
-require_once "Form.Element.class.php";
-
-require_once "Form.utils.php";
-
+/**
+ * FORM_FIELD
+ *
+ *
+ * A base class to represent a generic field.
+ *
+ */
 abstract class FORM_FIELD extends FORM_ELEMENT {
 
+	/**
+	* An array of field attributes for rendering
+	* with name and value pairs matching
+	* attribute names and values
+	*
+	* @var array
+	*/
 	protected $field_attributes = array();
 
-	protected $value;
 
-	protected static $base_renderer = array('self', '_default_renderer');
-	protected static $base_field_renderer = array('self', '_default_field_renderer');
+	/*************************
+	 **  GETTERS / SETTERS  **
+	 *************************/
 
-	public function __construct($parent, $name, $label='', $default=null) {
-		parent::__construct($parent, $name, $label);
-		$this->default_value = $default;
-	}
-
-	public function value($value=null) {
-		if (isset($value)) {
-			$this->value = $value;
-			return $this;
-		}
-
-		return $this->value;
-	}
-
-	public function field_attributes(array $attributes=null) {
-		if (isset($attributes)) {
-			$this->field_attributes = $attributes;
-			return $this;
-		}
-
+	/**
+	* Returns all of the element's field attributes in an array
+	*
+	* @return array
+	*/
+	public function getFieldAttributesArray() {
 		return $this->field_attributes;
 	}
 
-	public function field_addAttributes (array $attributes) {
+	/**
+	* Sets all field attributes in the given array
+	*
+	* @param array $attributes
+	* @return FORM_ELEMENT
+	*/
+	public function setFieldAttributesArray(array $attributes) {
 		$this->field_attributes = array_merge($this->field_attributes, $attributes);
 		return $this;
 	}
 
-	public function field_attr($key, $value=null) {
-		if (isset($value)) {
-			$this->field_attributes[$key] = $value;
-			return $this;
-		}
-
+	/**
+	* Get the specified field attribute
+	*
+	* @param string $key
+	* @returns string
+	*/
+	public function getFieldAttribute($key) {
 		return $this->field_attributes[$key];
 	}
 
-	public function field_addClass($class) {
-		if (!isset($this->field_attributes['class'])) {
-			$this->field_attributes['class'] = array();
-		} elseif (is_string($this->field_attributes['class'])) {
-			$this->field_attributes['class'] = explode(' ', $this->field_attributes['class']);
-		}
-
-		$this->field_attributes['class'][] = $class;
-
+	/**
+	* Set the specified field attribute to a given value
+	*
+	* @param string $key
+	* @param string $value
+	* @returns FORM_ELEMENT
+	*/
+	public function setFieldAttribute($key, $value) {
+		$this->field_attributes[$key] = $value;
 		return $this;
 	}
 
-	public function field_addClasses(array $classes) {
-		foreach ($classes as $class) $this->field_addClass($class);
-
+	/**
+	* Remove all field attributes
+	*
+	* @return FORM_ELEMENT
+	*/
+	public function resetFieldAttributes() {
+		$this->field_attributes = array();
 		return $this;
 	}
 
-	public function field_id($id) {
-		$this->field_attr('id', $id);
-
-		return $this;
+	/**
+	* Get the element's field class attribute
+	*
+	* @returns string
+	*/
+	public function getFieldClass() {
+		return $this->getFieldAttribute('class');
 	}
 
-	public function field_attr2str() { return attr2str($this->field_attributes); }
+	/**
+	* Appends a class to the element's field class attribute
+	*
+	* @param string $class
+	* @return FORM_ELEMENT
+	*/
+	public function addFieldClass($class) {
+		return $this->setFieldAttribute('class', $this->getFieldClass() . " " . $class);
+	}
 
-	public function html($type) {
-		$this->field_addAttributes(array(
-			'type' => $type,
-			'name' => $this->name,
-			'value' => htmlspecialchars($this->value(), ENT_QUOTES)
-		));
-		$attributes = $this->field_attr2str();
+	/**
+	* Remove the given class from the element field
+	*
+	* @param string $class
+	* @return FORM_ELEMENT
+	*/
+	public function removeFieldClass($class) {
+		$class = preg_quote($class);
+		return $this->setFieldAttribute('class', preg_replace("/\\b{$class}\\b/i", '', $this->getFieldClass()));
+	}
+
+	/**
+	* Get the element's ID attribute
+	*
+	* @return string
+	*/
+	public function getFieldID() {
+		return $this->getFieldAttribute('id');
+	}
+
+	/**
+	* Sets the element's ID attribute
+	*
+	* @param string $id
+	* @return FORM_ELEMENT
+	*/
+	public function setFieldID($id) {
+		return $this->setFieldAttribute('id', $id);
+	}
+
+
+	/*****************
+	 **  RENDERING  **
+	 *****************/
+
+	/*
+	 * Abstract functions setStaticRenderer(), getStaticRenderer(), resolveRenderer() and render()
+	 * from FORM_ELEMENT are deferred to subclasses of FORM_FIELD
+	 */
+
+
+	/**
+	* Render this element's field
+	*
+	* @return string
+	*/
+	public function render_field() {
+		$attributes = array_merge(
+			$this->getFieldAttributesArray(),
+			array(
+				'type' => $this->type(),
+				'name' => $this->name(),
+			)
+		);
+
+		$attributes = self::attr2str($attributes);
+
 		return "<input {$attributes} />";
 	}
 
-	abstract public function render($renderer='');
 
-	abstract public function render_field($renderer='');
-
-	public static function renderer($renderer) {
-		self::$base_renderer = $renderer;
-	}
-
-	public function field_renderer($field_renderer) {
-		$this->field_renderer = $field_renderer;
-		return $this;
-	}
-
-	public static function static_field_renderer($field_renderer) {
-		self::$base_field_renderer = $field_renderer;
-	}
-
-	public function __toString() { return $this->render(); }
-
-	public static function _default_renderer($element) {
-
+	/**
+	* A default renderer for fields
+	*
+	* @param FORM_FIELD $fieldset
+	* @param string $elements
+	*/
+	public static function _default_renderer($element, array $languages) {
 		$type = $element->type();
 
-		$element->addClasses(array('form-element-container', 'form-field-container', "form-field-container-{$type}"));
+		$attributes = $element->getAttributesArray();
 
-		$attributes = $element->attr2str();
-		$s  = "<div {$attributes}>";
+		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$type}";
 
-			$label = $element->label();
-			if (!empty($label)) {
+		$attributes = self::attr2str($attributes);
 
-				if ($element->field_attr('id') == null) $element->field_attr('id', uniqid('form-id-'));
 
-				$field_id = $element->field_attr('id');
+		$original_field_id = $element->getFieldID();
 
-				$s .= "<label class='form-element-label form-field-label form-field-label-{$type}' for='{$field_id}'>";
+		if (empty($original_field_id)) {
+			$field_id = uniqid('form-id-');
+			$element->setFieldID($field_id);
+		} else {
+			$field_id = $original_field_id;
+		}
 
-				if (is_array($label)) {
-					$lang = $element->form()->language();
-					$en = "<span class='form-field-label-en'>{$label[0]}</span>";
-					$fr = "<span class='form-field-label-fr'>{$label[1]}</span>";
+		$labels = $element->getLabels();
 
-					if ($lang=='both') $s .= $en.$fr;
-					elseif ($lang=='fr') $s .= $fr;
-					else $s .= $en;
-				} else {
-					$s .= "<span class='form-field-label-nolang'>{$label}</span>";
-				}
 
-				$s .= "</label>";
-			}
+		$str = "<div {$attributes}>";
 
-			$type = $element->type();
-			$field = $element->render_field();
-			$s .= "<div class='form-field form-field-{$type}'>{$field}</div>";
+		$str .= "\t<label class='form-element-label form-field-label form-field-label-{$type}' for='{$field_id}'>\n";
 
-		$s .= "</div>";
-		return $s;
+		foreach ($languages as $lang) {
+			$str .= "\t\t<span class='form-field-label-{$lang} form-field-label-{$type}-{$lang}'>{$labels[$lang]}</span>\n";
+		}
+
+		$str .= "\t</label>\n";
+
+		$type = $element->type();
+		$field = $element->render_field();
+		$str .= "\t<div class='form-field form-field-{$type}'>{$field}</div>\n";
+
+		$str .= "</div>\n";
+
+		$element->setFieldID($original_field_id);
+
+		return $str;
 	}
-
-	public static function _default_field_renderer($element) { return $element->html(); }
 
 }
