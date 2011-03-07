@@ -401,7 +401,7 @@ abstract class FORM_ELEMENT {
 			if (is_array($value)) $value = implode(' ', $value);
 			$str .= " {$key}='{$value}' ";
 		}
-		return $s;
+		return $str;
 	}
 
 	/**
