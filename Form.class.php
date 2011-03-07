@@ -69,6 +69,27 @@ class FORM extends FORM_FIELDSET {
 	*/
 	protected static $static_renderer = array('self', "_default_renderer");
 
+	/**
+	* Default child renderers
+	*
+	* @var array
+	*/
+	protected static $default_child_type_renderers = array(
+		'fieldset'  => array('FORM_FIELDSET', '_default_renderer'),
+		'button' 		=> array('FORM_BUTTON', 	'_default_renderer'),
+		'checkbox'  => array('FORM_CHECKBOX', '_default_renderer'),
+		'file' 			=> array('FORM_FILE',			'_default_renderer'),
+		'hidden' 		=> array('FORM_HIDDEN', 	'_default_renderer'),
+		'info' 			=> array('FORM_INFO', 		'_default_renderer'),
+		'password' 	=> array('FORM_PASSWORD', '_default_renderer'),
+		'radio' 		=> array('FORM_RADIO', 		'_default_renderer'),
+		'select'		=> array('FORM_SELECT', 	'_default_renderer'),
+		'text' 			=> array('FORM_TEXT', 		'_default_renderer'),
+		'textarea' 	=> array('FORM_TEXTAREA', '_default_renderer'),
+		'submit_button'	=> array('FORM_SUBMIT_BUTTON', 	'_default_renderer'),
+		'reset_button' 	=> array('FORM_RESET_BUTTON', 	'_default_renderer'),
+	);
+
 
 	/*****************
 	 **  CONSTANTS  **
@@ -107,6 +128,8 @@ class FORM extends FORM_FIELDSET {
 
 		$this->form = $this;
 
+		$this->setDefaultRenderers();
+
 		$this->attributes = array(
 			'method' => $method,
 			'action' => isset($action) ? $action : $_SERVER['PHP_SELF']
@@ -126,6 +149,13 @@ class FORM extends FORM_FIELDSET {
 
 	}
 
+	/**
+	* Sets the default renderers for the form and its children
+	*/
+	protected function setDefaultRenderers() {
+		$this->setChildTypeRenderersArray(self::$default_child_type_renderers);
+		$this->setRenderer(array("FORM", "_default_renderer"));
+	}
 
 	/*************************
 	 **  GETTERS / SETTERS  **
@@ -254,49 +284,6 @@ class FORM extends FORM_FIELDSET {
 	/*****************
 	 **  RENDERING  **
 	 *****************/
-
-	/**
-	* Step through renderer precedence until one is found, and returns it, null otherwise
-	*
-	* @return callable
-	*/
-	public function resolveRenderer() {
-		$parent_child_type_renderer = $this->parent() ? $this->parent()->getChildTypeRenderer($this->type(), true) : null;
-
-		if (is_callable($this->renderer)) return $this->renderer;
-		elseif (is_callable($parent_child_type_renderer)) return $parent_child_type_renderer;
-		elseif (is_callable(self::$static_renderer)) return self::$static_renderer;
-		else return null;
-	}
-
-	/**
-	* Uses the given renderer or, if not provided, a resolved renderer to render the element
-	*
-	* @param array $lang
-	* @param callback $renderer
-	* @return string
-	*/
-	public function render($lang=null, $renderer=null) {
-		if (!isset($lang)) {
-			$lang = $this->form()->getLanguages();
-		} else{
-			if (is_string($lang)) $lang = array($lang);
-
-			if (!$this->form()->areValidLanguages($lang, $invalid)) {
-				throw new FormInvalidLanguageException(null, $invalid, $this);
-			}
-		}
-
-		if (is_callable($renderer)) {
-			return call_user_func($renderer, $this, $lang);
-		}
-		elseif (is_callable($this->resolveRenderer())) {
-			return call_user_func($this->resolveRenderer(), $this, $lang);
-		}
-		else {
-			throw new FormNoRendererFound(null, $this);
-		}
-	}
 
 	/**
 	* Default renderer for Forms

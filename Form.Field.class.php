@@ -130,14 +130,11 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	 **  RENDERING  **
 	 *****************/
 
-	/*
-	 * Abstract functions setStaticRenderer(), getStaticRenderer(), resolveRenderer() and render()
-	 * from FORM_ELEMENT are deferred to subclasses of FORM_FIELD
-	 */
-
-
 	/**
-	* Render this element's field
+	* Render this element's field, basic input tag.
+	*
+	* For other type of tags this function should be
+	* overwritten in the super class.
 	*
 	* @return string
 	*/

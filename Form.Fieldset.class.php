@@ -34,14 +34,6 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	protected $child_type_renderers = array();
 
 
-	/**
-	* Callable to the static renderer
-	*
-	* @var callable
-	*/
-	protected static $static_renderer = array('self', "_default_renderer");
-
-
 	/**************
 	 **  HELPERS **
 	 **************/
@@ -457,24 +449,6 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *****************/
 
 	/**
-	* Set a renderer for all elements of this type
-	*
-	* @param callable $renderer
-	*/
-	public static function setStaticRenderer($renderer) {
-		self::$static_renderer = $renderer;
-	}
-
-	/**
-	* Get the static renderer, or null if none set
-	*
-	* @return callable
-	*/
-	public static function getStaticRenderer() {
-		return self::$static_renderer;
-	}
-
-	/**
 	* Set a renderer for all child elements of the specified type
 	*
 	* @param string $type
@@ -486,19 +460,36 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	}
 
 	/**
+	* Set multiple child renderers by an array, keyed by type
+	*
+	* @param array $renderers
+	*/
+	public function setChildTypeRenderersArray(array $renderers) {
+		$this->child_type_renderers = array_merge(
+			$this->child_type_renderers, $renderers
+		);
+	}
+
+	/**
 	* Get the renderer set for all children of the specified type.
 	*
-	* If $recurse is true and a renderer is not set, a recursive call
-	* to parent's getChildTypeRenderer() is made until one if found (or not)
+	* @param string $type
+	*/
+	public function getChildTypeRenderer($type) {
+		return $this->child_type_renderers[$type];
+	}
+
+	/**
+	* Get the renderer set for all children of the specified type,
+	* determined by self and recursive calls to parents until one is found
 	*
 	* @param string $type
-	* @param boolean $recurse
 	*/
-	public function getChildTypeRenderer($type, $recurse=false) {
-		$renderer = $this->child_type_renderers[$type];
+	public function getChildTypeRendererRecurse($type) {
+		$renderer = $this->getChildTypeRenderer($type);
 
-		if (!$renderer && $recurse && $this->parent()) {
-			$renderer = $this->parent()->getChildTypeRenderer($type, true);
+		if (!$renderer && $this->parent()) {
+			$renderer = $this->parent()->getChildTypeRendererRecurse($type);
 		}
 
 		return $renderer;
@@ -507,19 +498,27 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	/**
 	* Return an array of all renderers set for children, keyed by element type.
 	*
-	* If $recurse is true, recursive calls to the parent's getAllTypeRenderers()
-	* are done to
-	*
-	* @param boolean $recurse
 	* @return array
 	*/
-	public function getAllChildTypeRenderers($recurse=false) {
-		if ($recurse && $this->parent()) {
-			$parent_child_type_renderers = $this->parent()->getAllChildTypeRenderers(true);
-			return array_merge($parent_child_type_renderers, $this->child_type_renderers);
-		} else {
-			return $this->child_type_renderers;
+	public function getAllChildTypeRenderers() {
+		return $this->child_type_renderers;
+	}
+
+	/**
+	* Return an array of all renders set for children, keyed by element type,
+	* and recursively determined through parents
+	*
+	* @return array
+	*/
+	public function getAllChildTypeRenderersRecurse() {
+		$renderers = $this->getAllChildTypeRenderers();
+
+		if ($this->parent()) {
+			$parent_child_type_renderers = $this->parent()->getAllChildTypeRenderers();
+			$renderers = array_merge($parent_child_type_renderers, $renderers);
 		}
+
+		return $renderers;
 	}
 
 	/**
@@ -536,48 +535,6 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 		}
 
 		return $render;
-	}
-
-	/**
-	* Step through renderer precedence until one is found, and returns it, null otherwise
-	*
-	* @return callable
-	*/
-	public function resolveRenderer() {
-		$parent_child_type_renderer = $this->parent() ? $this->parent()->getChildTypeRenderer($this->type(), true) : null;
-
-		if (is_callable($this->renderer)) return $this->renderer;
-		elseif (is_callable($parent_child_type_renderer)) return $parent_child_type_renderer;
-		elseif (is_callable(self::$static_renderer)) return self::$static_renderer;
-		else return null;
-	}
-
-	/**
-	* Uses the given renderer or, if not provided, a resolved renderer to render the element
-	*
-	* @param callback $renderer
-	* @return string
-	*/
-	public function render($lang=null, $renderer=null) {
-		if (!isset($lang)) {
-			$lang = $this->form()->getLanguages();
-		} else{
-			if (is_string($lang)) $lang = array($lang);
-
-			if (!$this->form()->areValidLanguages($lang, $invalid)) {
-				throw new FormInvalidLanguageException(null, $invalid, $this);
-			}
-		}
-
-		if (is_callable($renderer)) {
-			return call_user_func($renderer, $this, $lang);
-		}
-		elseif (is_callable($this->resolveRenderer())) {
-			return call_user_func($this->resolveRenderer(), $this, $lang);
-		}
-		else {
-			throw new FormNoRendererFound(null, $this);
-		}
 	}
 
 	/**
