@@ -132,6 +132,14 @@ class FORM extends FORM_FIELDSET {
 	 *************************/
 
 	/**
+	 * Return the element's type
+	 *
+	 * @return string
+	 */
+	public function type() { return self::$type; }
+
+
+	/**
 	 * Get all supported languages for this form
 	 *
 	 * @return array
@@ -264,6 +272,7 @@ class FORM extends FORM_FIELDSET {
 	/**
 	* Uses the given renderer or, if not provided, a resolved renderer to render the element
 	*
+	* @param array $lang
 	* @param callback $renderer
 	* @return string
 	*/

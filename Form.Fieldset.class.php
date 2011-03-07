@@ -42,6 +42,19 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	protected static $static_renderer = array('self', "_default_renderer");
 
 
+	/**************
+	 **  HELPERS **
+	 **************/
+
+	/**
+	 * Return the element's type
+	 *
+	 * @return string
+	 */
+	public function type() { return self::$type; }
+
+
+
 	/********************
 	 **  FIELD ADDERS  **
 	 ********************/

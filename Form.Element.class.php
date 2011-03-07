@@ -107,7 +107,7 @@ abstract class FORM_ELEMENT {
 	 *
 	 * @return string
 	 */
-	public function type() { return $this->late_static_get('type'); }
+	abstract public function type();
 
 	/**
 	* Return the element's parent
@@ -451,20 +451,5 @@ abstract class FORM_ELEMENT {
 	 * @return string
 	 */
 	public function __toString() { return $this->render(); }
-
-	/**
-	 * A hack to get PHP 5.3's late static binding functionality
-	 *
-	 * Works only if $var is public or protected
-	 *
-	 * $var does not need to be static
-	 *
-	 * @param string $var
-	 * @return mixed
-	 */
-	protected function late_static_get($var) {
-		$class_vars = get_class_vars(get_class($this));
-		return $class_vars[$var];
-	}
 
 }
