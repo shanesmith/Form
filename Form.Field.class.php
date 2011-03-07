@@ -172,7 +172,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 		$original_field_id = $element->getFieldID();
 
 		if (empty($original_field_id)) {
-			$field_id = uniqid('form-id-');
+			$field_id = uniqid("form-{$type}-");
 			$element->setFieldID($field_id);
 		} else {
 			$field_id = $original_field_id;
