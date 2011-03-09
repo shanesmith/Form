@@ -135,49 +135,11 @@ abstract class FORM_ELEMENT {
 	/**
 	* Set this element's labels
 	*
-	* If a string, it is set to the form's first defined language
-	*
-	* If a numbered array, they are set in same sequence as the form's defined languages
-	*
-	* If an associative array, they are set to the keys
-	*
 	* @param string|array $labels
 	* @return FORM_ELEMENT
 	*/
 	public function setLabels($labels) {
-
-		if (!empty($labels)) {
-
-			$languages = $this->form()->getLanguages();
-
-			if (is_array($labels)) {
-
-				if (is_integer(array_shift(array_keys($labels)))) {
-					// sequential
-
-					$languages = array_slice($languages, 0, count($labels));
-					$this->labels = array_combine($languages, $labels);
-
-				} else {
-					// associative
-
-					if (!$this->form()->areValidLanguages(array_keys($labels), $invalid)) {
-						throw new FormInvalidLanguageException(null, $invalid, $this);
-					}
-
-					$this->labels = array_merge($this->labels, $labels);
-
-				}
-
-			} else {
-
-				$lang = $languages[0];
-				$this->labels[$lang] = $labels;
-
-			}
-
-		}
-
+		$this->process_languaged_argument($this->labels, $labels);
 		return $this;
 	}
 
@@ -407,6 +369,49 @@ abstract class FORM_ELEMENT {
 			$str .= " {$key}='{$value}' ";
 		}
 		return $str;
+	}
+
+	/**
+	* Set the given $current variable to the argument with special language processing.
+	*
+	* If a string, it is set to the form's first defined language
+	*
+	* If a numbered array, they are set in same sequence as the form's defined languages
+	*
+	* If an associative array, they are set to the keys
+	*
+	* @param array $current
+	* @param string|array $arg
+	* @return array
+	*/
+	public function process_languaged_argument(array &$current, $arg) {
+		$languages = $this->form()->getLanguages();
+
+		if (is_array($arg)) {
+			$keys = array_keys($arg);
+
+			if (is_integer(current($keys))) {
+				// sequential
+				$languages = array_slice($languages, 0, count($arg));
+				$current = array_combine($languages, $arg);
+
+			} else {
+				// associative
+				if (!$this->form()->areValidLanguages($keys, $invalid)) {
+					throw new FormInvalidLanguageException(null, $invalid, $this);
+				}
+
+				$current = array_merge($current, $arg);
+
+			}
+
+		} else {
+			$lang = $languages[0];
+			$current[$lang] = $arg;
+		}
+
+		return $current;
+
 	}
 
 	/**

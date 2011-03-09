@@ -424,37 +424,7 @@ abstract class FORM_SELECT_OPT_BASE {
 	* @return FORM_ELEMENT
 	*/
 	public function setLabels($labels) {
-
-		if (!empty($labels)) {
-
-			$languages = $this->backtoSelect()->form()->getLanguages();
-
-			if (is_array($labels)) {
-
-				if (is_integer(array_shift(array_keys($labels)))) {
-					// sequential
-					$languages = array_slice($languages, 0, count($labels));
-					$this->labels = array_combine($languages, $labels);
-
-				} else {
-					// associative
-					if (!$this->backtoSelect()->form()->areValidLanguages(array_keys($labels), $invalid)) {
-						throw new FormInvalidLanguageException(null, $invalid, $this);
-					}
-
-					$this->labels = array_merge($this->labels, $labels);
-
-				}
-
-			} else {
-
-				$lang = $languages[0];
-				$this->labels[$lang] = $labels;
-
-			}
-
-		}
-
+		$this->backtoSelect()->process_languaged_argument($this->labels, $labels);
 		return $this;
 	}
 
