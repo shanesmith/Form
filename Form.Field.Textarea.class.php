@@ -31,14 +31,9 @@ class FORM_TEXTAREA extends FORM_FIELD {
 	* @return string
 	*/
 	public function render_field() {
-		$attributes = array_merge(
-			$this->getFieldAttributesArray(),
-			array(
-				'name' => $this->name(),
-			)
-		);
-
-		$attributes = self::attr2str($attributes);
+		$attributes = $this->getFieldAttributesString(array(
+			'name' => $this->name(),
+		));
 
 		return "<textarea {$attributes}></textarea>";
 	}

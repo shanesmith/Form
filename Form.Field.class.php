@@ -55,6 +55,19 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	}
 
 	/**
+	* Return a string of this field's HTML attributes
+	*
+	* Optinally provide an array of attributes to override or add to
+	* the attributes already set
+	*
+	* @param array $override
+	* @return string
+	*/
+	public function getFieldAttributesString(array $override=array()) {
+		return self::attr2str(array_merge($this->getFieldAttributesArray(), $override));
+	}
+
+	/**
 	* Set the specified field attribute to a given value
 	*
 	* @param string $key
@@ -139,15 +152,10 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	* @return string
 	*/
 	public function render_field() {
-		$attributes = array_merge(
-			$this->getFieldAttributesArray(),
-			array(
-				'type' => $this->type(),
-				'name' => $this->name(),
-			)
-		);
-
-		$attributes = self::attr2str($attributes);
+		$attributes = $this->getFieldAttributesString(array(
+			'type' => $this->type(),
+			'name' => $this->name(),
+		));
 
 		return "<input {$attributes} />";
 	}
