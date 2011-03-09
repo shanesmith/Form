@@ -151,7 +151,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	*
 	* @return string
 	*/
-	public function render_field() {
+	public function render_field(array $languages) {
 		$attributes = $this->getFieldAttributesString(array(
 			'type' => $this->type(),
 			'name' => $this->name(),
@@ -200,7 +200,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 		$str .= "\t</label>\n";
 
 		$type = $element->type();
-		$field = $element->render_field();
+		$field = $element->render_field($languages);
 		$str .= "\t<div class='form-field form-field-{$type}'>{$field}</div>\n";
 
 		$str .= "</div>\n";

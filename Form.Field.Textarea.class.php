@@ -30,7 +30,7 @@ class FORM_TEXTAREA extends FORM_FIELD {
 	*
 	* @return string
 	*/
-	public function render_field() {
+	public function render_field(array $languages) {
 		$attributes = $this->getFieldAttributesString(array(
 			'name' => $this->name(),
 		));
