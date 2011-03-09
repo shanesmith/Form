@@ -28,6 +28,7 @@ class FORM_TEXTAREA extends FORM_FIELD {
 	/**
 	* Render the textarea field, overwitting basic input tag renderer.
 	*
+	* @param array $languages
 	* @return string
 	*/
 	public function render_field(array $languages) {

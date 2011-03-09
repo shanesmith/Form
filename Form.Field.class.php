@@ -144,11 +144,14 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	 *****************/
 
 	/**
-	* Render this element's field, basic input tag.
+	* Render this element's field.
+	*
+	* Uses basic input tag.
 	*
 	* For other type of tags this function should be
 	* overwritten in the super class.
 	*
+	* @param array $languages useful mostly for select elements
 	* @return string
 	*/
 	public function render_field(array $languages) {
@@ -164,8 +167,9 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	/**
 	* A default renderer for fields
 	*
-	* @param FORM_FIELD $fieldset
-	* @param string $elements
+	* @param FORM_FIELD $element
+	* @param array $languages
+	* @returns string
 	*/
 	public static function _default_renderer($element, array $languages) {
 		$type = $element->type();

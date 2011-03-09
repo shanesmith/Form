@@ -283,6 +283,7 @@ class FORM extends FORM_FIELDSET {
 	*
 	* @param FORM $form
 	* @param array $languages
+	* @returs string
 	*/
 	public static function _default_renderer($form, array $languages) {
 		$attributes = $form->getAttributesString();

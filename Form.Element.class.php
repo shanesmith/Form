@@ -385,6 +385,7 @@ abstract class FORM_ELEMENT {
 	* A default renderer for this element type
 	*
 	* @param FORM_ELEMENT $element
+	* @param array $languages
 	* @return string
 	*/
 	abstract public static function _default_renderer($element, array $languages);

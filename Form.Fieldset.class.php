@@ -541,7 +541,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* A default renderer for fieldsets
 	*
 	* @param FORM_FIELDSET $fieldset
-	* @param string $elements
+	* @param array $languages
+	* @returns string
 	*/
 	public static function _default_renderer($fieldset, array $languages) {
 		$labels = $fieldset->getLabels();
