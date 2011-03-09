@@ -12,7 +12,7 @@ require_once "Form.Field.File.class.php";
 require_once "Form.Field.Password.class.php";
 //require_once "Form.Field.Checkbox.class.php";
 //require_once "Form.Field.Radio.class.php";
-//require_once "Form.Field.Button.class.php";
+require_once "Form.Field.Button.class.php";
 require_once "Form.exceptions.php";
 restore_include_path();
 
@@ -79,8 +79,8 @@ class FORM extends FORM_FIELDSET {
 		'select'		=> array('FORM_SELECT', 	'_default_renderer'),
 		'text' 			=> array('FORM_TEXT', 		'_default_renderer'),
 		'textarea' 	=> array('FORM_TEXTAREA', '_default_renderer'),
-		'submit_button'	=> array('FORM_SUBMIT_BUTTON', 	'_default_renderer'),
-		'reset_button' 	=> array('FORM_RESET_BUTTON', 	'_default_renderer'),
+		'submit'		=> array('FORM_SUBMIT_BUTTON', 	'_default_renderer'),
+		'reset' 		=> array('FORM_RESET_BUTTON', 	'_default_renderer'),
 	);
 
 

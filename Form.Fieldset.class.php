@@ -163,10 +163,10 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	*
 	* @param string $name
 	* @param string $text
-	* @return FORM_BUTTOM
+	* @return FORM_BUTTON
 	*/
 	public function button($name, $texts=null) {
-		return $this->addChild(new FORM_BUTTOM($this, $name, $texts));
+		return $this->addChild(new FORM_BUTTON($this, $name, $texts));
 	}
 
 	/**
@@ -174,10 +174,10 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	*
 	* @param string $name
 	* @param string $text
-	* @return FORM_SUBMIT_BUTTOM
+	* @return FORM_SUBMIT_BUTTON
 	*/
 	public function submit_button($name, $texts=null) {
-		return $this->addChild(new FORM_SUBMIT_BUTTOM($this, $name, $texts));
+		return $this->addChild(new FORM_SUBMIT_BUTTON($this, $name, $texts));
 	}
 
 	/**
@@ -188,7 +188,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @return FORM_RESET_BUTTON
 	*/
 	public function reset_button($name, $texts=null) {
-		return $this->addChild(new FORM_RESET_BUTTOM($this, $name, $texts));
+		return $this->addChild(new FORM_RESET_BUTTON($this, $name, $texts));
 	}
 
 	/**
