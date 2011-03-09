@@ -63,13 +63,6 @@ class FORM extends FORM_FIELDSET {
 	protected $elements = array();
 
 	/**
-	* Callable to the static renderer
-	*
-	* @var callable
-	*/
-	protected static $static_renderer = array('self', "_default_renderer");
-
-	/**
 	* Default child renderers
 	*
 	* @var array
