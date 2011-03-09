@@ -34,7 +34,6 @@ class FORM_TEXTAREA extends FORM_FIELD {
 		$attributes = array_merge(
 			$this->getFieldAttributesArray(),
 			array(
-				'type' => $this->type(),
 				'name' => $this->name(),
 			)
 		);
