@@ -1,102 +1,493 @@
 <?php
+require_once dirname(__FILE__) . "/Form.class.php";
 
-require_once "Form.Field.class.php";
-
-require_once "Form.utils.php";
-
+/**
+*
+* FORM_SELECT
+*
+*
+* An HTML select field
+*
+*/
 class FORM_SELECT extends FORM_FIELD {
 
+	/**
+	* Collection of both options and groups (which contain the sub-options)
+	*
+	* @see FORM_SELECT_OPTION
+	* @see FORM_SELECT_GROUP
+	* @var array[FORM_SELECT_OPTION|FORM_SELECT_GROUP]
+	*/
+	protected $options = array();
+
+	/**
+	* Type of Form Element
+	*
+	* @var string
+	*/
 	static private $type = 'select';
-	protected $validate_option=true, $validate_option_errortext='';
-	protected static $static_renderer, $static_field_renderer;
 
-	private $options;
+	/**
+	* Constructor
+	*
+	* @param FORM_FIELDSET $parent
+	* @param string $name
+	* @param array|string $labels
+	* @param array $options
+	* @return FORM_SELECT
+	*/
+	public function __construct($parent, $name, $labels=null, $options=null) {
+		parent::__construct($parent, $name, $labels);
 
-	public function __construct($parent, $name, $label='', array $options=array(), $default=null) {
-		$this->options($options, $default);
-		parent::__construct($parent, $name, $label, $this->default_value);
-		//$this->validator(array('FORM_SELECT', '_valid_option'), "The value of {$label} must be a valid option!");
+		if (isset($options)) {
+			$this->addOptionsArray($options);
+		}
 	}
 
-	public function options(array $options=null, $default=null) {
-		if (!isset($options)) return $this->options;
-		if (!isset($default)) $default = current(array_keys($options));
+	/**
+	* Return the collection of options
+	*
+	* @returns array[FORM_SELECT_OPTION|FORM_SELECT_GROUP]
+	*/
+	public function getOptions() {
+		return $this->options;
+	}
 
-		$this->default_value = $default;
-		$this->options = $options;
-
+	/**
+	* Append an option to the collection
+	*
+	* @param string $value
+	* @param array|string $labels
+	* @param boolean $enabled
+	* @returns FORM_SELECT
+	*/
+	public function addOption($value, $labels, $enabled=true) {
+		$this->options[] = new FORM_SELECT_OPTION($this, $value, $labels, $enabled);
 		return $this;
 	}
 
-	public function html() {
-		$options = "";
-		foreach ($this->options as $value=>$text) {
-			if (is_array($text)) {
-				$options .= "<optgroup label='{$value}'>";
-				foreach ($text as $v=>$t) $options .= $this->_html_option($v, $t);
-				$options .= "</optgroup>";
-			} else {
-				$options .= $this->_html_option($value, $text);
-			}
+	/**
+	* Iteratively add options from the given array, which
+	* should be of the form (value => label)
+	*
+	* ex: array(
+	*		'on' => "Ontario",
+	* 	'nb' => array("New Brunswick", "Nouveau Brunswick")
+	* )
+	*
+	* @param array $options
+	* @param boolean $enabled
+	* @returns FORM_SELECT
+	*/
+	public function addOptionsArray(array $options, $enabled=true) {
+		foreach ($options as $value => $labels) {
+			$this->addOption($value, $labels, $enabled);
+		}
+		return $this;
+	}
+
+	/**
+	* Add and return a new group.
+	*
+	* @param string $name OPTIONAL using null will automatically create a name
+	* @param mixed $labels
+	* @param array $options
+	* @returns FORM_SELECT_GROUP
+	*/
+	public function addGroup($name, $labels, $options=array()) {
+		if (!isset($name)) {
+			$name = uniqid('group-');
 		}
 
-		$this->field_attr('name', $this->name);
-		$attributes = $this->field_attr2str();
+		$group = new FORM_SELECT_GROUP($this, $name, $labels, $options);
+
+		$this->options[$name] = $group;
+
+		return $group;
+	}
+
+	/**
+	* Get the named group, or null if none found
+	*
+	* @param string $name
+	* @returns FORM_SELECT_GROUP
+	*/
+	public function getGroup($name) {
+		$group = $this->options[$name];
+		return ($group instanceof FORM_SELECT_GROUP) ? $group : null;
+	}
+
+	/**
+	* Render the select tag and its groups and options
+	*
+	* @param array $languages
+	* @return string
+	*/
+	public function render_field(array $languages) {
+		$attributes = $this->getFieldAttributesString(array(
+			'name' => $this->name(),
+		));
+
+		$options = "";
+		foreach ($this->options as $opt) {
+			$options .= $opt->render($languages);
+		}
 
 		return "<select {$attributes}>{$options}</select>";
 	}
 
-	protected function _html_option($value, $text) {
-		$selected = ($value == $this->value()) ? "selected='selected'" : "";
-		return "<option value='{$value}' {$selected}>{$text}</option>";
-	}
-
-	public function render($renderer=null) {
-		if (is_callable($renderer)) return call_user_func($renderer, $this);
-		elseif (is_callable($this->renderer)) return call_user_func($this->renderer, $this);
-		elseif (is_callable(self::$static_renderer)) return call_user_func(self::$static_renderer, $this);
-		elseif (is_callable(parent::$base_renderer)) return call_user_func(parent::$base_renderer, $this);
-		else return "";
-	}
-
-	public function render_field($field_renderer=null) {
-		if (is_callable($field_renderer)) return call_user_func($field_renderer, $this);
-		elseif (is_callable($this->field_renderer)) return call_user_func($this->field_renderer, $this);
-		elseif (is_callable(self::$static_field_renderer)) return call_user_func(self::$static_field_renderer, $this);
-		elseif (is_callable(parent::$base_field_renderer)) return call_user_func(parent::$base_field_renderer, $this);
-		else return "";
-	}
-
+	/**
+	 * Return the element's type
+	 *
+	 * @return string
+	 */
 	public function type() { return self::$type; }
 
-	public static function renderer($renderer) {
-		if (isset($this)) $this->renderer = $renderer;
-		else self::$static_renderer = $renderer;
-	}
+}
 
-	public static function static_field_renderer($field_renderer) {
-		self::$static_field_renderer = $field_renderer;
-	}
 
-	public function validate() {
-		if (!empty($this->options) && $this->validate_option) $this->validator(array('FORM_SELECT', '_valid_option'), array(), $this->validate_option_errortext);
-		return parent::validate();
-	}
+/**
+*
+* FORM_SELECT_GROUP
+*
+*
+* Groups options for FORM_SELECT
+*
+*/
+class FORM_SELECT_GROUP extends FORM_SELECT_OPT_BASE {
 
-	public function validate_option($set=null, $errortext='') {
-		if (isset($set)) {
-			$this->validate_option = (bool) $set;
-			$this->validate_option_errortext = $errortext;
-			return $this;
+	/**
+	* Group's name for reference
+	*
+	* @var string
+	*/
+	protected $name;
+
+	/**
+	* Collection of options
+	*
+	* @var array
+	*/
+	protected $options = array();
+
+	/**
+	* Constructor
+	*
+	* @param FORM_SELECT $select
+	* @param string $name
+	* @param array|string $labels
+	* @param array $options
+	* @param boolean $enabled
+	* @return FORM_SELECT_GROUP
+	*/
+	public function __construct(&$select, $name, $labels, array $options=array(), $enabled=true) {
+		parent::__construct($select, $labels, $enabled);
+
+		$this->name = $name;
+
+		if (isset($options)) {
+			$this->addOptionsArray($options);
 		}
-		return $this->validate_option;
 	}
 
-	static function _valid_option(FORM_SELECT &$element) {
-		$valid = array_key_exists($element->value(), $element->options());
-		if (!$valid) $element->value(current(array_keys($element->options())));
-
-		return $valid;
+	/**
+	* Return the full collection of options
+	*
+	* @returns array
+	*/
+	public function getOptions() {
+		return $this->options;
 	}
 
+	/**
+	* Get the group's name
+	*
+	* @returns string
+	*/
+	public function getName() {
+		return $this->name;
+	}
+
+	/**
+	* Return the select element that this group belongs to
+	*
+	* @return FORM_SELECT
+	*/
+	public function backtoSelect() {
+		return $this->getOptParent();
+	}
+
+	/**
+	* Add an option to the collection
+	*
+	* @param string $value
+	* @param array|string $labels
+	* @param boolean $enabled
+	*/
+	public function addOption($value, $labels, $enabled=true) {
+		$this->options[] = new FORM_SELECT_OPTION($this, $value, $labels, $enabled);
+		return $this;
+	}
+
+	/**
+	* Iteratively add options from the given array, which
+	* should be of the form (value => label)
+	*
+	* ex: array(
+	*		'on' => "Ontario",
+	* 	'nb' => array("New Brunswick", "Nouveau Brunswick")
+	* )
+	*
+	* @param array $options
+	* @param boolean $enabled
+	* @returns FORM_SELECT
+	*/
+	public function addOptionsArray(array $options, $enabled=true) {
+		foreach ($options as $value => $label) {
+			$this->addOption($value, $label, $enabled);
+		}
+		return $this;
+	}
+
+	/**
+	* Render the optgroup tag with all sub-options
+	*
+	* @param array $languages
+	* @returns string
+	*/
+	public function render(array $languages) {
+		$labels = array();
+
+		foreach ($languages as $lang) {
+			if ($this->labels[$lang])
+				$labels[] = $this->labels[$lang];
+		}
+
+		$text = implode(" // ", $labels);
+
+		$disabled = $this->enabled ? "" : "disabled='disabled'";
+
+		$options = "";
+		foreach ($this->options as $opt) {
+			$options .= $opt->render($languages);
+		}
+
+		return "<optgroup label='{$text}' {$disabled}>{$options}</optgroup>";
+	}
+}
+
+
+/**
+*
+* FORM_SELECT_OPTION
+*
+*
+* An option in a select field
+*
+*/
+class FORM_SELECT_OPTION extends FORM_SELECT_OPT_BASE {
+
+	/**
+	* The option's value
+	*
+	* @var string
+	*/
+	protected $value;
+
+	/**
+	* Constructor
+	*
+	* @param FORM_SELECT|FORM_SELECT_GROUP $parent
+	* @param string $value
+	* @param array|string $labels
+	* @param boolean $enabled
+	* @return FORM_SELECT_OPTION
+	*/
+	public function __construct(&$parent, $value, $labels, $enabled=true) {
+		parent::__construct($parent, $labels, $enabled);
+		$this->value = $value;
+	}
+
+	/**
+	* Get the option's value
+	*
+	*	@returns string
+	*/
+	public function getValue() {
+		return $this->value;
+	}
+
+	/**
+	* Return the select element that this option belongs to
+	*
+	* @return FORM_SELECT
+	*/
+	public function backtoSelect() {
+		$select = $this->getOptParent();
+
+		if ($select instanceof FORM_SELECT_GROUP) {
+			$select = $select->backtoSelect();
+		}
+
+		return $select;
+	}
+
+
+	/**
+	* Render the option tag
+	*
+	* @param array $languages
+	* @returns string
+	*/
+	public function render(array $languages) {
+		$labels = array();
+
+		foreach ($languages as $lang) {
+			if ($this->labels[$lang])
+				$labels[] = $this->labels[$lang];
+		}
+
+		$value = $this->value;
+
+		$text = implode(" // ", $labels);
+
+		$disabled = $this->enabled ? "" : "disabled='disabled'";
+
+		return "<option value='{$value}' {$disabled}>{$text}</option>";
+	}
+}
+
+/**
+*
+* FORM_SELECT_OPT_BASE
+*
+*
+* Base class for groups and options, holds shared variables and methods
+*
+*/
+abstract class FORM_SELECT_OPT_BASE {
+
+	/**
+	* Either a group or select
+	*
+	* @var FORM_SELECT|FORM_SELECT_GROUP
+	*/
+	protected $parent;
+
+	/**
+	* Whether or not this option/group is enabled
+	*
+	* @var boolean
+	*/
+	protected $enabled = true;
+
+	/**
+	* The option/group labels, with the usual keying by lang
+	*
+	* @var array
+	*/
+	protected $labels = array();
+
+	/**
+	* Constructor
+	*
+	* @param FORM_SELECT|FORM_SELECT_GROUP $parent
+	* @param array|string $labels
+	* @param boolean $enabled
+	* @return FORM_SELECT_OPT_BASE
+	*/
+	public function __construct(&$parent, $labels, $enabled) {
+		$this->parent = $parent;
+		$this->enabled = (bool) $enabled;
+		$this->setLabels($labels);
+	}
+
+	/**
+	* The the direct parent of this option/group
+	*
+	* @returns FORM_SELECT|FORM_SELECT_GROUP
+	*/
+	public function getOptParent() {
+		return $this->parent;
+	}
+
+	/**
+	* Set this group's labels
+	*
+	* If a string, it is set to the form's first defined language
+	*
+	* If a numbered array, they are set in same sequence as the form's defined languages
+	*
+	* If an associative array, they are set to the keys
+	*
+	* @param string|array $labels
+	* @return FORM_ELEMENT
+	*/
+	public function setLabels($labels) {
+
+		if (!empty($labels)) {
+
+			$languages = $this->backtoSelect()->form()->getLanguages();
+
+			if (is_array($labels)) {
+
+				if (is_integer(array_shift(array_keys($labels)))) {
+					// sequential
+					$languages = array_slice($languages, 0, count($labels));
+					$this->labels = array_combine($languages, $labels);
+
+				} else {
+					// associative
+					if (!$this->backtoSelect()->form()->areValidLanguages(array_keys($labels), $invalid)) {
+						throw new FormInvalidLanguageException(null, $invalid, $this);
+					}
+
+					$this->labels = array_merge($this->labels, $labels);
+
+				}
+
+			} else {
+
+				$lang = $languages[0];
+				$this->labels[$lang] = $labels;
+
+			}
+
+		}
+
+		return $this;
+	}
+
+	/**
+	* Return whethere or not this option/group is enabled
+	*
+	* @returns booleans
+	*/
+	public function isEnabled() {
+		return $this->enabled;
+	}
+
+	/**
+	* Return the labels array
+	*
+	* @returns array
+	*/
+	public function getLabels() {
+		return $this->labels;
+	}
+
+	/**
+	* Return the parenting select
+	*
+	* @returns FORM_SELECT
+	*/
+	abstract public function backtoSelect();
+
+	/**
+	* Render the tag
+	*
+	* @param array $languages
+	* @returns string
+	*/
+	abstract public function render(array $languages);
 }
