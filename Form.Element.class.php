@@ -259,12 +259,16 @@ abstract class FORM_ELEMENT {
 	}
 
 	/**
-	* Return a string of HTML this element's attributes
+	* Return a string of this element's HTML attributes
 	*
+	* Optinally provide an array of attributes to override or add to
+	* the attributes already set
+	*
+	* @param array $override
 	* @return string
 	*/
-	public function getAttributesString() {
-		return self::attr2str($this->getAttributesArray());
+	public function getAttributesString(array $override=array()) {
+		return self::attr2str(array_merge($this->getAttributesArray(), $override));
 	}
 
 	/**
