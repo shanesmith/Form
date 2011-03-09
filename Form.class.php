@@ -1,6 +1,7 @@
 <?
 set_include_path(dirname(__FILE__)."/");
 require_once "Form.Element.class.php";
+require_once "Form.Info.class.php";
 require_once "Form.Fieldset.class.php";
 require_once "Form.Field.class.php";
 require_once "Form.Field.Text.class.php";
@@ -12,7 +13,6 @@ require_once "Form.Field.Password.class.php";
 //require_once "Form.Field.Checkbox.class.php";
 //require_once "Form.Field.Radio.class.php";
 //require_once "Form.Field.Button.class.php";
-//require_once "Form.Field.Info.class.php";
 require_once "Form.exceptions.php";
 restore_include_path();
 
