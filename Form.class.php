@@ -3,6 +3,7 @@ set_include_path(dirname(__FILE__)."/");
 require_once "Form.Element.class.php";
 require_once "Form.Info.class.php";
 require_once "Form.Fieldset.class.php";
+require_once "Form.RadioList.class.php";
 require_once "Form.Field.class.php";
 require_once "Form.Field.Text.class.php";
 require_once "Form.Field.Textarea.class.php";
@@ -11,7 +12,7 @@ require_once "Form.Field.Select.class.php";
 require_once "Form.Field.File.class.php";
 require_once "Form.Field.Password.class.php";
 //require_once "Form.Field.Checkbox.class.php";
-//require_once "Form.Field.Radio.class.php";
+require_once "Form.Field.Radio.class.php";
 require_once "Form.Field.Button.class.php";
 require_once "Form.exceptions.php";
 restore_include_path();
@@ -68,17 +69,18 @@ class FORM extends FORM_FIELDSET {
 	* @var array
 	*/
 	protected static $default_child_type_renderers = array(
-		'fieldset'  => array('FORM_FIELDSET', '_default_renderer'),
-		'button' 		=> array('FORM_BUTTON', 	'_default_renderer'),
-		'checkbox'  => array('FORM_CHECKBOX', '_default_renderer'),
-		'file' 			=> array('FORM_FILE',			'_default_renderer'),
-		'hidden' 		=> array('FORM_HIDDEN', 	'_default_renderer'),
-		'info' 			=> array('FORM_INFO', 		'_default_renderer'),
-		'password' 	=> array('FORM_PASSWORD', '_default_renderer'),
-		'radio' 		=> array('FORM_RADIO', 		'_default_renderer'),
-		'select'		=> array('FORM_SELECT', 	'_default_renderer'),
-		'text' 			=> array('FORM_TEXT', 		'_default_renderer'),
-		'textarea' 	=> array('FORM_TEXTAREA', '_default_renderer'),
+		'fieldset'  => array('FORM_FIELDSET', 	'_default_renderer'),
+		'button' 		=> array('FORM_BUTTON', 		'_default_renderer'),
+		'checkbox'  => array('FORM_CHECKBOX', 	'_default_renderer'),
+		'file' 			=> array('FORM_FILE',				'_default_renderer'),
+		'hidden' 		=> array('FORM_HIDDEN', 		'_default_renderer'),
+		'info' 			=> array('FORM_INFO', 			'_default_renderer'),
+		'password' 	=> array('FORM_PASSWORD', 	'_default_renderer'),
+		'radio' 		=> array('FORM_RADIO', 			'_default_renderer'),
+		'radio_list'=> array('FORM_RADIO_LIST', '_default_renderer'),
+		'select'		=> array('FORM_SELECT', 		'_default_renderer'),
+		'text' 			=> array('FORM_TEXT', 			'_default_renderer'),
+		'textarea' 	=> array('FORM_TEXTAREA', 	'_default_renderer'),
 		'submit'		=> array('FORM_SUBMIT_BUTTON', 	'_default_renderer'),
 		'reset' 		=> array('FORM_RESET_BUTTON', 	'_default_renderer'),
 	);

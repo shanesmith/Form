@@ -360,10 +360,21 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * and if it's of the type FORM_CHECKBOX, null otherwise
 	 *
 	 * @param string $name
-	 * @returns FORM_CHECKbOX
+	 * @returns FORM_CHECKBOX
 	 */
 	public function getCheckbox($name) {
 		return $this->getChildWithTypeCheck($name, 'checkbox');
+	}
+
+	/**
+	 * Returns the named child element if it exists
+	 * and if it's of the type FORM_RADIO_LIST, null otherwise
+	 *
+	 * @param string $name
+	 * @returns FORM_RADIO_LIST
+	 */
+	public function getRadioList($name) {
+		return $this->getChildWithTypeCheck($name, 'radio_list');
 	}
 
 	/**
@@ -408,17 +419,6 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 */
 	public function getPassword($name) {
 		return $this->getChildWithTypeCheck($name, 'password');
-	}
-
-	/**
-	 * Returns the named child element if it exists
-	 * and if it's of the type FORM_RADIO, null otherwise
-	 *
-	 * @param string $name
-	 * @returns FORM_RADIO
-	 */
-	public function getRadio($name) {
-		return $this->getChildWithTypeCheck($name, 'radio');
 	}
 
 	/**
