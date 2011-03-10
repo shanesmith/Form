@@ -213,7 +213,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param FORM_ELEMENT $elem
 	* @returns FORM_ELEMENT
 	*/
-	private function addChild(FORM_ELEMENT $elem) {
+	protected function addChild(FORM_ELEMENT $elem) {
 		$this->children[] = $elem->name();
 		return $this->form()->addElement($elem);
 	}
