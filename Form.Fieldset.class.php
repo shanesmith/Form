@@ -284,7 +284,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	public function getChildWithTypeCheck($name, $type) {
 		$elem = $this->getChild($name);
 
-		if ($elem->type() != $type) return null;
+		if ($elem && $elem->type() != $type) return null;
 
 		return $elem;
 	}
