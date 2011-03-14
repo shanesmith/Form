@@ -142,8 +142,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string $default
 	* @return FORM_CHECKBOX
 	*/
-	public function checkbox($name, $labels=null, $default=null) {
-		return $this->addChild(new FORM_CHECKBOX($this, $name, $labels, $default));
+	public function checkbox($name, $labels=null, $value="true") {
+		return $this->addChild(new FORM_CHECKBOX($this, $name, $labels, $value));
 	}
 
 	/**

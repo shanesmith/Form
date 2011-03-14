@@ -11,7 +11,7 @@ require_once "Form.Field.Hidden.class.php";
 require_once "Form.Field.Select.class.php";
 require_once "Form.Field.File.class.php";
 require_once "Form.Field.Password.class.php";
-//require_once "Form.Field.Checkbox.class.php";
+require_once "Form.Field.Checkbox.class.php";
 require_once "Form.Field.Radio.class.php";
 require_once "Form.Field.Button.class.php";
 require_once "Form.exceptions.php";
