@@ -28,20 +28,6 @@ class FORM_RADIO_LIST extends FORM_ELEMENT {
 	protected $child_radio_renderer;
 
 	/**
-	 * Type of Form Element
-	 *
-	 * @var string
-	 */
-	static protected $type = 'radio_list';
-
-	/**
-	 * Return the element's type
-	 *
-	 * @return string
-	 */
-	public function type() { return self::$type; }
-
-	/**
 	 * Add a radio field with this list's name
 	 *
 	 * @param string $value

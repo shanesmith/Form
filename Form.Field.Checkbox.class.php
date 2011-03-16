@@ -19,13 +19,6 @@ class FORM_CHECKBOX extends FORM_FIELD {
 	protected $value;
 
 	/**
-	 * Type of Form Element
-	 *
-	 * @var string
-	 */
-	static protected $type = 'checkbox';
-
-	/**
 	* Constructor
 	*
 	* @param FORM_FIELDSET $parent
@@ -38,13 +31,6 @@ class FORM_CHECKBOX extends FORM_FIELD {
 		parent::__construct($parent, $name, $labels);
 		$this->value = $value;
 	}
-
-	/**
-	 * Return the element's type
-	 *
-	 * @return string
-	 */
-	public function type() { return self::$type; }
 
 	/**
 	 * Render the checkbox element

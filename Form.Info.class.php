@@ -12,13 +12,6 @@ require_once dirname(__FILE__) . "/Form.class.php";
 class FORM_INFO extends FORM_ELEMENT {
 
 	/**
-	* Type of Form Element
-	*
-	* @var string
-	*/
-	static private $type = 'info';
-
-	/**
 	* The info's text
 	*
 	* @var array
@@ -58,13 +51,6 @@ class FORM_INFO extends FORM_ELEMENT {
 		$this->process_languaged_argument($this->texts, $texts);
 		return $this;
 	}
-
-	/**
-	 * Return the element's type
-	 *
-	 * @return string
-	 */
-	public function type() { return self::$type; }
 
 	/**
 	* A default renderer for info box

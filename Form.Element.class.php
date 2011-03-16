@@ -67,6 +67,29 @@ abstract class FORM_ELEMENT {
 	*/
 	protected $renderer;
 
+	/**
+	* A list of form classes and their string type
+	*
+	* @var array
+	*/
+	protected static $types = array(
+		'FORM'								=> 'form',
+		'FORM_FIELDSET' 			=> 'fieldset',
+		'FORM_BUTTON' 				=> 'button',
+		'FORM_CHECKBOX' 			=> 'checkbox',
+		'FORM_FILE' 					=> 'file',
+		'FORM_HIDDEN' 				=> 'hidden',
+		'FORM_INFO' 					=> 'info',
+		'FORM_PASSWORD' 			=> 'password',
+		'FORM_RADIO' 					=> 'radio',
+		'FORM_RADIO_LIST' 		=> 'radio_list',
+		'FORM_SELECT' 				=> 'select',
+		'FORM_TEXT' 					=> 'text',
+		'FORM_TEXTAREA' 			=> 'textarea',
+		'FORM_SUBMIT_BUTTON'  => 'submit',
+		'FORM_RESET_BUTTON' 	=> 'reset',
+	);
+
 
 	/*******************
 	 **  CONSTRUCTOR  **
@@ -107,7 +130,10 @@ abstract class FORM_ELEMENT {
 	 *
 	 * @return string
 	 */
-	abstract public function type();
+	public function type() {
+		$class = get_class($this);
+		return self::$types[$class];
+	}
 
 	/**
 	* Return the element's parent

@@ -29,13 +29,6 @@ restore_include_path();
 class FORM extends FORM_FIELDSET {
 
 	/**
-	* Type of Form Element
-	*
-	* @var string
-	*/
-	static protected $type = 'form';
-
-	/**
 	 * The form's id
 	 *
 	 * @var string
@@ -155,14 +148,6 @@ class FORM extends FORM_FIELDSET {
 	/*************************
 	 **  GETTERS / SETTERS  **
 	 *************************/
-
-	/**
-	 * Return the element's type
-	 *
-	 * @return string
-	 */
-	public function type() { return self::$type; }
-
 
 	/**
 	 * Get all supported languages for this form

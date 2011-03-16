@@ -21,13 +21,6 @@ class FORM_SELECT extends FORM_FIELD {
 	protected $options = array();
 
 	/**
-	* Type of Form Element
-	*
-	* @var string
-	*/
-	static private $type = 'select';
-
-	/**
 	* Constructor
 	*
 	* @param FORM_FIELDSET $parent
@@ -135,13 +128,6 @@ class FORM_SELECT extends FORM_FIELD {
 
 		return "<select {$attributes}>{$options}</select>";
 	}
-
-	/**
-	 * Return the element's type
-	 *
-	 * @return string
-	 */
-	public function type() { return self::$type; }
 
 }
 

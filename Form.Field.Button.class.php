@@ -12,20 +12,6 @@ require_once dirname(__FILE__) . "/Form.class.php";
 class FORM_BUTTON extends FORM_FIELD {
 
 	/**
-	* Type of Form Element
-	*
-	* @var string
-	*/
-	static private $type = 'button';
-
-	/**
-	 * Return the element's type
-	 *
-	 * @return string
-	 */
-	public function type() { return self::$type; }
-
-	/**
 	* Render the button field, adding value attribute equal to labels.
 	*
 	* @param array $languages
@@ -89,20 +75,6 @@ class FORM_BUTTON extends FORM_FIELD {
 */
 class FORM_SUBMIT_BUTTON extends FORM_BUTTON {
 
-	/**
-	* Type of Form Element
-	*
-	* @var string
-	*/
-	static private $type = 'submit';
-
-	/**
-	 * Return the element's type
-	 *
-	 * @return string
-	 */
-	public function type() { return self::$type; }
-
 }
 
 
@@ -116,18 +88,4 @@ class FORM_SUBMIT_BUTTON extends FORM_BUTTON {
 */
 class FORM_RESET_BUTTON extends FORM_BUTTON {
 
-	/**
-	* Type of Form Element
-	*
-	* @var string
-	*/
-	static private $type = 'reset';
-
-	/**
-	 * Return the element's type
-	 *
-	 * @return string
-	 */
-	public function type() { return self::$type; }
-	
 }

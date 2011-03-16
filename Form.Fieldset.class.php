@@ -12,13 +12,6 @@ require_once dirname(__FILE__) . "/Form.class.php";
 class FORM_FIELDSET extends FORM_ELEMENT {
 
 	/**
-	* Type of Form Element
-	*
-	* @var string
-	*/
-	static protected $type = 'fieldset';
-
-	/**
 	* List of element _names_ that this fieldset contains
 	*
 	* @var array
@@ -32,19 +25,6 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * @var array
 	 */
 	protected $child_type_renderers = array();
-
-
-	/**************
-	 **  HELPERS **
-	 **************/
-
-	/**
-	 * Return the element's type
-	 *
-	 * @return string
-	 */
-	public function type() { return self::$type; }
-
 
 
 	/********************
