@@ -297,7 +297,11 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * @returns FORM_FIELD
 	 */
 	public function getField($name) {
-		return $this->getChildWithTypeCheck($name, 'field');
+		$elem = $this->getChild($name);
+
+		if (!($elem instanceof FORM_FIELD)) return null;
+
+		return $elem;
 	}
 
 	/**
@@ -530,7 +534,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 		$render = "";
 
 		/** @var FORM_ELEMENT $child */
-		foreach ($this->getAllChildren() as   $child) {
+		foreach ($this->getAllChildren() as  $child) {
 			$render .= $child->render($lang);
 		}
 
