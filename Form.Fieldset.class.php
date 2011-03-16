@@ -433,13 +433,17 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *****************/
 
 	/**
-	* Set a renderer for all child elements of the specified type
+	* Set a renderer for all child elements of the specified type,
+	* which can optionally be an array of types
 	*
-	* @param string $type
+	* @param string|array $type
 	* @param callable $renderer
 	*/
-	public function setChildTypeRenderer($type, $renderer) {
-		$this->child_type_renderers[$type] = $renderer;
+	public function setChildTypeRenderer($types, $renderer) {
+		foreach ((array)$types as $t) {
+				$this->child_type_renderers[$t] = $renderer;
+		}
+
 		return $this;
 	}
 
