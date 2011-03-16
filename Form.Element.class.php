@@ -15,13 +15,6 @@ require_once dirname(__FILE__) . "/Form.class.php";
 abstract class FORM_ELEMENT {
 
 	/**
-	* The element's type (fieldset, text, file, submit, etc...)
-	*
-	* @var string
-	*/
-	static private $type;
-
-	/**
 	* A reference to the element's parent Fieldset
 	*
 	* Set to null if this element is Form
@@ -133,6 +126,16 @@ abstract class FORM_ELEMENT {
 	public function type() {
 		$class = get_class($this);
 		return self::$types[$class];
+	}
+
+	/**
+	* Return an array of all type strings,
+	* keyed by class names
+	*
+	* @return array
+	*/
+	public static function getAllTypes() {
+		return self::$types;
 	}
 
 	/**
