@@ -447,11 +447,13 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* Set multiple child renderers by an array, keyed by type
 	*
 	* @param array $renderers
+	* @return FORM_FIELDSET
 	*/
 	public function setChildTypeRenderersArray(array $renderers) {
 		$this->child_type_renderers = array_merge(
 			$this->child_type_renderers, $renderers
 		);
+		return $this;
 	}
 
 	/**
