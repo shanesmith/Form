@@ -17,13 +17,13 @@ class FormException extends Exception {
 	*/
 	public function __construct($message, $element=null) {
 		parent::__construct($message);
-		$this->element = $this->element;
+		$this->element = $element;
 	}
 
 	/**
 	* @return FORM_ELEMENT
 	*/
-	public function getelement() { return $this->element; }
+	public function getElement() { return $this->element; }
 
 }
 
