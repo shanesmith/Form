@@ -56,28 +56,6 @@ class FORM extends FORM_FIELDSET {
 	 */
 	protected $elements = array();
 
-	/**
-	* Default child renderers
-	*
-	* @var array
-	*/
-	protected static $default_child_type_renderers = array(
-		'fieldset'  => array('FORM_FIELDSET', 	'_default_renderer'),
-		'button' 		=> array('FORM_BUTTON', 		'_default_renderer'),
-		'checkbox'  => array('FORM_CHECKBOX', 	'_default_renderer'),
-		'file' 			=> array('FORM_FILE',				'_default_renderer'),
-		'hidden' 		=> array('FORM_HIDDEN', 		'_default_renderer'),
-		'info' 			=> array('FORM_INFO', 			'_default_renderer'),
-		'password' 	=> array('FORM_PASSWORD', 	'_default_renderer'),
-		'radio' 		=> array('FORM_RADIO', 			'_default_renderer'),
-		'radio_list'=> array('FORM_RADIO_LIST', '_default_renderer'),
-		'select'		=> array('FORM_SELECT', 		'_default_renderer'),
-		'text' 			=> array('FORM_TEXT', 			'_default_renderer'),
-		'textarea' 	=> array('FORM_TEXTAREA', 	'_default_renderer'),
-		'submit'		=> array('FORM_SUBMIT_BUTTON', 	'_default_renderer'),
-		'reset' 		=> array('FORM_RESET_BUTTON', 	'_default_renderer'),
-	);
-
 
 	/*****************
 	 **  CONSTANTS  **
@@ -141,7 +119,12 @@ class FORM extends FORM_FIELDSET {
 	* Sets the default renderers for the form and its children
 	*/
 	protected function setDefaultRenderers() {
-		$this->setChildTypeRenderersArray(self::$default_child_type_renderers);
+		foreach (self::getAllTypes() as $class => $type) {
+			if ($type == 'form') continue;
+
+			$this->setChildTypeRenderer($type, array($class, '_default_renderer'));
+		}
+
 		$this->setRenderer(array("FORM", "_default_renderer"));
 	}
 
