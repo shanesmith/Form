@@ -62,6 +62,42 @@ class FORM_BUTTON extends FORM_FIELD {
 		return $str;
 	}
 
+	/**
+	* A renderer for buttons as table rows
+	*
+	* Overrides FORM_FIELD to remove label tags
+	*
+	* @param FORM_BUTTON $element
+	* @param array $languages
+	* @return string
+	*/
+	public static function _table_renderer($element, array $languages) {
+		if ($element->parent()->type() == "form") {
+			return self::_div_renderer($element, $languages);
+		}
+
+		$type = $element->type();
+
+		$labels = $element->getLabels();
+
+		$field = $element->render_field($languages);
+
+		$attributes = $element->getAttributesArray();
+
+		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$type}";
+
+		$attributes = self::attr2str($attributes);
+
+
+		$str = "<tr {$attributes}>\n";
+
+		$str .= "\t<td colspan='2' class='form-field form-field-{$type}'>{$field}</td>\n";
+
+		$str .= "</tr>";
+
+		return $str;
+	}
+
 }
 
 

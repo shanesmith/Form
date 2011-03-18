@@ -255,9 +255,20 @@ class FORM extends FORM_FIELDSET {
 	* @param array $languages
 	* @returs string
 	*/
-	public static function _default_renderer($form, array $languages) {
+	public static function _div_renderer($form, array $languages) {
 		$attributes = $form->getAttributesString();
 		return "<form {$attributes}>" . $form->renderAllChildren($languages) . "</form>";
+	}
+
+	/**
+	* Form rendering doesn't change if table renderer is used
+	*
+	* @param FORM $form
+	* @param array $languages
+	* @return string
+	*/
+	public static function _table_renderer($form, array $languages) {
+		return self::_div_renderer($form, $languages);
 	}
 
 }

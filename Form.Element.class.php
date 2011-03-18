@@ -380,6 +380,7 @@ abstract class FORM_ELEMENT {
 	* @return string
 	*/
 	abstract public static function _default_renderer($element, array $languages);
+	abstract public static function _table_renderer($element, array $languages);
 
 
 	/***************

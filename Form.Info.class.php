@@ -96,4 +96,52 @@ class FORM_INFO extends FORM_ELEMENT {
 		return $str;
 	}
 
+	/**
+	* A renderer for info box in the table format
+	*
+	* Simplified version found in FORM_FIELD
+	*
+	* @param FORM_INFO $element
+	* @param array $languages
+	* @returns string
+	*/
+	public static function _table_renderer($element, array $languages) {
+		if ($element->parent()->type() == "form") {
+			return self::_div_renderer($element, $languages);
+		}
+
+		$attributes = $element->getAttributesArray();
+
+		$attributes['class'] .= " form-element-container form-info-container";
+
+		$attributes = self::attr2str($attributes);
+
+		$labels = $element->getLabels();
+
+		$texts = $element->getTexts();
+
+
+		$str = "<tr {$attributes}>\n";
+
+		$str .= "\t<th class='form-element-label form-info-label'>\n";
+
+		foreach ($languages as $lang) {
+			$str .= "\t\t<span class='form-info-label-{$lang}'>{$labels[$lang]}</span>\n";
+		}
+
+		$str .= "\t</th>\n";
+
+		$str .= "\t<td class='form-info'>";
+
+		foreach ($languages as $lang) {
+			$str .= "\t\t<span class='form-info-{$lang}'>{$texts[$lang]}</span>\n";
+		}
+
+		$str .= "\t</td>\n";
+
+		$str .= "</tr>";
+
+		return $str;
+	}
+
 }

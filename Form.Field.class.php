@@ -213,4 +213,46 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 		return $str;
 	}
 
+	/**
+	* A renderer for fields as table rows
+	*
+	* @param FORM_FIELD $element
+	* @param array $languages
+	* @return string
+	*/
+	public static function _table_renderer($element, array $languages) {
+		if ($element->parent()->type() == "form") {
+			return self::_div_renderer($element, $languages);
+		}
+
+		$type = $element->type();
+
+		$labels = $element->getLabels();
+
+		$field = $element->render_field($languages);
+
+		$attributes = $element->getAttributesArray();
+
+		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$type}";
+
+		$attributes = self::attr2str($attributes);
+
+
+		$str = "<tr {$attributes}>\n";
+
+		$str .= "\t<th class='form-element-label form-field-label form-field-label-{$type}'>\n";
+
+		foreach ($languages as $lang) {
+			$str .= "\t\t<span class='form-field-label-{$lang} form-field-label-{$type}-{$lang}'>{$labels[$lang]}</span>\n";
+		}
+
+		$str .= "\t</th>\n";
+
+		$str .= "\t<td class='form-field form-field-{$type}'>{$field}</td>\n";
+
+		$str .= "</tr>";
+
+		return $str;
+	}
+
 }

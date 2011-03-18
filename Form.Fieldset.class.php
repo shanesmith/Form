@@ -563,4 +563,56 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 		return $str;
 	}
 
+
+	/**
+	* A fieldset renderer based on tables
+	*
+	* @param FORM_FIELDSET $fieldset
+	* @param array $languages
+	*/
+	public static function _table_renderer($fieldset, array $languages) {
+		$labels = $fieldset->getLabels();
+
+		$elements = $fieldset->renderAllChildren($languages);
+
+		$attributes = $fieldset->getAttributesArray();
+
+		$attributes['class'] .= " form-element-container form-fieldset-container";
+
+		$attributes = self::attr2str($attributes);
+
+		$subfieldset = ($fieldset->parent()->type() == 'fieldset');
+
+
+		$str = "";
+
+		if ($subfieldset) {
+			$str .= "<tr {$attributes}>";
+			$str .= "<th class='form-element-label form-fieldset-label'>";
+		} else {
+			$str .= "<table {$attributes}>\n";
+			$str .= "\t<thead class='form-element-label form-fieldset-label'>\n\t\t<tr>\n\t\t\t<th colspan='2'>\n";
+		}
+
+		foreach ($languages as $lang) {
+			$str .= "\t\t<span class='form-fieldset-label-{$lang}'>{$labels[$lang]}</span>\n";
+		}
+
+		if ($subfieldset) {
+			$str .= "</th><td><table>\n";
+		} else {
+			$str .= "\t\t\t</th>\n\t\t</tr>\n\t</thead>\n";
+		}
+
+		$str .= "\t<tbody class='form-fieldset'>\n\t\t{$elements}\n\t</tbody>\n";
+
+		$str .= "</table>\n";
+
+		if ($subfieldset) {
+			$str .= "</td></tr>";
+		}
+
+		return $str;
+	}
+
 }

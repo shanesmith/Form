@@ -175,4 +175,56 @@ class FORM_RADIO_LIST extends FORM_ELEMENT {
 		return $str;
 	}
 
+	/**
+	* A default table renderer for radio lists
+	*
+	* @param FORM_RADIO_LIST $radio_list
+	* @param array $languages
+	* @returns string
+	*/
+	public static function _table_renderer($radio_list, array $languages) {
+		$labels = $radio_list->getLabels();
+
+		$elements = $radio_list->renderAllRadios($languages);
+
+		$attributes = $radio_list->getAttributesArray();
+
+		$attributes['class'] .= " form-element-container form-radio_list-container";
+
+		$attributes = self::attr2str($attributes);
+
+		$subfieldset = ($radio_list->parent()->type() == 'fieldset');
+
+
+		$str = "";
+
+		if ($subfieldset) {
+			$str .= "<tr {$attributes}>";
+			$str .= "<th class='form-element-label form-radio_list-label'>";
+		} else {
+			$str .= "<table {$attributes}>\n";
+			$str .= "\t<thead class='form-element-label form-radio_list-label'>\n\t\t<tr>\n\t\t\t<th colspan='2'>\n";
+		}
+
+		foreach ($languages as $lang) {
+			$str .= "\t\t<span class='form-radio_list-label-{$lang}'>{$labels[$lang]}</span>\n";
+		}
+
+		if ($subfieldset) {
+			$str .= "</th><td><table>\n";
+		} else {
+			$str .= "\t\t\t</th>\n\t\t</tr>\n\t</thead>\n";
+		}
+
+		$str .= "\t<tbody class='form-radio_list'>\n\t\t{$elements}\n\t</tbody>\n";
+
+		$str .= "</table>\n";
+
+		if ($subfieldset) {
+			$str .= "</td></tr>";
+		}
+
+		return $str;
+	}
+
 }
