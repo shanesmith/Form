@@ -149,11 +149,13 @@ class FORM_RADIO_LIST extends FORM_ELEMENT {
 	public static function _div_renderer($radio_list, array $languages) {
 		$labels = $radio_list->getLabels();
 
+		$name = $radio_list->name();
+
 		$radios = $radio_list->renderAllRadios($languages);
 
 		$attributes = $radio_list->getAttributesArray();
 
-		$attributes['class'] .= " form-element-container form-radio_list-container";
+		$attributes['class'] .= " form-element-container form-radio_list-container form-element-name-{$name}";
 
 		$attributes = self::attr2str($attributes);
 
@@ -185,11 +187,13 @@ class FORM_RADIO_LIST extends FORM_ELEMENT {
 	public static function _table_renderer($radio_list, array $languages) {
 		$labels = $radio_list->getLabels();
 
+		$name = $radio_list->name();
+
 		$elements = $radio_list->renderAllRadios($languages);
 
 		$attributes = $radio_list->getAttributesArray();
 
-		$attributes['class'] .= " form-element-container form-radio_list-container";
+		$attributes['class'] .= " form-element-container form-radio_list-container form-element-name-{$name}";
 
 		$attributes = self::attr2str($attributes);
 

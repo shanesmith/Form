@@ -62,9 +62,11 @@ class FORM_INFO extends FORM_ELEMENT {
 	* @returns string
 	*/
 	public static function _div_renderer($element, array $languages) {
+		$name = $element->name();
+
 		$attributes = $element->getAttributesArray();
 
-		$attributes['class'] .= " form-element-container form-info-container";
+		$attributes['class'] .= " form-element-container form-info-container form-element-name-{$name}";
 
 		$attributes = self::attr2str($attributes);
 
@@ -110,9 +112,11 @@ class FORM_INFO extends FORM_ELEMENT {
 			return self::_div_renderer($element, $languages);
 		}
 
+		$name = $element->name();
+
 		$attributes = $element->getAttributesArray();
 
-		$attributes['class'] .= " form-element-container form-info-container";
+		$attributes['class'] .= " form-element-container form-info-container form-element-name-{$name}";
 
 		$attributes = self::attr2str($attributes);
 

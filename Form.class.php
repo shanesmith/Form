@@ -25,6 +25,9 @@ restore_include_path();
  * The form.
  *
  * @TODO Are there Fieldset methods that should not be used in Form?
+ * @TODO Support for name[]
+ * @TODO Ability to split a radio list, individual rendering of radios
+ * @TODO Hooks and options within renderers for finer customizations without changing the renderer
  */
 class FORM extends FORM_FIELDSET {
 

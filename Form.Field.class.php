@@ -174,9 +174,11 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	public static function _div_renderer($element, array $languages) {
 		$type = $element->type();
 
+		$name = $element->name();
+
 		$attributes = $element->getAttributesArray();
 
-		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$type}";
+		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$type} form-element-name-{$name}";
 
 		$attributes = self::attr2str($attributes);
 
@@ -227,13 +229,15 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 
 		$type = $element->type();
 
+		$name = $element->name();
+
 		$labels = $element->getLabels();
 
 		$field = $element->render_field($languages);
 
 		$attributes = $element->getAttributesArray();
 
-		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$type}";
+		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$type} form-element-name-{$name}";
 
 		$attributes = self::attr2str($attributes);
 

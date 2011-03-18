@@ -42,9 +42,11 @@ class FORM_BUTTON extends FORM_FIELD {
 	public static function _div_renderer($element, array $languages) {
 		$type = $element->type();
 
+		$name = $element->name();
+
 		$attributes = $element->getAttributesArray();
 
-		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$type}";
+		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$type} form-element-name-{$name}";
 
 		$attributes = self::attr2str($attributes);
 
@@ -78,13 +80,15 @@ class FORM_BUTTON extends FORM_FIELD {
 
 		$type = $element->type();
 
+		$name = $element->name();
+
 		$labels = $element->getLabels();
 
 		$field = $element->render_field($languages);
 
 		$attributes = $element->getAttributesArray();
 
-		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$type}";
+		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$type} form-element-name-{$name}";
 
 		$attributes = self::attr2str($attributes);
 

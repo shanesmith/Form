@@ -537,11 +537,13 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	public static function _div_renderer($fieldset, array $languages) {
 		$labels = $fieldset->getLabels();
 
+		$name = $fieldset->name();
+
 		$elements = $fieldset->renderAllChildren($languages);
 
 		$attributes = $fieldset->getAttributesArray();
 
-		$attributes['class'] .= " form-element-container form-fieldset-container";
+		$attributes['class'] .= " form-element-container form-fieldset-container form-fieldset-name-{$name}";
 
 		$attributes = self::attr2str($attributes);
 
@@ -573,11 +575,13 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	public static function _table_renderer($fieldset, array $languages) {
 		$labels = $fieldset->getLabels();
 
+		$name = $fieldset->name();
+
 		$elements = $fieldset->renderAllChildren($languages);
 
 		$attributes = $fieldset->getAttributesArray();
 
-		$attributes['class'] .= " form-element-container form-fieldset-container";
+		$attributes['class'] .= " form-element-container form-fieldset-container form-fieldset-name-{$name}";
 
 		$attributes = self::attr2str($attributes);
 
