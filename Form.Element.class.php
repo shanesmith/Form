@@ -379,7 +379,7 @@ abstract class FORM_ELEMENT {
 	* @param array $languages
 	* @return string
 	*/
-	abstract public static function _default_renderer($element, array $languages);
+	abstract public static function _div_renderer($element, array $languages);
 	abstract public static function _table_renderer($element, array $languages);
 
 

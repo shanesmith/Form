@@ -39,7 +39,7 @@ class FORM_BUTTON extends FORM_FIELD {
 	* @param array $languages
 	* @returns string
 	*/
-	public static function _default_renderer($element, array $languages) {
+	public static function _div_renderer($element, array $languages) {
 		$type = $element->type();
 
 		$attributes = $element->getAttributesArray();

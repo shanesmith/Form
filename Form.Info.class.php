@@ -61,7 +61,7 @@ class FORM_INFO extends FORM_ELEMENT {
 	* @param array $languages
 	* @returns string
 	*/
-	public static function _default_renderer($element, array $languages) {
+	public static function _div_renderer($element, array $languages) {
 		$attributes = $element->getAttributesArray();
 
 		$attributes['class'] .= " form-element-container form-info-container";

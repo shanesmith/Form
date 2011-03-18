@@ -171,7 +171,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	* @param array $languages
 	* @returns string
 	*/
-	public static function _default_renderer($element, array $languages) {
+	public static function _div_renderer($element, array $languages) {
 		$type = $element->type();
 
 		$attributes = $element->getAttributesArray();

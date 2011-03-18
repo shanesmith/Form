@@ -146,7 +146,7 @@ class FORM_RADIO_LIST extends FORM_ELEMENT {
 	* @param array $languages
 	* @returns string
 	*/
-	public static function _default_renderer($radio_list, array $languages) {
+	public static function _div_renderer($radio_list, array $languages) {
 		$labels = $radio_list->getLabels();
 
 		$radios = $radio_list->renderAllRadios($languages);

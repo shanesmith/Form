@@ -75,6 +75,12 @@ class FORM extends FORM_FIELDSET {
 	 */
 	const FORM_ATTR_FIELD_PREFIX = '__form-';
 
+	const DIV_DEFAULT_RENDERER = 0;
+	const TABLE_DEFAULT_RENDERER = 1;
+	protected $default_renderers = array(
+		0 => '_div_renderer',
+		1 => '_table_renderer'
+	);
 
 	/*******************
 	 **  CONSTRUCTOR  **
@@ -89,12 +95,12 @@ class FORM extends FORM_FIELDSET {
 	 * @param array $languages
 	 * @param array $options
 	 */
-	function __construct($id, $action=null, $method='post', $languages=array(), array $options=array()) {
+	function __construct($id, $action=null, $method='post', $languages=array(), $default_renderer=FORM::DIV_DEFAULT_RENDERER) {
 		$this->id = $id;
 
 		$this->form = $this;
 
-		$this->setDefaultRenderers();
+		$this->setDefaultRenderers($default_renderer);
 
 		$this->attributes = array(
 			'method' => $method,
@@ -105,9 +111,9 @@ class FORM extends FORM_FIELDSET {
 			$this->languages = $languages;
 		}
 
-		$this->options = array_merge($options, array(
-			'trim' => true,
-		));
+		//$this->options = array_merge($options, array(
+		//	'trim' => true,
+		//));
 
 		//$this->hidden(self::FORM_ATTR_FIELD_PREFIX."id", $id);
 
@@ -117,15 +123,24 @@ class FORM extends FORM_FIELDSET {
 
 	/**
 	* Sets the default renderers for the form and its children
+	*
+	* @param int|string $default_renderer
 	*/
-	protected function setDefaultRenderers() {
+	protected function setDefaultRenderers($default_renderer) {
+		if (is_numeric($default_renderer)) {
+			$class_renderer = true;
+			$default_renderer = $this->default_renderers[$default_renderer];
+		}
+
 		foreach (self::getAllTypes() as $class => $type) {
 			if ($type == 'form') continue;
 
-			$this->setChildTypeRenderer($type, array($class, '_default_renderer'));
+			$renderer = $class_renderer ? array($class, $default_renderer) : $default_renderer;
+
+			$this->setChildTypeRenderer($type, $renderer);
 		}
 
-		$this->setRenderer(array("FORM", "_default_renderer"));
+		$this->setRenderer(array("FORM", $default_renderer));
 	}
 
 	/*************************
