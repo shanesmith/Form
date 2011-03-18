@@ -43,4 +43,13 @@ class FORM_RADIO extends FORM_FIELD {
 		return parent::render_field($languages);
 	}
 
+	/**
+	* Override for phpdoc change of return type...
+	*
+	* @return FORM_RADIO_LIST
+	*/
+	public function parent() {
+		return parent::parent();
+	}
+
 }
