@@ -28,6 +28,37 @@ class FORM_RADIO_LIST extends FORM_ELEMENT {
 	protected $child_radio_renderer;
 
 	/**
+	* Values
+	*
+	* @var string
+	*/
+	protected $default_value, $posted_value;
+
+
+	/*******************
+	 **  CONSTRUCTOR  **
+	 *******************/
+
+	/**
+	 * Field constructor
+	 *
+	 * @param FORM_FIELDSET $parent
+	 * @param string $name
+	 * @param string $label
+	 * @param string $default
+	 * @return FORM_FIELD
+	 */
+	public function __construct(&$parent, $name, $labels=null, $default=null) {
+		$this->setDefaultValue($default);
+		parent::__construct($parent, $name, $labels);
+	}
+
+
+	/*************
+	 **  RADIO  **
+	 *************/
+
+	/**
 	 * Add a radio field with this list's name
 	 *
 	 * @param string $value
@@ -38,6 +69,64 @@ class FORM_RADIO_LIST extends FORM_ELEMENT {
 		$radio = new FORM_RADIO($this, $this->name(), $value, $labels);
 		$this->radios[] = $radio;
 		return $radio;
+	}
+
+
+	/**************
+	 **  VALUES  **
+	 **************/
+
+	 /**
+	 * Get the posted value, or if none get default
+	 *
+	 * @return string
+	 */
+	 public function getValue() {
+		 if ($this->posted_value) {
+			 return $this->posted_value;
+		 } else {
+			 return $this->default_value;
+		 }
+	 }
+
+	 /**
+	 * Return the default value
+	 *
+	 * @return string
+	 */
+	public function getDefaultValue() {
+		return $this->default_value;
+	}
+
+	/**
+	* Return the posted value
+	*
+	* @return string
+	*/
+	public function getPostedValue() {
+		return $this->posted_value;
+	}
+
+	/**
+	* Set a default value
+	*
+	* @param string $value
+	* @return FORM_FIELD
+	*/
+	public function setDefaultValue($value) {
+		$this->default_value = $value;
+		return $this;
+	}
+
+	/**
+	* Set the posted value
+	*
+	* @param string $value
+	* @return FORM_FIELD
+	*/
+	public function setPostedValue($value) {
+		$this->posted_value = $value;
+		return $this;
 	}
 
 

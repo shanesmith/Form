@@ -29,8 +29,8 @@ class FORM_SELECT extends FORM_FIELD {
 	* @param array $options
 	* @return FORM_SELECT
 	*/
-	public function __construct($parent, $name, $labels=null, $options=null) {
-		parent::__construct($parent, $name, $labels);
+	public function __construct($parent, $name, $labels=null, $options=null, $default=null) {
+		parent::__construct($parent, $name, $labels, $default);
 
 		if (isset($options)) {
 			$this->addOptionsArray($options);
@@ -303,6 +303,18 @@ class FORM_SELECT_OPTION extends FORM_SELECT_OPT_BASE {
 		return $this->value;
 	}
 
+	public function isSelected() {
+		return ($this->backtoSelect()->getValue() == $this->value);
+	}
+
+	public function isDefaultSelected() {
+		return ($this->backtoSelect()->getDefaultValue() == $this->value);
+	}
+
+	public function isPostedSelected() {
+		return ($this->backtoSelect()->getPostedValue() == $this->value);
+	}
+
 	/**
 	* Return the select element that this option belongs to
 	*
@@ -337,9 +349,11 @@ class FORM_SELECT_OPTION extends FORM_SELECT_OPT_BASE {
 
 		$text = implode(" // ", $labels);
 
+		$selected = $this->isSelected() ? "selected='selected'" : "";
+
 		$disabled = $this->enabled ? "" : "disabled='disabled'";
 
-		return "<option value='{$value}' {$disabled}>{$text}</option>";
+		return "<option value='{$value}' {$selected} {$disabled}>{$text}</option>";
 	}
 }
 

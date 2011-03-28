@@ -3,3 +3,7 @@
 - Ability to split a radio list, individual rendering of radios
 
 - Hooks and options within renderers for finer customizations
+
+- Should RadioList be a subclass of Field or Fieldset?
+
+- Error on duplicate name

@@ -19,10 +19,94 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	*/
 	protected $field_attributes = array();
 
+	/**
+	* Values
+	*
+	* @TODO override in Radio, Button, Checkbox, File?
+	*
+	* @var string
+	*/
+	protected $default_value, $posted_value;
 
-	/*************************
-	 **  GETTERS / SETTERS  **
-	 *************************/
+	/*******************
+	 **  CONSTRUCTOR  **
+	 *******************/
+
+	/**
+	* Field constructor
+	*
+	* @param FORM_FIELDSET $parent
+	* @param string $name
+	* @param string $label
+	* @param string $default
+	* @return FORM_FIELD
+	*/
+	public function __construct(&$parent, $name, $labels=null, $default=null) {
+		$this->setDefaultValue($default);
+		parent::__construct($parent, $name, $labels);
+	}
+
+
+	/**************
+	 **  VALUES  **
+	 **************/
+
+	 /**
+	 * Get the posted value, or if none get default
+	 *
+	 * @return string
+	 */
+	 public function getValue() {
+		 if ($this->posted_value) {
+			 return $this->posted_value;
+		 } else {
+			 return $this->default_value;
+		 }
+	 }
+
+	 /**
+	 * Return the default value
+	 *
+	 * @return string
+	 */
+	public function getDefaultValue() {
+		return $this->default_value;
+	}
+
+	/**
+	* Return the posted value
+	*
+	* @return string
+	*/
+	public function getPostedValue() {
+		return $this->posted_value;
+	}
+
+	/**
+	* Set a default value
+	*
+	* @param string $value
+	* @return FORM_FIELD
+	*/
+	public function setDefaultValue($value) {
+		$this->default_value = $value;
+		return $this;
+	}
+
+	/**
+	* Set the posted value
+	*
+	* @param string $value
+	* @return FORM_FIELD
+	*/
+	public function setPostedValue($value) {
+		$this->posted_value = $value;
+		return $this;
+	}
+
+	/************************
+	 **  FIELD ATTRIBUTES  **
+	 ************************/
 
 	/**
 	* Returns all of the element's field attributes in an array

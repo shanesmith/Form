@@ -22,7 +22,9 @@ class FORM_TEXTAREA extends FORM_FIELD {
 			'name' => $this->name(),
 		));
 
-		return "<textarea {$attributes}></textarea>";
+		$value = $this->getValue();
+
+		return "<textarea {$attributes}>{$value}</textarea>";
 	}
 
 }
