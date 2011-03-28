@@ -12,24 +12,24 @@ require_once dirname(__FILE__) . "/Form.class.php";
 class FORM_RADIO extends FORM_FIELD {
 
 	/**
-	* The radio's value field
+	* The radio's 'value' field
 	*
 	* @var string
 	*/
-	protected $value;
+	protected $text;
 
 	/**
 	* Constructor
 	*
 	* @param FORM_RADIO_LIST $parent
 	* @param string $name
-	* @param string $value
+	* @param string $text
 	* @param string|array $labels
 	* @return FORM_RADIO
 	*/
-	public function __construct(&$parent, $name, $value, $labels=null) {
+	public function __construct(&$parent, $name, $text, $labels=null) {
 		parent::__construct($parent, $name, $labels);
-		$this->value = $value;
+		$this->text = $text;
 	}
 
 	/**
@@ -39,7 +39,7 @@ class FORM_RADIO extends FORM_FIELD {
 	 * @return string
 	 */
 	public function render_field(array $languages) {
-		$this->setFieldAttribute('value', $this->value);
+		$this->setFieldAttribute('value', $this->text);
 		return parent::render_field($languages);
 	}
 
