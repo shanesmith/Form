@@ -28,6 +28,22 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	*/
 	protected $default_value, $posted_value;
 
+	/**
+	* An array of validators to be run on validate()
+	*
+	* Each element is an array with the keys 'func', 'args' and 'msg'
+	*
+	* @var array
+	*/
+	protected $validators = array();
+
+	/**
+	* An array of error or warning messages, usually set by a call to validate()
+	*
+	* @var array
+	*/
+	protected $messages = array();
+
 	/*******************
 	 **  CONSTRUCTOR  **
 	 *******************/
@@ -102,6 +118,133 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	public function setPostedValue($value) {
 		$this->posted_value = $value;
 		return $this;
+	}
+
+
+	/******************
+	 **  VALIDATORS  **
+	 ******************/
+
+	 /**
+	 * Add a validator to this field, including optional arguments array and error message
+	 *
+	 * @param callable $validator
+	 * @param array $args
+	 * @param string $message
+	 */
+	public function addValidator($validator, $args=array(), $message=null) {
+		$this->validators[] = array(
+			'func' => $validator,
+			'args' => $args,
+			'msg'  => $message
+		);
+		return $this;
+	}
+
+	/**
+	* Return an array of all validators.
+	*
+	* Each element is an array with the keys 'func', 'args' and 'msg'
+	*
+	* @return array
+	*/
+	public function getAllValidators() {
+		return $this->validators;
+	}
+
+	/**
+	* Run all validators
+	*
+	* Returns true if all validators return cleanly, false otherwise.
+	*
+	* Call getMessages() for more details on the errors, if any.
+	*
+	* @return boolean
+	*/
+	public function validate() {
+		$this->clearMessages();
+
+		$value = $this->getValue();
+
+		foreach ($this->getAllValidators() as $validator) {
+			if (!is_callable($validator['func'])) {
+				$validator_str = !is_string($validator['func']) ? var_export($validator['func'], true) : $validator['func'];
+				throw new FormInvalidValidator("Validator is not callable: {$validator_str}", $this, $validator);
+			}
+
+			$arguments = array_merge(array($value, $this), (array)$validator['args']);
+
+			$message = call_user_func_array($validator['func'], $arguments);
+
+			if ($message) {
+				$this->addMessage(isset($validator['msg']) ? $validator['msg'] : $message);
+			}
+		}
+
+		return !$this->hasMessages();
+	}
+
+	/**
+	* Return an array of all messages set after a validate() call
+	*
+	* @return array
+	*/
+	public function getMessages() {
+		return $this->messages;
+	}
+
+	/**
+	* Returns whether messages have been set by a validate() call
+	*
+	* @return boolean
+	*/
+	public function hasMessages() {
+		return !empty($this->messages);
+	}
+
+	/**
+	* Append a message to the list, usually used by validate()
+	*
+	* @param string $message
+	* @return FORM_FIELD
+	*/
+	public function addMessage($message) {
+		$this->messages[] = $message;
+		return $this;
+	}
+
+	/**
+	* Set the message list to empty
+	*
+	* @return FORM_FIELD
+	*/
+	public function clearMessages() {
+		$this->messages = array();
+		return $this;
+	}
+
+	/**
+	* Set a validator to make the field required
+	*
+	* @param string $message
+	* @return FORM_FIELD
+	*/
+	public function required($message=null) {
+		$this->addValidator(array('FORM_FIELD', 'validatorRequired'), null, $message);
+		return $this;
+	}
+
+	/**
+	* Returns a message if the value is empty
+	*
+	* @param string $value
+	* @param FORM_FIELD $field
+	*/
+	public static function validator_required($value, $field) {
+		if (empty($value)) {
+			return "Field {$field->name()} is required.";
+		}
+		return null;
 	}
 
 	/************************

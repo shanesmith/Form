@@ -59,3 +59,21 @@ class FormInvalidLanguageException extends FormException {
 * No valid renderer found while attempting to run render()
 */
 class FormNoRendererFound extends FormException { }
+
+/**
+* An invalid validator was invoked
+*/
+class FormInvalidValidator extends FormException {
+
+	private $validator;
+
+	public function __construct($message, $element=null, $validator=null) {
+		$this->validator = $validator;
+		parent::__construct($message, $element);
+	}
+
+	public function getValidator() {
+		return $this->validator;
+	}
+
+}

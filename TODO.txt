@@ -7,3 +7,5 @@
 - Should RadioList be a subclass of Field or Fieldset?
 
 - Error on duplicate name
+
+- Fieldset validators (ex: for comparing field values)

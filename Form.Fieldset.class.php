@@ -428,6 +428,28 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	}
 
 
+	/******************
+	 **  VALIDATING  **
+	 ******************/
+
+	 /**
+	 * Iterate over each child and run validation
+	 *
+	 * Returns true if all are valid, false otherwise
+	 *
+	 * @return boolean
+	 */
+	public function validate() {
+		$valid = true;
+		foreach ($this->getAllChildren() as $child) {
+			if (!($child instanceof FORM_INFO)) {
+				$valid |= $child->validate();
+			}
+		}
+		return $valid;
+	}
+
+
 	/*****************
 	 **  RENDERING  **
 	 *****************/

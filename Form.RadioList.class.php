@@ -8,6 +8,7 @@ require_once dirname(__FILE__) . "/Form.class.php";
  *
  * A collection of HTML radios, sort-of emulating Fieldset
  *
+ * @TODO make to extend FORM_FIELD...?
  */
 class FORM_RADIO_LIST extends FORM_ELEMENT {
 
@@ -129,6 +130,16 @@ class FORM_RADIO_LIST extends FORM_ELEMENT {
 		return $this;
 	}
 
+	/******************
+	 **  VALIDATING  **
+	 ******************/
+
+	 /**
+	 * Validating
+	 *
+	 * @TODO todo!
+	 */
+	 public function validate() {}
 
 	/*****************
 	 **  RENDERING  **
