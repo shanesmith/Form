@@ -82,7 +82,7 @@ class FORM_RADIO_LIST extends FORM_ELEMENT {
 	 * @return string
 	 */
 	 public function getValue() {
-		 if ($this->posted_value) {
+		 if (isset($this->posted_value)) {
 			 return $this->posted_value;
 		 } else {
 			 return $this->default_value;

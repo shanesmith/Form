@@ -261,6 +261,15 @@ class FORM extends FORM_FIELDSET {
 		return isset($this->elements[$name]);
 	}
 
+	public function loadPostedValues(array $post) {
+		foreach ($post as $name => $value) {
+			$elem = $this->getElement($name);
+			if ($elem) {
+				$elem->setPostedValue($value);
+			}
+		}
+		return $this;
+	}
 
 	/*****************
 	 **  RENDERING  **
