@@ -239,7 +239,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	* @param array|string $message
 	* @return FORM_FIELD
 	*/
-	public function required($message=null) {
+	public function validateRequired($message=null) {
 		if (!isset($message)) {
 			$message = array(
 				'en' => "Field {$this->name()} is required.",
@@ -425,9 +425,16 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 
 		$name = $element->name();
 
+		$errors = $element->getError();
+
+
 		$attributes = $element->getAttributesArray();
 
 		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$type} form-element-name-{$name}";
+
+		if ($element->hasError()) {
+			$attributes['class'] .= " form-element-has-error";
+		}
 
 		$attributes = self::attr2str($attributes);
 
@@ -456,6 +463,16 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 
 		$field = $element->render_field($languages);
 		$str .= "\t<div class='form-field form-field-{$type}'>{$field}</div>\n";
+
+		if ($element->hasError()) {
+			$str .= "\t<div class='form-error'>\n";
+
+			foreach ($languages as $lang) {
+				$str .= "\t\t<span class='form-error-{$lang}'>{$errors[$lang]}</span>";
+			}
+
+			$str .= "\t</div>\n";
+		}
 
 		$str .= "</div>\n";
 
