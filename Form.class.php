@@ -15,6 +15,7 @@ require_once "Form.Field.Checkbox.class.php";
 require_once "Form.Field.Radio.class.php";
 require_once "Form.Field.Button.class.php";
 require_once "Form.exceptions.php";
+require_once "Form.Validator.class.php";
 restore_include_path();
 
 /**
@@ -342,7 +343,7 @@ class FORM extends FORM_FIELDSET {
 	* @return boolean
 	*/
 	public function hasErrorByElementName($element) {
-		return !empty($this->errors[$name]);
+		return !empty($this->errors[$element]);
 	}
 
 	/**

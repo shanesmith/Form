@@ -236,25 +236,37 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	/**
 	* Set a validator to make the field required
 	*
-	* @param string $message
+	* @param array|string $message
 	* @return FORM_FIELD
 	*/
 	public function required($message=null) {
-		$this->addValidator(array('FORM_FIELD', 'validatorRequired'), null, $message);
+		if (!isset($message)) {
+			$message = array(
+				'en' => "Field {$this->name()} is required.",
+				'fr' => "Le champ {$this->name()} est requis."
+			);
+		}
+
+		$this->addValidator(FORM_VALIDATOR::$required, null, $message);
 		return $this;
 	}
 
 	/**
-	* Returns a message if the value is empty
+	* Set a validator for email matching
 	*
-	* @param string $value
-	* @param FORM_FIELD $field
+	* @param array|string $message
+	* @return FORM_FIELD
 	*/
-	public static function validator_required($value, $field) {
-		if (empty($value)) {
-			return "Field {$field->name()} is required.";
+	public function validateEmail($message=null) {
+		if (!isset($message)) {
+			$message = array(
+				'en' => "Field {$this->name()} is not a valid email.",
+				'fr' => "Le champ {$this->name()} n'est pas un courriel valide."
+			);
 		}
-		return null;
+
+		$this->addValidator(FORM_VALIDATOR::$email, null, $message);
+		return $this;
 	}
 
 	/************************
