@@ -26,7 +26,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	*
 	* @var string
 	*/
-	protected $default_value, $posted_value;
+	protected $default_value, $posted_value, $posted_raw_value;
 
 	/**
 	* An array of validators to be run on validate()
@@ -36,6 +36,15 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	* @var array
 	*/
 	protected $validators = array();
+
+	/**
+	* An array of formatters to be run on loadPostedValue()
+	*
+	* Each element is an array with the keys 'func' and 'args'
+	*
+	* @var array
+	*/
+	protected $formatters = array();
 
 
 	/*******************
@@ -93,6 +102,15 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	}
 
 	/**
+	* Return the posted raw (before formatting) value
+	*
+	* @return string
+	*/
+	public function getPostedRawValue() {
+		return $this->posted_raw_value;
+	}
+
+	/**
 	* Set a default value
 	*
 	* @param string $value
@@ -110,7 +128,24 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	* @return FORM_FIELD
 	*/
 	public function setPostedValue($value) {
-		$this->posted_value = $value;
+		$this->posted_raw_value = $value;
+
+		$formatted_value = $value;
+
+		foreach ($this->formatters as $formatter) {
+			if (!is_callable($formatter['func'])) {
+				$formatter_str = !is_string($formatter['func']) ? var_export($formatter['func'], true) : $formatter['func'];
+				throw new FormInvalidFormatter("Formatter is not callable: {$formatter_str}", $this, $formatter);
+			}
+
+			$arguments = array_merge(array($formatted_value, $this), (array)$formatter['args']);
+
+			$formatted_value = call_user_func_array($formatter['func'], $arguments);
+		}
+
+		$this->posted_value = $formatted_value;
+
+
 		return $this;
 	}
 
@@ -268,6 +303,56 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 		$this->addValidator(FORM_VALIDATOR::$email, null, $message);
 		return $this;
 	}
+
+
+	/******************
+	 **  FORMATTERS  **
+	 ******************/
+
+	 /**
+	 * Add a formatter to this field, including option arguments array
+	 *
+	 * @param callable $formatter
+	 * @param array $args
+	 * @return FORM_FIELD
+	 */
+	 public function addFormatter($formatter, $args=array()) {
+		 $this->formatters[] = array(
+				'func' => $formatter,
+				'args' => $args
+		 );
+		 return $this;
+	 }
+
+	 /**
+	 * Remove all formatters associated to this field
+	 *
+	 * @return FORM_FIELD
+	 */
+	 public function clearFormatters() {
+		 $this->formatters = array();
+		 return $this;
+	 }
+
+	 /**
+	 * Return all formatters
+	 *
+	 * @return array
+	 */
+	 public function getAllFormatters() {
+		 return $this->formatters;
+	 }
+
+	 /**
+	 * @param mixed $left
+	 * @param mixed $right
+	 * @param mixed $charlist
+	 */
+	 public function formatTrim($left=true, $right=true, $charlist=null) {
+		 $arguments = func_get_args();
+		 $this->addFormatter(FORM_FORMATTER::$trim, $arguments);
+		 return $this;
+	 }
 
 	/************************
 	 **  FIELD ATTRIBUTES  **

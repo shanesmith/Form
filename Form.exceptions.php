@@ -77,3 +77,21 @@ class FormInvalidValidator extends FormException {
 	}
 
 }
+
+/**
+* An invalid formatter was invoked
+*/
+class FormInvalidFormatter extends FormException {
+
+	private $formatter;
+
+	public function __construct($message, $element=null, $formatter=null) {
+		$this->formatter = $formatter;
+		parent::__construct($message, $element);
+	}
+
+	public function getFormatter() {
+		return $this->formatter;
+	}
+
+}
