@@ -59,6 +59,14 @@ class FORM extends FORM_FIELDSET {
 	 */
 	protected $elements = array();
 
+	/**
+	* A list of all errors on this form,
+	* keyed by element names
+	*
+	* @var array
+	*/
+	protected $errors = array();
+
 
 	/*****************
 	 **  CONSTANTS  **
@@ -261,6 +269,88 @@ class FORM extends FORM_FIELDSET {
 		return isset($this->elements[$name]);
 	}
 
+	/**
+	* Add an error message for the given element name
+	* in the errors list
+	*
+	* @param string $element_name
+	* @param string|array $error
+	* @return FORM
+	*/
+	public function addError($element_name, $error) {
+		$processed_error = array();
+		$this->process_languaged_argument($processed_error, $error);
+		$this->errors[$element_name] = $processed_error;
+		return $this;
+	}
+
+	/**
+	* Return the full list of errors,
+	* keyed by element names
+	*
+	* @return array
+	*/
+	public function getAllErrors() {
+		return $this->errors;
+	}
+
+	/**
+	* Get the error message for the specified element, if any,
+	* keyed by language
+	*
+	* @param string $element
+	* @return array
+	*/
+	public function getErrorByElementName($element) {
+		return $this->errors[$element];
+	}
+
+	/**
+	* Remove all previously set errors
+	*
+	* @return FORM
+	*/
+	public function clearAllErrors() {
+		$this->errors = array();
+		return $this;
+	}
+
+	/**
+	* Clear the error set for the specified element, if any
+	*
+	* @param string $element
+	* @return FORM
+	*/
+	public function clearErrorByElementName($element) {
+		unset($this->errors[$element]);
+		return $this;
+	}
+
+	/**
+	* Returns whether the form has any errors set
+	*
+	* @return boolean
+	*/
+	public function hasErrors() {
+		return !empty($this->errors);
+	}
+
+	/**
+	* Returns whether the specified element has an error set
+	*
+	* @param string $element
+	* @return boolean
+	*/
+	public function hasErrorByElementName($element) {
+		return !empty($this->errors[$name]);
+	}
+
+	/**
+	* Load all values from the passed arrays to the defined fields
+	*
+	* @param array $post
+	* @return FORM
+	*/
 	public function loadPostedValues(array $post) {
 		foreach ($post as $name => $value) {
 			$elem = $this->getElement($name);

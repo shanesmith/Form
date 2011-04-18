@@ -37,12 +37,6 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	*/
 	protected $validators = array();
 
-	/**
-	* An array of error or warning messages, usually set by a call to validate()
-	*
-	* @var array
-	*/
-	protected $messages = array();
 
 	/*******************
 	 **  CONSTRUCTOR  **
@@ -172,7 +166,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	* @return boolean
 	*/
 	public function validate() {
-		$this->clearMessages();
+		$this->clearError();
 
 		$value = $this->getValue();
 
@@ -184,52 +178,58 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 
 			$arguments = array_merge(array($value, $this), (array)$validator['args']);
 
-			$message = call_user_func_array($validator['func'], $arguments);
+			$valid = call_user_func_array($validator['func'], $arguments);
 
-			if ($message) {
-				$this->addMessage(isset($validator['msg']) ? $validator['msg'] : $message);
+			if (!$valid) {
+				$this->setError($validator['msg']);
+				return false;
 			}
+
 		}
 
-		return !$this->hasMessages();
+		return true;
 	}
 
 	/**
-	* Return an array of all messages set after a validate() call
+	* Return the language-keyed array of error messages, if any were set by validate()
 	*
 	* @return array
 	*/
-	public function getMessages() {
-		return $this->messages;
+	public function getError() {
+		$name = $this->name();
+		return $this->form()->getErrorByElementName($name);
 	}
 
 	/**
-	* Returns whether messages have been set by a validate() call
+	* Returns whether the field has an error from running validate()
 	*
 	* @return boolean
 	*/
-	public function hasMessages() {
-		return !empty($this->messages);
+	public function hasError() {
+		$name = $this->name();
+		return $this->form()->hasErrorByElementName($name);
 	}
 
 	/**
-	* Append a message to the list, usually used by validate()
+	* Set an error for this field, usually used by validate()
 	*
-	* @param string $message
+	* @param string $error
 	* @return FORM_FIELD
 	*/
-	public function addMessage($message) {
-		$this->messages[] = $message;
+	public function setError($error) {
+		$name = $this->name();
+		$this->form()->addError($name, $error);
 		return $this;
 	}
 
 	/**
-	* Set the message list to empty
+	* Unset the error, if any
 	*
 	* @return FORM_FIELD
 	*/
-	public function clearMessages() {
-		$this->messages = array();
+	public function clearError() {
+		$name = $this->name();
+		$this->form()->clearErrorByElementName($name);
 		return $this;
 	}
 
