@@ -142,6 +142,16 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	}
 
 	/**
+	* Remove all validators
+	*
+	* @return FORM_FIELD
+	*/
+	public function clearValidators() {
+		$this->validators = array();
+		return $this;
+	}
+
+	/**
 	* Return an array of all validators.
 	*
 	* Each element is an array with the keys 'func', 'args' and 'msg'
