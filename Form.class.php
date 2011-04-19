@@ -376,7 +376,9 @@ class FORM extends FORM_FIELDSET {
 	*/
 	public static function _div_renderer($form, array $languages) {
 		$attributes = $form->getAttributesString();
-		return "<form {$attributes}>" . $form->renderAllChildren($languages) . "</form>";
+		$errors = $form->renderErrorList($languages);
+		$children = $form->renderAllChildren($languages);
+		return "<form {$attributes}>" . $errors . $children . "</form>";
 	}
 
 	/**
