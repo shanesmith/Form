@@ -1,5 +1,5 @@
 <?php
-	require_once '../Form.class.php';
+	require_once '../../Form.class.php';
 
 	$items = array(
 		1 => "That NSERC’s budget for 'basic' research (i.e. Discovery Grants) be increased",

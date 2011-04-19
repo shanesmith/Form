@@ -2,7 +2,7 @@
 
 include_once 'CAP.inc.php';
 include_once 'Medal.class.php';
-include_once '../Form.class.php';
+include_once '../../Form.class.php';
 //include_once 'SQLBuilder.old.class.php';
 include_once 'UPLOAD.class.php';
 
@@ -13,9 +13,9 @@ class NOMINATION_FORM extends FORM {
 	*/
 	protected $nomination;
 
-	function __construct($nomination_id=null, $options=array()) {
+	function __construct($nomination_id=null, $action=null, $method='post', $languages=array(), $default_renderer=FORM::DIV_DEFAULT_RENDERER) {
 		// Setup form
-		parent::__construct('nomination', $options);
+		parent::__construct('nomination', $action, $method, $languages, $default_renderer);
 
 		// Database
 		$cpdb = CAP::CapSiteDB();
@@ -40,15 +40,16 @@ class NOMINATION_FORM extends FORM {
 
 		// Define the major fieldsets
 		$fieldset_medal = 		$this->fieldset('medal')->addClass('top_fieldset');
-		$fieldset_nominator = 	$this->fieldset('nominator', 'Nominator')->addClass('top_fieldset');
+		$fieldset_nominator = $this->fieldset('nominator', 'Nominator')->addClass('top_fieldset');
 		$fieldset_nominee = 	$this->fieldset('nominee', 'Nominee')->addClass('top_fieldset');
-		$fieldset_documents = 	$this->fieldset('documents', 'Required Supporting Documents')->id('documents')->addClass('top_fieldset');
+		$fieldset_documents = $this->fieldset('documents', 'Required Supporting Documents')->setID('documents')->addClass('top_fieldset');
 		$fieldset_citation = 	$this->fieldset('citation', '300 Word Citation')->addClass('top_fieldset');
 		$fieldset_notes = 		$this->fieldset('notes', "Special Notes")->addClass('top_fieldset');
 		$fieldset_buttons = 	$this->fieldset('buttons')->addClass('top_fieldset');
 
 		// Medal fieldset
-		$fieldset_medal->select('medal', 'Medal', $medals, $this->nomination('medal_id'));
+		$fieldset_medal
+			->select('medal', 'Medal', $medals, $this->nomination('medal_id'));
 
 		// Nominator fieldset
 		$fieldset_nominator
