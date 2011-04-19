@@ -346,15 +346,7 @@ abstract class FORM_ELEMENT {
 	* @return string
 	*/
 	public function render($lang=null, $renderer=null) {
-		if (!isset($lang)) {
-			$lang = $this->form()->getLanguages();
-		} else{
-			if (is_string($lang)) $lang = array($lang);
-
-			if (!$this->form()->areValidLanguages($lang, $invalid)) {
-				throw new FormInvalidLanguageException(null, $invalid, $this);
-			}
-		}
+		$lang = $this->resolve_lang($lang);
 
 		if (!is_callable($renderer)) {
 			$renderer = $this->getRenderer();
@@ -442,6 +434,32 @@ abstract class FORM_ELEMENT {
 
 		return $current;
 
+	}
+
+	/**
+	* Makes sure it returns an array of valid languages.
+	*
+	* If null is passed, the array of valid languages is returned.
+	*
+	* If a string is passed, it checked for validity and returned as a one-item array.
+	*
+	* If an array is passed, each item is validated and the whole array is returned.
+	*
+	* @param mixed $lang
+	* @return array
+	*/
+	public function resolve_lang($lang=null) {
+		if (!isset($lang)) {
+			return $this->form()->getLanguages();
+		} else{
+			if (is_string($lang)) $lang = array($lang);
+
+			if (!$this->form()->areValidLanguages($lang, $invalid)) {
+				throw new FormInvalidLanguageException(null, $invalid, $this);
+			}
+
+			return $lang;
+		}
 	}
 
 	/**
