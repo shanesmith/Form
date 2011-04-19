@@ -449,6 +449,93 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 		return $valid;
 	}
 
+	/**
+	* Returns true if at least one of its children, including sub-fieldset's chilren if $recurse,
+	* has an error, false otherwise
+	*
+	* @param boolean $recurse
+	* @return boolean
+	*/
+	public function hasErrors($recurse=true) {
+		foreach ($this->getAllChildren() as $child) {
+			if ($child instanceof FORM_FIELDSET && $recurse) {
+				if ($child->hasError()) return true;
+			}
+			elseif ($child instanceof FORM_FIELD)  {
+				if ($child->hasError()) return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	* Synonym for hasErrors()
+	*
+	* @see hasErrors()
+	* @param boolean $recurse
+	* @return boolean
+	*/
+	public function hasError($recurse=true) {
+		return $this->hasErrors($recurse);
+	}
+
+	/**
+	* Returns true if there are no errors
+	*
+	* @see hasErrors()
+	* @param boolean $recurse
+	* @return boolean
+	*/
+	public function isValid($recurse=true) {
+		return !$this->hasErrors($recurse);
+	}
+
+	/**
+	* Returns an element name keyed array of all errors found in the fields
+	* of this fieldset.
+	*
+	* Each element is a language keyed array of error messages.
+	*
+	* @param boolean $recurse
+	* @return array
+	*/
+	public function getAllErrors($recurse=true) {
+		$errors = array();
+
+		foreach ($this->getAllChildren() as $child) {
+			if ($child instanceof FORM_FIELDSET && $recurse) {
+				$errors = array_merge($errors, $child->getAllErrors(true));
+			}
+			elseif ($child instanceof FORM_FIELD) {
+				$errors[$child->name()] = $child->getError();
+			}
+		}
+
+		return $errors;
+	}
+
+	/**
+	* Returns an element name keyed array of all errors found in the fields
+	* of this fieldset, where each item is the error message in the specified language
+	*
+	* @param array|string $lang
+	* @param boolean $recurse
+	* @return array
+	*/
+	public function getAllErrorsByLang($lang, $recurse=true) {
+		if (!$this->form()->isValidLanguage($lang)) {
+			throw new FormInvalidLanguageException("The language {$lang} is invalid", $lang, $this);
+		}
+
+		$errors = $this->getAllErrors($recurse);
+
+		foreach ($errors as $elem => $err) {
+			$errors[$elem] = $err[$lang];
+		}
+
+		return $errors;
+	}
+
 
 	/*****************
 	 **  RENDERING  **
@@ -547,6 +634,33 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 		}
 
 		return $render;
+	}
+
+	/**
+	* Return the list of errors found in this fieldset as an html list
+	*
+	* @param string|array $languages
+	* @param boolean $recurse
+	* @return boolean
+	*/
+	public function renderErrorList($languages=null, $recurse=true) {
+		$languages = $this->resolve_lang($languages);
+
+		$list = "<ul>";
+
+		foreach ($this->getAllErrors($recurse) as $error) {
+			$list .= "<li>";
+
+			foreach ($languages as $lang) {
+				$list .= "<span class='{$lang}'>{$error[$lang]}</span>";
+			}
+
+			$list .= "</li>";
+		}
+
+		$list .= "</ul>";
+
+		return $list;
 	}
 
 	/**
