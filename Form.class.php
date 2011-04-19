@@ -17,6 +17,7 @@ require_once "Form.Field.Button.class.php";
 require_once "Form.exceptions.php";
 require_once "Form.Validator.class.php";
 require_once "Form.Formatter.class.php";
+require_once "lib/upload/class.upload.php";
 restore_include_path();
 
 /**
