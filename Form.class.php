@@ -354,14 +354,24 @@ class FORM extends FORM_FIELDSET {
 	* @return FORM
 	*/
 	public function loadPostedValues(array $post) {
-		foreach ($post as $name => $value) {
-			$elem = $this->getElement($name);
-			if ($elem) {
-				$elem->setPostedValue($value);
+		$it = new AppendIterator();
+
+		$it->append(new ArrayIterator($post));
+
+		foreach ($it as $name => $value) {
+			if (is_array($value)) {
+				$value = self::prefix_keys($name, $value);
+				$it->append(new ArrayIterator($value));
+			} else {
+				$elem = $this->getElement($name);
+				if ($elem) {
+					$elem->setPostedValue($value);
+				}
 			}
 		}
 		return $this;
 	}
+
 
 	/*****************
 	 **  RENDERING  **
@@ -392,5 +402,27 @@ class FORM extends FORM_FIELDSET {
 		return self::_div_renderer($form, $languages);
 	}
 
+
+	/***************
+	 **  HELPERS  **
+	 ***************/
+
+	/**
+	* Returns the given array with each key prefixed with
+	* the given string
+	*
+	* @param string $prefix
+	* @param array $array
+	* @return array
+	*/
+	public static function prefix_keys($prefix, $array) {
+		$proc = array();
+
+		foreach ($array as $key => $value) {
+			$proc["{$prefix}[{$key}]"] = $value;
+		}
+
+		return $proc;
+	}
 }
 
