@@ -236,6 +236,21 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	}
 
 	/**
+	* Return the error in the specified language, if any were set
+	*
+	* @param string $lang
+	* @return string
+	*/
+	public function getErrorByLang($lang) {
+		if ($this->form()->isValidLanguage($lang)) {
+			throw new FormInvalidLanguageException("Language {$lang} is invalid.", $lang, $this);
+		}
+
+		$error = $this->getError();
+		return $error[$lang];
+	}
+
+	/**
 	* Returns whether the field has an error from running validate()
 	*
 	* @return boolean
@@ -243,6 +258,15 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	public function hasError() {
 		$name = $this->name();
 		return $this->form()->hasErrorByElementName($name);
+	}
+
+	/**
+	* Returns whether the field is valid (ie: has no errors)
+	*
+	* @return boolean
+	*/
+	public function isValid() {
+		return !$this->hasError();
 	}
 
 	/**
