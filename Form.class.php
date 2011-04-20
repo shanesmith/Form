@@ -349,12 +349,14 @@ class FORM extends FORM_FIELDSET {
 	}
 
 	/**
-	* Load all values from the passed arrays to the defined fields
+	* Load all values from the passed array to the defined fields, optionally
+	* including a second parameter for uploaded files
 	*
 	* @param array $post
+	* @param array $files
 	* @return FORM
 	*/
-	public function loadPostedValues(array $post) {
+	public function loadPostedValues(array $post, array $files=array()) {
 		$it = new AppendIterator();
 
 		$it->append(new ArrayIterator($post));
@@ -370,6 +372,73 @@ class FORM extends FORM_FIELDSET {
 				}
 			}
 		}
+
+		if (!empty($files)) {
+			$this->loadUploadedFiles($files);
+		}
+
+		return $this;
+	}
+
+	/**
+	* Load all file information from an array formatted as $_FILES
+	*
+	*	Note that the $_FILES array is formatted oddly when field names
+	* are of the form arr[a]. arr[b][c], etc...
+	*
+	* $_FILES = array(
+	*
+	*		'basic' => array(
+	*			'name' => "...",
+	* 		'size' => "...",
+	* 		...
+	* 	),
+	*
+	* 	'arr' => array(
+	*			'name' => array(
+	*				'a' => "...",
+	* 			'b' => array(
+	*					'c' => "..."
+	* 			)
+	* 		),
+	*			'size' => array(
+	*				'a' => "...",
+	* 			'b' => array(
+	*					'c' => "..."
+	* 			)
+	* 		),
+	* 		...
+	* 	)
+	* )
+	*
+	* @param array $files
+	* @return FORM_FILE
+	*/
+	public function loadUploadedFiles(array $files) {
+		$it = new AppendIterator();
+
+		$it->append(new ArrayIterator($files));
+
+		foreach ($it as $name => $info) {
+			if (is_array($info['name'])) {
+				// field names are array-based (field[a][b])
+				// so we flatten the oddly set information
+				// and append it to the iterator
+				$more = array();
+				foreach (array_keys($info['name']) as $subname) {
+					foreach (FORM_FILE::$infokeys as $key) {
+						$more["{$name}[{$subname}]"][$key] = $info[$key][$subname];
+					}
+				}
+				$it->append(new ArrayIterator($more));
+			} else {
+				$elem = $this->getElement($name);
+				if ($elem && $elem instanceof FORM_FILE) {
+					$elem->setUploadedFileInfo($info);
+				}
+			}
+		}
+
 		return $this;
 	}
 

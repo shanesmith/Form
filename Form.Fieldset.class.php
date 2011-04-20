@@ -94,11 +94,13 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	*
 	* @param string $name
 	* @param string $label
+	* @param string $target_dir
+	* @param array $options
 	* @return FORM_FILE
 	*/
-	public function file($name, $labels=null) {
+	public function file($name, $labels=null, $target_dir=null, array $options=array()) {
 		$this->form()->setAttribute('enctype', FORM::ENCTYPE_FILE);
-		return $this->addChild(new FORM_FILE($this, $name, $labels));
+		return $this->addChild(new FORM_FILE($this, $name, $labels, $target_dir, $options));
 	}
 
 	/**
@@ -608,6 +610,30 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 		return $errors;
 	}
 
+
+	/***********************
+	 **  FILE PROCESSING  **
+	 ***********************/
+
+	/**
+	* Processes all child file fields, optionally recursive
+	* down other fieldsets
+	*
+	* @param boolean $recurse
+	* @return FORM_FIELDSET
+	*/
+	public function processUploadedFiles($recurse=true) {
+		foreach ($this->getAllChildren() as $child) {
+			if ($child instanceof FORM_FILE) {
+				$child->process();
+			}
+			elseif ($child instanceof FORM_FIELDSET && $recurse) {
+				$child->processUploadedFiles(true);
+			}
+		}
+
+		return $this;
+	}
 
 	/*****************
 	 **  RENDERING  **

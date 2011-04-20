@@ -95,3 +95,26 @@ class FormInvalidFormatter extends FormException {
 	}
 
 }
+
+/**
+* An invalid processor was invoked
+*/
+class FormInvalidProcessor extends FormException {
+
+	private $processor;
+
+	public function __construct($message, $element=null, $processor=null) {
+		$this->processor = $processor;
+		parent::__construct($message, $element);
+	}
+
+	public function getProcessor() {
+		return $this->processor;
+	}
+
+}
+
+/**
+* An error occured while processing an uploaded file
+*/
+class FormFileUploadError extends FormException { }
