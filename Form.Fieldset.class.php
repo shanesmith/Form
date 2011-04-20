@@ -209,6 +209,17 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	}
 
 	/**
+	* Returns whether this fieldset, or any descendant fieldsets,
+	* holds the named child
+	*
+	* @param string $name
+	* @return boolean
+	*/
+	public function hasChildRecursive($name) {
+		return (bool)$this->getChildRecursive($name);
+	}
+
+	/**
 	 * Remove and return the named element from this fieldset (and the form)
 	 *
 	 * If there are no child of the given name, then null is returned
@@ -225,6 +236,25 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	}
 
 	/**
+	 * Remove and return the named element from this fieldset,
+	 * or any descendant fieldsets, and the form
+	 *
+	 * If there are no child of the given name, then null is returned
+	 *
+	 * @param string $name
+	 * @returns FORM_ELEMENT
+	 */
+	public function removeChildRecursive($name) {
+		$elem = $this->getChildRecursive($name);
+
+		if ($elem) {
+			$elem->parent()->removeChild($name);
+		}
+
+		return $elem;
+	}
+
+	/**
 	 * Return the named child element if it exists, null otherwise
 	 *
 	 * @param string $name
@@ -237,8 +267,22 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	}
 
 	/**
+	* Return the named child element if it exists in this fieldset or
+	* any descendant fieldsets, null otherwise
+	*
+	* @param string $name
+	* @return FORM_FIELDSET
+	*/
+	public function getChildRecursive($name) {
+		// checking ancestory should be faster than drilling down each fieldset
+		$elem = $this->form()->getElement($name);
+		return $elem->hasAncestor($this->name()) ? $elem : null;
+	}
+
+	/**
 	* Get all children, either only names or resolved to actual elements
 	*
+	* @param boolean $resolve
 	* @return array(string|FORM_ELEMENT)
 	*/
 	public function getAllChildren($resolve=true) {
@@ -254,15 +298,16 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it matches the given type (class name), null otherwise
 	 *
 	 * @param string $name
 	 * @param string $type
+	 * @param boolean $recurse
 	 * @returns FORM_ELEMENT
 	 */
-	public function getChildWithTypeCheck($name, $type) {
-		$elem = $this->getChild($name);
+	public function getChildWithTypeCheck($name, $type, $recurse=false) {
+		$elem = $recurse ? $this->getChildRecursive($name) : $this->getChild($name);
 
 		if ($elem && $elem->type() != $type) return null;
 
@@ -270,14 +315,28 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists in this fieldset or under descendant fieldsets
+	 * and if it matches the given type (class name), null otherwise
+	 *
+	 * @param string $name
+	 * @param string $type
+	 * @returns FORM_ELEMENT
+	 */
+	public function getChildWithTypeCheckRecursive($name, $type) {
+		return $this->getChildWithTypeCheck($name, $type, true);
+	}
+
+
+	/**
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_FIELD, null otherwise
 	 *
 	 * @param string $name
+	 * @param boolean $recurse
 	 * @returns FORM_FIELD
 	 */
-	public function getField($name) {
-		$elem = $this->getChild($name);
+	public function getField($name, $recurse=true) {
+		$elem = $recurse ? $this->getChildRecursive($name) : $this->getChild($name);
 
 		if (!($elem instanceof FORM_FIELD)) return null;
 
@@ -285,146 +344,159 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_FIELDSET, null otherwise
 	 *
 	 * @param string $name
+	 * @param boolean $recurse
 	 * @returns FORM_FIELDSET
 	 */
-	public function getFieldset($name) {
-		return $this->getChildWithTypeCheck($name, 'fieldset');
+	public function getFieldset($name, $recurse=true) {
+		return $this->getChildWithTypeCheck($name, 'fieldset', $recurse);
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_TEXT, null otherwise
 	 *
 	 * @param string $name
+	 * @param boolean $recurse
 	 * @returns FORM_TEXT
 	 */
-	public function getText($name) {
-		return $this->getChildWithTypeCheck($name, 'text');
+	public function getText($name, $recurse=true) {
+		return $this->getChildWithTypeCheck($name, 'text', $recurse);
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_BUTTON, null otherwise
 	 *
 	 * @param string $name
+	 * @param boolean $recurse
 	 * @returns FORM_BUTTON
 	 */
-	public function getButton($name) {
-		return $this->getChildWithTypeCheck($name, 'button');
+	public function getButton($name, $recurse=true) {
+		return $this->getChildWithTypeCheck($name, 'button', $recurse);
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_SUBMIT_BUTTON, null otherwise
 	 *
 	 * @param string $name
+	 * @param boolean $recurse
 	 * @returns FORM_SUBMIT_BUTTON
 	 */
-	public function getSubmitButton($name) {
-		return $this->getChildWithTypeCheck($name, 'submit_button');
+	public function getSubmitButton($name, $recurse=true) {
+		return $this->getChildWithTypeCheck($name, 'submit_button', $recurse);
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_RESET_BUTTON, null otherwise
 	 *
 	 * @param string $name
+	 * @param boolean $recurse
 	 * @returns FORM_RESET_BUTTON
 	 */
-	public function getResetButton($name) {
-		return $this->getChildWithTypeCheck($name, 'reset_button');
+	public function getResetButton($name, $recurse=true) {
+		return $this->getChildWithTypeCheck($name, 'reset_button', $recurse);
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_CHECKBOX, null otherwise
 	 *
 	 * @param string $name
+	 * @param boolean $recurse
 	 * @returns FORM_CHECKBOX
 	 */
-	public function getCheckbox($name) {
-		return $this->getChildWithTypeCheck($name, 'checkbox');
+	public function getCheckbox($name, $recurse=true) {
+		return $this->getChildWithTypeCheck($name, 'checkbox', $recurse);
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_RADIO_LIST, null otherwise
 	 *
 	 * @param string $name
+	 * @param boolean $recurse
 	 * @returns FORM_RADIO_LIST
 	 */
-	public function getRadioList($name) {
-		return $this->getChildWithTypeCheck($name, 'radio_list');
+	public function getRadioList($name, $recurse=true) {
+		return $this->getChildWithTypeCheck($name, 'radio_list', $recurse);
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_FILE, null otherwise
 	 *
 	 * @param string $name
+	 * @param boolean $recurse
 	 * @returns FORM_FILE
 	 */
-	public function getFile($name) {
-		return $this->getChildWithTypeCheck($name, 'file');
+	public function getFile($name, $recurse=true) {
+		return $this->getChildWithTypeCheck($name, 'file', $recurse);
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_HIDDEN, null otherwise
 	 *
 	 * @param string $name
+	 * @param boolean $recurse
 	 * @returns FORM_HIDDEN
 	 */
-	public function getHidden($name) {
-		return $this->getChildWithTypeCheck($name, 'hidden');
+	public function getHidden($name, $recurse=true) {
+		return $this->getChildWithTypeCheck($name, 'hidden', $recurse);
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_INFO, null otherwise
 	 *
 	 * @param string $name
+	 * @param boolean $recurse
 	 * @returns FORM_INFO
 	 */
-	public function getInfo($name) {
-		return $this->getChildWithTypeCheck($name, 'info');
+	public function getInfo($name, $recurse=true) {
+		return $this->getChildWithTypeCheck($name, 'info', $recurse);
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_PASSWORD, null otherwise
 	 *
 	 * @param string $name
+	 * @param boolean $recurse
 	 * @returns FORM_PASSWORD
 	 */
-	public function getPassword($name) {
-		return $this->getChildWithTypeCheck($name, 'password');
+	public function getPassword($name, $recurse=true) {
+		return $this->getChildWithTypeCheck($name, 'password', $recurse);
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_SELECT, null otherwise
 	 *
 	 * @param string $name
+	 * @param boolean $recurse
 	 * @returns FORM_SELECT
 	 */
-	public function getSelect($name) {
-		return $this->getChildWithTypeCheck($name, 'select');
+	public function getSelect($name, $recurse=true) {
+		return $this->getChildWithTypeCheck($name, 'select', $recurse);
 	}
 
 	/**
-	 * Returns the named child element if it exists
+	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_TEXTAREA, null otherwise
 	 *
 	 * @param string $name
+	 * @param boolean $recurse
 	 * @returns FORM_TEXTAREA
 	 */
-	public function getTextarea($name) {
-		return $this->getChildWithTypeCheck($name, 'textarea');
+	public function getTextarea($name, $recurse=true) {
+		return $this->getChildWithTypeCheck($name, 'textarea', $recurse);
 	}
 
 

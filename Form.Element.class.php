@@ -146,6 +146,21 @@ abstract class FORM_ELEMENT {
 	public function parent() { return $this->parent; }
 
 	/**
+	* Returns whether this element has a fieldset
+	* of the given name as an ancestor
+	*
+	* @param string $name
+	* @return boolean
+	*/
+	public function hasAncestor($name) {
+		$parent = $this->parent();
+		while($parent && $parent->name() != $name) {
+			$parent = $parent->parent();
+		}
+		return isset($parent);
+	}
+
+	/**
 	* Return the associated FORM
 	*
 	* @return FORM
