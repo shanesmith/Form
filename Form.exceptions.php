@@ -118,3 +118,5 @@ class FormInvalidProcessor extends FormException {
 * An error occured while processing an uploaded file
 */
 class FormFileUploadError extends FormException { }
+
+class FormDuplicateElementName extends FormException { }

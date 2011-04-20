@@ -228,7 +228,14 @@ class FORM extends FORM_FIELDSET {
 	 * @return FORM_ELEMENT
 	 */
 	public function addElement(FORM_ELEMENT $elem) {
-		$this->elements[$elem->name()] = $elem;
+		$name = $elem->name();
+
+		if ($this->hasElement($name)) {
+			throw new FormDuplicateElementName("An element with name '{$name}' already exists.", $elem);
+		}
+
+		$this->elements[$name] = $elem;
+
 		return $elem;
 	}
 
