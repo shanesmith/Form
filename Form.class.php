@@ -17,6 +17,8 @@ require_once "Form.Field.Button.class.php";
 require_once "Form.exceptions.php";
 require_once "Form.Validator.class.php";
 require_once "Form.Formatter.class.php";
+require_once "Form.Renderer.class.php";
+require_once "Form.Renderer.Div.class.php";
 require_once "lib/upload/class.upload.php";
 restore_include_path();
 
@@ -70,6 +72,13 @@ class FORM extends FORM_FIELDSET {
 	*/
 	protected $errors = array();
 
+	/**
+	* The default FORM_RENDERER class
+	*
+	* @var FORM_RENDERER
+	*/
+	protected $default_renderer;
+
 
 	/*****************
 	 **  CONSTANTS  **
@@ -89,13 +98,6 @@ class FORM extends FORM_FIELDSET {
 	 */
 	const FORM_ATTR_FIELD_PREFIX = '__form-';
 
-	const DIV_DEFAULT_RENDERER = 0;
-	const TABLE_DEFAULT_RENDERER = 1;
-	protected $default_renderers = array(
-		0 => '_div_renderer',
-		1 => '_table_renderer'
-	);
-
 	/*******************
 	 **  CONSTRUCTOR  **
 	 *******************/
@@ -107,14 +109,11 @@ class FORM extends FORM_FIELDSET {
 	 * @param string $action
 	 * @param string $method
 	 * @param array $languages
-	 * @param array $options
 	 */
-	function __construct($id, $action=null, $method='post', $languages=array(), $default_renderer=FORM::DIV_DEFAULT_RENDERER) {
+	function __construct($id, $action=null, $method='post', $languages=array(), FORM_RENDERER $default_renderer=null) {
 		$this->id = $id;
 
 		$this->form = $this;
-
-		$this->setDefaultRenderers($default_renderer);
 
 		$this->attributes = array(
 			'method' => $method,
@@ -125,6 +124,11 @@ class FORM extends FORM_FIELDSET {
 			$this->languages = $languages;
 		}
 
+		if (!$default_renderer) $default_renderer = new FORM_DIV_RENDERER();
+
+		$this->default_renderer = $default_renderer;
+		$this->default_renderer->init($this);
+
 		//$this->options = array_merge($options, array(
 		//	'trim' => true,
 		//));
@@ -133,28 +137,6 @@ class FORM extends FORM_FIELDSET {
 
 		//$this->hidden(self::FORM_ATTR_FIELD_PREFIX."lang", $this->options['lang']);
 
-	}
-
-	/**
-	* Sets the default renderers for the form and its children
-	*
-	* @param int|string $default_renderer
-	*/
-	protected function setDefaultRenderers($default_renderer) {
-		if (is_numeric($default_renderer)) {
-			$class_renderer = true;
-			$default_renderer = $this->default_renderers[$default_renderer];
-		}
-
-		foreach (self::getAllTypes() as $class => $type) {
-			if ($type == 'form') continue;
-
-			$renderer = $class_renderer ? array($class, $default_renderer) : $default_renderer;
-
-			$this->setChildTypeRenderer($type, $renderer);
-		}
-
-		$this->setRenderer(array("FORM", $default_renderer));
 	}
 
 	/*************************
@@ -455,28 +437,33 @@ class FORM extends FORM_FIELDSET {
 	 *****************/
 
 	/**
-	* Default renderer for Forms
+	* Set default sections and renderers for each type at the same time through an array, first keyed by type, then section
 	*
-	* @param FORM $form
-	* @param array $languages
-	* @returs string
+	*	A special type of 'form' can be used to set sections and renderers for the form.
+	*
+	* A special type of 'field' can be used to set sections and renderers for each field child type (won't overwrite other field
+	* types that are specified).
+	*
+	* @param array $type_section_renderer
+	* @return FORM
 	*/
-	public static function _div_renderer($form, array $languages) {
-		$attributes = $form->getAttributesString();
-		$errors = $form->renderErrorList($languages);
-		$children = $form->renderAllChildren($languages);
-		return "<form {$attributes}>" . $errors . $children . "</form>";
-	}
+	public function setDefaultSectionsAndRenderers(array $type_section_renderer) {
 
-	/**
-	* Form rendering doesn't change if table renderer is used
-	*
-	* @param FORM $form
-	* @param array $languages
-	* @return string
-	*/
-	public static function _table_renderer($form, array $languages) {
-		return self::_div_renderer($form, $languages);
+		if (array_key_exists('form', $type_section_renderer)) {
+
+			$section_renderer = $type_section_renderer['form'];
+
+			$sections = array_diff(array_keys($section_renderer), array('container'));
+
+			$this->setSections($sections);
+			$this->setRenderersArray($section_renderer);
+
+			unset($type_section_renderer['form']);
+		}
+
+		$this->setChildTypeSectionsAndRenderers($type_section_renderer);
+
+		return $this;
 	}
 
 

@@ -422,7 +422,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	* @return string
 	*/
 	public function getFieldAttributesString(array $override=array()) {
-		return self::attr2str(array_merge($this->getFieldAttributesArray(), $override));
+		return FORM_RENDERER::attr2str(array_merge($this->getFieldAttributesArray(), $override));
 	}
 
 	/**
@@ -480,10 +480,16 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	/**
 	* Get the element's ID attribute
 	*
+	* @param boolean $create
 	* @return string
 	*/
-	public function getFieldID() {
-		return $this->getFieldAttribute('id');
+	public function getFieldID($create=false) {
+		$id = $this->getFieldAttribute('id');
+		if (empty($id)) {
+			$id = uniqid("form-{$this->type()}-");
+			$this->setFieldID($id);
+		}
+		return $id;
 	}
 
 	/**
@@ -512,126 +518,13 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	* @param array $languages useful mostly for select elements
 	* @return string
 	*/
-	public function render_field(array $languages) {
+	public function fieldHTML(array $languages) {
 		$attributes = $this->getFieldAttributesString(array(
 			'type' => $this->type(),
 			'name' => $this->name(),
 		));
 
 		return "<input {$attributes} />";
-	}
-
-
-	/**
-	* A default renderer for fields
-	*
-	* @param FORM_FIELD $element
-	* @param array $languages
-	* @returns string
-	*/
-	public static function _div_renderer($element, array $languages) {
-		$type = $element->type();
-
-		$name = $element->name();
-
-		$errors = $element->getError();
-
-
-		$attributes = $element->getAttributesArray();
-
-		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$type} form-element-name-{$name}";
-
-		if ($element->hasError()) {
-			$attributes['class'] .= " form-element-has-error";
-		}
-
-		$attributes = self::attr2str($attributes);
-
-
-		$original_field_id = $element->getFieldID();
-
-		if (empty($original_field_id)) {
-			$field_id = uniqid("form-{$type}-");
-			$element->setFieldID($field_id);
-		} else {
-			$field_id = $original_field_id;
-		}
-
-		$labels = $element->getLabels();
-
-
-		$str = "<div {$attributes}>";
-
-		$str .= "\t<label class='form-element-label form-field-label form-field-label-{$type}' for='{$field_id}'>\n";
-
-		foreach ($languages as $lang) {
-			$str .= "\t\t<span class='form-field-label-{$lang} form-field-label-{$type}-{$lang}'>{$labels[$lang]}</span>\n";
-		}
-
-		$str .= "\t</label>\n";
-
-		$field = $element->render_field($languages);
-		$str .= "\t<div class='form-field form-field-{$type}'>{$field}</div>\n";
-
-		if ($element->hasError()) {
-			$str .= "\t<div class='form-error'>\n";
-
-			foreach ($languages as $lang) {
-				$str .= "\t\t<span class='form-error-{$lang}'>{$errors[$lang]}</span>";
-			}
-
-			$str .= "\t</div>\n";
-		}
-
-		$str .= "</div>\n";
-
-		$element->setFieldID($original_field_id);
-
-		return $str;
-	}
-
-	/**
-	* A renderer for fields as table rows
-	*
-	* @param FORM_FIELD $element
-	* @param array $languages
-	* @return string
-	*/
-	public static function _table_renderer($element, array $languages) {
-		if ($element->parent()->type() == "form") {
-			return self::_div_renderer($element, $languages);
-		}
-
-		$type = $element->type();
-
-		$name = $element->name();
-
-		$labels = $element->getLabels();
-
-		$field = $element->render_field($languages);
-
-		$attributes = $element->getAttributesArray();
-
-		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$type} form-element-name-{$name}";
-
-		$attributes = self::attr2str($attributes);
-
-
-		$str = "<tr {$attributes}>\n";
-
-		$str .= "\t<th class='form-element-label form-field-label form-field-label-{$type}'>\n";
-
-		foreach ($languages as $lang) {
-			$str .= "\t\t<span class='form-field-label-{$lang} form-field-label-{$type}-{$lang}'>{$labels[$lang]}</span>\n";
-		}
-
-		$str .= "\t</th>\n";
-
-		$str .= "\t<td class='form-field form-field-{$type}'>{$field}</td>\n";
-
-		$str .= "</tr>";
-
-		return $str;
 	}
 
 }

@@ -17,9 +17,9 @@ class FORM_PASSWORD extends FORM_FIELD {
 	 * @param array $languages
 	 * @return string
 	 */
-	public function render_field(array $languages) {
+	public function fieldHTML(array $languages) {
 		// password fields should not display anything.....
-		return parent::render_field($languages);
+		return parent::fieldHTML($languages);
 	}
 
 }

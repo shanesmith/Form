@@ -79,14 +79,14 @@ class FORM_CHECKBOX extends FORM_FIELD {
 	 * @param array $languages
 	 * @return string
 	 */
-	public function render_field(array $languages) {
+	public function fieldHTML(array $languages) {
 		$this->setFieldAttribute('value', self::$text);
 
 		if ($this->isChecked()) {
 			$this->setFieldAttribute('checked', 'checked');
 		}
 
-		return parent::render_field($languages);
+		return parent::fieldHTML($languages);
 	}
 
 }

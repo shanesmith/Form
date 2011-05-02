@@ -20,11 +20,18 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 
 
 	/**
-	 * Callable of renderers keyed by field type
+	 * Callable of renderers keyed by field type, then section
 	 *
 	 * @var array
 	 */
 	protected $child_type_renderers = array();
+
+	/**
+	* Sections keyed by field type
+	*
+	* @var array
+	*/
+	protected $child_type_sections = array();
 
 
 	/********************
@@ -136,8 +143,10 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string $default
 	* @return FORM_RADIO_LIST
 	*/
-	public function radio_list($name, $labels=null, $default=null) {
-		return $this->addChild(new FORM_RADIO_LIST($this, $name, $labels, $default));
+	public function radio($unique_name, $radio_name, $labels=null, $default=null) {
+		$radio = $this->addChild(new FORM_RADIO($this, $unique_name, $radio_name, $labels, $default));
+		$this->form()->addToRadioList($radio_name, $unique_name);
+		return $radio;
 	}
 
 	/**
@@ -592,7 +601,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* Returns an element name keyed array of all errors found in the fields
 	* of this fieldset, where each item is the error message in the specified language
 	*
-	* @param array|string $lang
+	* @param string $lang
 	* @param boolean $recurse
 	* @return array
 	*/
@@ -635,44 +644,292 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 		return $this;
 	}
 
+
+	/****************
+	 **  SECTIONS  **
+	 ****************/
+
+	/**
+	* Set a sections list by type(s)
+	*
+	* @param string|array $types
+	* @param string|array $sections
+	* @return FORM_FIELDSET
+	*/
+	public function setChildTypeSections($types, $sections) {
+		foreach ((array)$types as $t) {
+			$this->child_type_sections[$t] = (array)$sections;
+		}
+		return $this;
+	}
+
+	/**
+	* Set sections list by an array keyed by types
+	*
+	* @param array $type_sections
+	* @return FORM_FIELDSET
+	*/
+	public function setChildTypeSectionsArray(array $type_sections) {
+		foreach ($type_sections as $type => $sections) {
+			$this->setChildTypeSections($type, $sections);
+		}
+		return $this;
+	}
+
+	/**
+	* Set the sections list for the specified types to the parent's resolved sections list
+	*
+	* @param string|array $types
+	* @return FORM_FIELDSET
+	*/
+	public function inheritChildTypeSections($types) {
+		if ($this->parent()) {
+			$parent = $this->parent();
+			foreach ((array)$types as $t) {
+				$this->setChildTypeSections($t, $parent->getChildTypeSectionsRecurse($t));
+			}
+		}
+		return $this;
+	}
+
+	/**
+	* Add the specified section(s) to the end of the current sections
+	* list of the given type(s)
+	*
+	* @param string|array $types
+	* @param string|array $sections
+	* @return FORM_FIELDSET
+	*/
+	public function addChildTypeSections($types, $sections) {
+		foreach ((array)$types as $t) {
+			$this->addChildTypeSectionsLast($t, $sections);
+		}
+		return $this;
+	}
+
+	/**
+	* Add the specified section(s) to the end of the current sections
+	* list of the given type(s)
+	*
+	* @param string|array $types
+	* @param string|array $sections
+	* @return FORM_FIELDSET
+	*/
+	public function addChildTypeSectionsLast($types, $sections) {
+		foreach ((array)$types as $t) {
+			$offset = count($this->getChildTypeSections($t));
+			$this->addChildTypeSectionsAt($t, $offset, $sections);
+		}
+		return $this;
+	}
+
+	/**
+	* Add the specified section(s) to the start of the current sections
+	* list of the given type(s)
+	*
+	* @param string|array $types
+	* @param string|array $sections
+	* @return FORM_FIELDSET
+	*/
+	public function addChildTypeSectionsFirst($types, $sections) {
+		$this->addChildTypeSectionsAt($types, 0, $sections);
+		return $this;
+	}
+
+	/**
+	* Add the specified section(s) after the given section in the current sections
+	* list of the given type(s)
+	*
+	* @param string|array $types
+	* @param string $after
+	* @param string|array $sections
+	* @return FORM_FIELDSET
+	*/
+	public function addChildTypeSectionsAfter($type, $after, $sections) {
+		foreach ((array)$types as $t) {
+			$offset = array_search($after, $this->getChildTypeSections($t)) + 1;
+			$this->addChildTypeSectionsAt($t, $offset, $sections);
+		}
+		return $this;
+	}
+
+	/**
+	* Add the specified section(s) before the given section in the current sections
+	* list of the given type(s)
+	*
+	* @param string|array $types
+	* @param string $before
+	* @param string|array $sections
+	* @return FORM_FIELDSET
+	*/
+	public function addChildTypeSectionsBefore($type, $before, $sections) {
+		foreach ((array)$types as $t) {
+			$offset = array_search($before, $this->getChildTypeSections($t));
+			$this->addChildTypeSectionsAt($t, $offset, $sections);
+		}
+		return $this;
+	}
+
+	/**
+	* Add the specified section(s) at the given offset in the current sections
+	* list of the given type(s)
+	*
+	* @param string|array $types
+	* @param int $offset
+	* @param string|array $sections
+	* @return FORM_FIELDSET
+	*/
+	public function addChildTypeSectionsAt($types, $offset, $sections) {
+		if (!is_numeric($offset)) $offset = count($this->sections);
+		foreach ((array)$types as $t) {
+			array_splice($this->child_type_sections[$t], $offset, 0, $sections);
+		}
+		return $this;
+	}
+
+	/**
+	* Remove the specified section(s) from the given type(s)
+	*
+	* @param string|array $types
+	* @param string|array $sections
+	* @return FORM_FIELDSET
+	*/
+	public function removeChildTypeSections($types, $sections) {
+		foreach ((array)$types as $t) {
+			$diff = array_diff((array)$this->getChildTypeSections($t), (array)$sections);
+			$this->setChildTypeSections($t,	$diff);
+		}
+		return $this;
+	}
+
+	/**
+	* Clear the sections list for each of the given types
+	*
+	* @param string|array $types
+	* @return FORM_FIELDSET
+	*/
+	public function clearChildTypeSections($types) {
+		$this->setChildTypeSections($types, array());
+		return $this;
+	}
+
+	/**
+	* Returns whether each of the given types has the specified sections
+	*
+	* @param string|array $types
+	* @param string|array $sections
+	* @return FORM_FIELDSET
+	*/
+	public function hasChildTypeSections($types, $sections) {
+		$has = true;
+		foreach ((array)$types as $t) {
+			$interset = array_intersect((array)$sections, $this->getChildTypeSections($t));
+			$has &= (count($interset) == count((array)$sections));
+		}
+		return $has;
+	}
+
+	/**
+	* Return the currently set sections list for the specified child type
+	*
+	* @param string $type
+	* @return array
+	*/
+	public function getChildTypeSections($type) {
+		return $this->child_type_sections[$type];
+	}
+
+	/**
+	* Return the sections list for the specified child type, recursing through parents if none
+	*
+	* @param string $type
+	* @return array
+	*/
+	public function getChildTypeSectionsRecurse($type) {
+		$sections = $this->getChildTypeSections($type);
+
+		if (!$sections && $this->parent()) {
+			$sections = $this->parent()->getChildTypeSectionsRecurse($type);
+		}
+
+		return $sections;
+	}
+
+	/**
+	* Return the array of child type sections lists, keyed by child type
+	*
+	*/
+	public function getAllChildTypeSections() {
+		return $this->child_type_sections;
+	}
+
+
 	/*****************
 	 **  RENDERING  **
 	 *****************/
 
 	/**
-	* Set a renderer for all child elements of the specified type,
+	* Set a section renderer for all child elements of the specified type,
 	* which can optionally be an array of types
 	*
 	* @param string|array $type
+	* @param string $section
 	* @param callable $renderer
 	*/
-	public function setChildTypeRenderer($types, $renderer) {
+	public function setChildTypeRenderer($types, $sections, $renderer) {
 		foreach ((array)$types as $t) {
-				$this->child_type_renderers[$t] = $renderer;
+			foreach ((array)$sections as $s) {
+				$this->child_type_renderers[$t][$s] = $renderer;
+			}
 		}
-
 		return $this;
 	}
 
 	/**
-	* Set multiple child renderers by an array, keyed by type
+	* Set multiple child renderers by an array, keyed by type, then section
 	*
 	* @param array $renderers
 	* @return FORM_FIELDSET
 	*/
-	public function setChildTypeRenderersArray(array $renderers) {
-		$this->child_type_renderers = array_merge(
-			$this->child_type_renderers, $renderers
-		);
+	public function setChildTypeRenderersArray(array $type_section_renderers) {
+		foreach ($type_section_renderers as $type => $section_renderers) {
+			$this->setChildTypeRenderersSectionArray($t, $section_renderers);
+		}
 		return $this;
 	}
 
 	/**
-	* Get the renderer set for all children of the specified type.
+	* Set renderers for the given child type through an array, keyed by section
 	*
 	* @param string $type
+	* @param array $section_renderers
+	* @return FORM_FIELDSET
 	*/
-	public function getChildTypeRenderer($type) {
+	public function setChildTypeRenderersSectionArray($type, array $section_renderers) {
+		foreach ($section_renderers as $section => $renderer) {
+			$this->setChildTypeRenderer($type, $section, $renderer);
+		}
+		return $this;
+	}
+
+	/**
+	* Get the renderer set for all children of the specified type and section.
+	*
+	* @param string $type
+	* @param string $section
+	* @return string
+	*/
+	public function getChildTypeRenderer($type, $section) {
+		return $this->child_type_renderers[$type][$section];
+	}
+
+	/**
+	* Get all section renderers for the specified type, keyed by section
+	*
+	* @param string $type
+	* @return array
+	*/
+	public function getChildTypeAllSectionsRenderers($type) {
 		return $this->child_type_renderers[$type];
 	}
 
@@ -681,12 +938,13 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* determined by self and recursive calls to parents until one is found
 	*
 	* @param string $type
+	* @param string section
 	*/
-	public function getChildTypeRendererRecurse($type) {
-		$renderer = $this->getChildTypeRenderer($type);
+	public function getChildTypeRendererRecurse($type, $section) {
+		$renderer = $this->getChildTypeRenderer($type, $section);
 
 		if (!$renderer && $this->parent()) {
-			$renderer = $this->parent()->getChildTypeRendererRecurse($type);
+			$renderer = $this->parent()->getChildTypeRendererRecurse($type, $section);
 		}
 
 		return $renderer;
@@ -711,11 +969,48 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 		$renderers = $this->getAllChildTypeRenderers();
 
 		if ($this->parent()) {
-			$parent_child_type_renderers = $this->parent()->getAllChildTypeRenderers();
-			$renderers = array_merge($parent_child_type_renderers, $renderers);
+			$parent_child_type_renderers = $this->parent()->getAllChildTypeRenderersRecurse();
+			$renderers = array_merge_recursive($parent_child_type_renderers, $renderers);
 		}
 
 		return $renderers;
+	}
+
+	/**
+	* Set sections and renderers at the same time through an array, keyed first by type, then by section
+	*
+	* A special type of 'field' can be used, which is substituted by all field types
+	*
+	* @param array $type_section_renderer
+	* @return FORM_FIELDSET
+	*/
+	public function setChildTypeSectionsAndRenderers(array $type_section_renderer) {
+
+		foreach ($type_section_renderer as $type => $section_renderer) {
+			if ($type == 'field') continue;
+
+			$sections = array_diff(array_keys($section_renderer), array('container'));
+			$this->setChildTypeSections($type, $sections);
+			$this->setChildTypeRenderersSectionArray($type, $section_renderer);
+		}
+
+		// if there exists the special 'field' type, iterate over all field types
+		// and set sections and renderes if none previously set
+		if (array_key_exists('field', $type_section_renderer)) {
+
+			$section_renderer = $type_section_renderer['field'];
+			$sections = array_diff(array_keys($section_renderer), array('container'));
+
+			foreach (self::getFieldTypes() as $type) {
+				if (!$this->getChildTypeSections($type)) {
+					$this->setChildTypeSections($type, $sections);
+					$this->setChildTypeRenderersSectionArray($type, $section_renderer);
+				}
+			}
+
+		}
+
+		return $this;
 	}
 
 	/**
@@ -726,131 +1021,11 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	public function renderAllChildren($lang=null) {
 		$render = "";
 
-		/** @var FORM_ELEMENT $child */
-		foreach ($this->getAllChildren() as  $child) {
+		foreach ($this->getAllChildren() as $child) {
 			$render .= $child->render($lang);
 		}
 
 		return $render;
-	}
-
-	/**
-	* Return the list of errors found in this fieldset as an html list
-	*
-	* @param string|array $languages
-	* @param boolean $recurse
-	* @return boolean
-	*/
-	public function renderErrorList($languages=null, $recurse=true) {
-		$languages = $this->resolve_lang($languages);
-
-		$list = "<ul>";
-
-		foreach ($this->getAllErrors($recurse) as $error) {
-			$list .= "<li>";
-
-			foreach ($languages as $lang) {
-				$list .= "<span class='{$lang}'>{$error[$lang]}</span>";
-			}
-
-			$list .= "</li>";
-		}
-
-		$list .= "</ul>";
-
-		return $list;
-	}
-
-	/**
-	* A default renderer for fieldsets
-	*
-	* @param FORM_FIELDSET $fieldset
-	* @param array $languages
-	* @returns string
-	*/
-	public static function _div_renderer($fieldset, array $languages) {
-		$labels = $fieldset->getLabels();
-
-		$name = $fieldset->name();
-
-		$elements = $fieldset->renderAllChildren($languages);
-
-		$attributes = $fieldset->getAttributesArray();
-
-		$attributes['class'] .= " form-element-container form-fieldset-container form-fieldset-name-{$name}";
-
-		$attributes = self::attr2str($attributes);
-
-
-		$str  = "<div {$attributes}>\n";
-
-		$str .= "\t<label class='form-element-label form-fieldset-label'>\n";
-
-		foreach ($languages as $lang) {
-			$str .= "\t\t<span class='form-fieldset-label-{$lang}'>{$labels[$lang]}</span>\n";
-		}
-
-		$str .= "\t</label>\n";
-
-		$str .= "\t<div class='form-fieldset'>{$elements}</div>\n";
-
-		$str .= "</div>";
-
-		return $str;
-	}
-
-
-	/**
-	* A fieldset renderer based on tables
-	*
-	* @param FORM_FIELDSET $fieldset
-	* @param array $languages
-	*/
-	public static function _table_renderer($fieldset, array $languages) {
-		$labels = $fieldset->getLabels();
-
-		$name = $fieldset->name();
-
-		$elements = $fieldset->renderAllChildren($languages);
-
-		$attributes = $fieldset->getAttributesArray();
-
-		$attributes['class'] .= " form-element-container form-fieldset-container form-fieldset-name-{$name}";
-
-		$attributes = self::attr2str($attributes);
-
-		$subfieldset = ($fieldset->parent()->type() == 'fieldset');
-
-
-		$str = "";
-
-		if ($subfieldset) {
-			$str .= "<tr {$attributes}>";
-			$str .= "<th class='form-element-label form-fieldset-label'>";
-		} else {
-			$str .= "<table {$attributes}>\n";
-			$str .= "\t<thead class='form-element-label form-fieldset-label'>\n\t\t<tr>\n\t\t\t<th colspan='2'>\n";
-		}
-
-		foreach ($languages as $lang) {
-			$str .= "\t\t<span class='form-fieldset-label-{$lang}'>{$labels[$lang]}</span>\n";
-		}
-
-		if ($subfieldset) {
-			$str .= "</th><td><table>\n";
-		} else {
-			$str .= "\t\t\t</th>\n\t\t</tr>\n\t</thead>\n";
-		}
-
-		$str .= "\t<tbody class='form-fieldset'>\n\t\t{$elements}\n\t</tbody>\n";
-
-		$str .= "</table>\n";
-
-		if ($subfieldset) {
-			$str .= "</td></tr>";
-		}
-
-		return $str;
 	}
 
 }

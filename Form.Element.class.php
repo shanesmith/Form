@@ -54,11 +54,18 @@ abstract class FORM_ELEMENT {
 	protected $attributes = array();
 
 	/**
-	* An optional renderer for this element
+	* An optional list of renderers for this element, keyed by section
 	*
 	* @var callable
 	*/
-	protected $renderer;
+	protected $renderers = array();
+
+	/**
+	* The (optional) set of container sections for this element
+	*
+	* @var array
+	*/
+	protected $sections = array();
 
 	/**
 	* A list of form classes and their string type
@@ -81,6 +88,15 @@ abstract class FORM_ELEMENT {
 		'FORM_TEXTAREA' 			=> 'textarea',
 		'FORM_SUBMIT_BUTTON'  => 'submit',
 		'FORM_RESET_BUTTON' 	=> 'reset',
+	);
+
+	/**
+	* A list of all Field types (ie: subclasses of FORM_FIELD)
+	*
+	* @var array
+	*/
+	protected static $field_types = array(
+		'info', 'button', 'checkbox', 'file', 'hidden', 'password', 'radio', 'radio_list', 'select', 'text', 'textarea', 'submit', 'reset'
 	);
 
 
@@ -136,6 +152,15 @@ abstract class FORM_ELEMENT {
 	*/
 	public static function getAllTypes() {
 		return self::$types;
+	}
+
+	/**
+	* Return a list of all Field types
+	*
+	* @return array
+	*/
+	public static function getFieldTypes() {
+		return self::$field_types;
 	}
 
 	/**
@@ -274,7 +299,7 @@ abstract class FORM_ELEMENT {
 	* @return string
 	*/
 	public function getAttributesString(array $override=array()) {
-		return self::attr2str(array_merge($this->getAttributesArray(), $override));
+		return FORM_RENDERER::attr2str(array_merge($this->getAttributesArray(), $override));
 	}
 
 	/**
@@ -332,81 +357,283 @@ abstract class FORM_ELEMENT {
 	 *****************/
 
 	/**
-	* Sets the renderer for this specific element
+	* Render this element (in fact calls rendering on the container)
 	*
-	* @param callback $renderer
+	* @param string|array $lang
+	* @return string
+	*/
+	public function render($lang) {
+		return $this->renderSection('container', $lang);
+	}
+
+	/**
+	* Render this element's specified section by calling the renderer
+	*
+	* @param string $section
+	* @param string|array $lang
+	* @return string
+	*/
+	public function renderSection($section, $lang) {
+		$lang = $this->resolve_lang($lang);
+
+		$renderer = $this->getRendererResolved($section);
+
+		if ($section == 'container') {
+			$rendered_sections = $this->renderAllSections($lang);
+		}
+
+		$output = call_user_func($renderer, $this, $lang, $rendered_sections);
+
+		return $output;
+	}
+
+	/**
+	* Renders all sections and returns its concatenation
+	*
+	* @param string|array $lang
 	* @return FORM_ELEMENT
 	*/
-	public function setRenderer($renderer) {
-		$this->renderer = $renderer;
+	public function renderAllSections($lang) {
+		$str = "";
+
+		foreach ($this->getSectionsResolved() as $section) {
+			$str .= $this->renderSection($section, $lang);
+		}
+
+		return $str;
+	}
+
+	/**
+	* Set a renderer for the specified section
+	*
+	* @param string $section
+	* @param callable $renderer
+	* @return FORM_ELEMENT
+	*/
+	public function setRenderer($section, $renderer) {
+		$this->renderers[$section] = $renderer;
 		return $this;
 	}
 
 	/**
-	* Get the renderer for this specific element,
-	* or null if none set
+	* Set multiple renderers by an array, keyed by sections
 	*
+	* @param array $section_renderers
+	* @return FORM_ELEMENT
+	*/
+	public function setRenderersArray(array $section_renderers) {
+		foreach ($section_renderers as $section => $renderer) {
+			$this->setRenderer($section, $renderer);
+		}
+		return $this;
+	}
+
+	/**
+	* Return the renderer for the specified section
+	*
+	* @param string $section
 	* @return callable
 	*/
-	public function getRenderer() {
-		return $this->renderer;
+	public function getRenderer($section) {
+		return $this->renderers[$section];
 	}
 
 	/**
-	* Render this element, optionally passing a renderer
-	* that will override the renderer chain
+	* Return the array for all section renderers, keyed by section
 	*
-	* @param string|array $lang
-	* @param callable $renderer
-	* @return string
+	* @return array
 	*/
-	public function render($lang=null, $renderer=null) {
-		$lang = $this->resolve_lang($lang);
+	public function getAllRenderers() {
+		return $this->renderers;
+	}
 
-		if (!is_callable($renderer)) {
-			$renderer = $this->getRenderer();
+	/**
+	* Get the renderer for this element, resolved through parents if none specifically set
+	*
+	* @param string $section
+	* @return callable
+	*/
+	public function getRendererResolved($section) {
+		$renderer = $this->getRenderer($section);
 
-			if (!is_callable($renderer) && $this->parent()) {
-				$renderer = $this->parent()->getChildTypeRendererRecurse($this->type());
-			}
+		if (!$renderer && $this->parent()) {
+			$renderer = $this->parent()->getChildTypeRendererRecurse($this->type(), $section);
 		}
 
-		if (!is_callable($renderer)) {
-			throw new FormNoRendererFound(null, $this);
+		return $renderer;
+	}
+
+	/**
+	* Get all section renderers for this element, resolved through parents if
+	* none specifically set, as an array keyed by sections
+	*
+	* @return array
+	*/
+	public function getAllRenderersResolved() {
+		$all_renderers = array();
+
+		$container_renderer = $this->getRendererResolved('container');
+		if ($container_renderer) {
+			$all_renderers['container'] = $container_renderer;
 		}
 
-		return call_user_func($renderer, $this, $lang);
+		foreach ($this->getSectionsResolved() as $section) {
+			$all_renderers[$section] = $this->getRendererResolved($section);
+		}
+
+		return $all_renderers;
 	}
 
 
+	/****************
+	 **  SECTIONS  **
+	 ****************/
+
 	/**
-	* A default renderer for this element type
+	* Add a section to the end of the current section list
 	*
-	* @param FORM_ELEMENT $element
-	* @param array $languages
-	* @return string
+	* @param string|array $sections
+	* @return FORM_ELEMENT
 	*/
-	abstract public static function _div_renderer($element, array $languages);
-	abstract public static function _table_renderer($element, array $languages);
+	public function addSections($sections) {
+		$this->addSectionsLast($sections);
+		return $this;
+	}
+
+	/**
+	* Add a section to the end of the current section list
+	*
+	* @param string|array $sections
+	* @return FORM_ELEMENT
+	*/
+	public function addSectionsLast($sections) {
+		$offset = count($this->sections);
+		$this->addSectionsAt($offset, $sections);
+		return $this;
+	}
+
+	/**
+	* Add a section to the start of the current section list
+	*
+	* @param string|array $sections
+	* @return FORM_ELEMENT
+	*/
+	public function addSectionsFirst($sections) {
+		$this->addSectionsAt(0, $sections);
+		return $this;
+	}
+
+	/**
+	* Add a section after the specified section in the current section list
+	*
+	* @param string $after
+	* @param string|array $sections
+	* @return FORM_ELEMENT
+	*/
+	public function addSectionsAfter($after, $sections) {
+		$offset = array_search($after, $this->sections) + 1;
+		$this->addSectionsAt($offset, $sections);
+		return $this;
+	}
+
+	/**
+	* Add a section before the specified section in the current section list
+	*
+	* @param string $before
+	* @param string|array $sections
+	* @return FORM_ELEMENT
+	*/
+	public function addSectionsBefore($before, $sections) {
+		$offset = array_search($before, $this->sections);
+		$this->addSectionsAt($offset, $sections);
+		return $this;
+	}
+
+	/**
+	* Add a section at the specified offset in the current section list,
+	* or at the end of the list if the offset is not valid
+	*
+	* @param int $offset
+	* @param string|array $sections
+	* @return FORM_ELEMENT
+	*/
+	public function addSectionsAt($offset, $sections) {
+		if (!is_numeric($offset)) $offset = count($this->sections);
+		array_splice($this->sections, $offset, 0, $sections);
+		return $this;
+	}
+
+	/**
+	* Remove the specified section(s) from the current sections list
+	*
+	* @param string|array $sections
+	* @return FORM_ELEMENT
+	*/
+	public function removeSections($sections) {
+		$this->sections = array_diff($this->sections, (array)$sections);
+		return $this;
+	}
+
+	/**
+	* Returns whether the current sections list contains the specified section(s)
+	*
+	* @param string|array $sections
+	* @return boolean
+	*/
+	public function hasSections($sections) {
+		$interset = array_intersect((array)$sections, $this->sections);
+		return (count($interset) == count($sections));
+	}
+
+	/**
+	* Remove all sections from the current list
+	*
+	* @return FORM_ELEMENT
+	*/
+	public function clearSections() {
+		$this->sections = array();
+		return $this;
+	}
+
+	/**
+	* Set the current sections list to the specified array
+	*
+	* @param array $sections
+	* @return FORM_ELEMENT
+	*/
+	public function setSections(array $sections) {
+		$this->sections = $sections;
+		return $this;
+	}
+
+	/**
+	* Return the current sections list
+	*
+	* @return array
+	*/
+	public function getSections() {
+		return $this->sections;
+	}
+
+	/**
+	* Get the sections list for this element, resolved through parents if none specifically set
+	*
+	* @return array
+	*/
+	public function getSectionsResolved() {
+		$sections = $this->getSections();
+
+		if (empty($sections) && $this->parent()) {
+			$sections = $this->parent()->getChildTypeSectionsRecurse($this->type());
+		}
+
+		return $sections;
+	}
 
 
 	/***************
 	 **  HELPERS  **
 	 ***************/
-
-	/**
-	* Returns the attributes array converted into and html attributes string
-	*
-	* @return string
-	*/
-	public static function attr2str(array $attributes) {
-		$str = "";
-		foreach($attributes as $key=>$value) {
-			if (is_array($value)) $value = implode(' ', $value);
-			$str .= " {$key}='{$value}' ";
-		}
-		return $str;
-	}
 
 	/**
 	* Set the given $current variable to the argument with special language processing.

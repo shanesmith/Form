@@ -42,6 +42,16 @@ class FORM_INFO extends FORM_ELEMENT {
 	}
 
 	/**
+	* Returns the text for the given language
+	*
+	* @param string $lang
+	* @return string
+	*/
+	public function getTextByLang($lang) {
+		return $this->texts[$lang];
+	}
+
+	/**
 	* Sets this info's texts
 	*
 	* @param string|array $texts
@@ -50,102 +60,6 @@ class FORM_INFO extends FORM_ELEMENT {
 	public function setTexts($texts) {
 		$this->process_languaged_argument($this->texts, $texts);
 		return $this;
-	}
-
-	/**
-	* A default renderer for info box
-	*
-	* Simplified version found in FORM_FIELD
-	*
-	* @param FORM_INFO $element
-	* @param array $languages
-	* @returns string
-	*/
-	public static function _div_renderer($element, array $languages) {
-		$name = $element->name();
-
-		$attributes = $element->getAttributesArray();
-
-		$attributes['class'] .= " form-element-container form-info-container form-element-name-{$name}";
-
-		$attributes = self::attr2str($attributes);
-
-		$labels = $element->getLabels();
-
-		$texts = $element->getTexts();
-
-
-		$str = "<div {$attributes}>";
-
-		$str .= "\t<label class='form-element-label form-info-label'>\n";
-
-		foreach ($languages as $lang) {
-			$str .= "\t\t<span class='form-info-label-{$lang}'>{$labels[$lang]}</span>\n";
-		}
-
-		$str .= "\t</label>\n";
-
-		$str .= "\t<div class='form-info'>";
-
-		foreach ($languages as $lang) {
-			$str .= "\t\t<span class='form-info-{$lang}'>{$texts[$lang]}</span>\n";
-		}
-
-		$str .= "\t</div>\n";
-
-		$str .= "</div>\n";
-
-		return $str;
-	}
-
-	/**
-	* A renderer for info box in the table format
-	*
-	* Simplified version found in FORM_FIELD
-	*
-	* @param FORM_INFO $element
-	* @param array $languages
-	* @returns string
-	*/
-	public static function _table_renderer($element, array $languages) {
-		if ($element->parent()->type() == "form") {
-			return self::_div_renderer($element, $languages);
-		}
-
-		$name = $element->name();
-
-		$attributes = $element->getAttributesArray();
-
-		$attributes['class'] .= " form-element-container form-info-container form-element-name-{$name}";
-
-		$attributes = self::attr2str($attributes);
-
-		$labels = $element->getLabels();
-
-		$texts = $element->getTexts();
-
-
-		$str = "<tr {$attributes}>\n";
-
-		$str .= "\t<th class='form-element-label form-info-label'>\n";
-
-		foreach ($languages as $lang) {
-			$str .= "\t\t<span class='form-info-label-{$lang}'>{$labels[$lang]}</span>\n";
-		}
-
-		$str .= "\t</th>\n";
-
-		$str .= "\t<td class='form-info'>";
-
-		foreach ($languages as $lang) {
-			$str .= "\t\t<span class='form-info-{$lang}'>{$texts[$lang]}</span>\n";
-		}
-
-		$str .= "\t</td>\n";
-
-		$str .= "</tr>";
-
-		return $str;
 	}
 
 }

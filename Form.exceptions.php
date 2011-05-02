@@ -43,7 +43,7 @@ class FormInvalidLanguageException extends FormException {
 	* @param FORM_ELEMENT $element
 	* @return FormInvalidLanguageException
 	*/
-	function __construct($message=null, $lang=null, $element=null) {
+	public function __construct($message=null, $lang=null, $element=null) {
 		parent::__construct($message, $element);
 		$this->lang = $lang;
 	}
@@ -51,7 +51,7 @@ class FormInvalidLanguageException extends FormException {
 	/**
 	* @return string
 	*/
-	function getLang() { return $this->lang; }
+	public function getLang() { return $this->lang; }
 
 }
 
@@ -120,3 +120,18 @@ class FormInvalidProcessor extends FormException {
 class FormFileUploadError extends FormException { }
 
 class FormDuplicateElementName extends FormException { }
+
+class FormInvalidRendererClass extends FormException {
+
+	protected $class;
+
+	public function __construct($message, $element=null, $class=null) {
+		parent::__construct($message, $element);
+		$this->class = $class;
+	}
+
+	public function getClass() {
+		return $this->class;
+	}
+
+}
