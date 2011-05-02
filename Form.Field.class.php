@@ -242,7 +242,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	* @return string
 	*/
 	public function getErrorByLang($lang) {
-		if ($this->form()->isValidLanguage($lang)) {
+		if (!$this->form()->isValidLanguage($lang)) {
 			throw new FormInvalidLanguageException("Language {$lang} is invalid.", $lang, $this);
 		}
 
