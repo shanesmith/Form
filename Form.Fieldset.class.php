@@ -747,7 +747,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string|array $sections
 	* @return FORM_FIELDSET
 	*/
-	public function addChildTypeSectionsAfter($type, $after, $sections) {
+	public function addChildTypeSectionsAfter($types, $after, $sections) {
 		foreach ((array)$types as $t) {
 			$offset = array_search($after, $this->getChildTypeSections($t)) + 1;
 			$this->addChildTypeSectionsAt($t, $offset, $sections);
@@ -764,7 +764,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* @param string|array $sections
 	* @return FORM_FIELDSET
 	*/
-	public function addChildTypeSectionsBefore($type, $before, $sections) {
+	public function addChildTypeSectionsBefore($types, $before, $sections) {
 		foreach ((array)$types as $t) {
 			$offset = array_search($before, $this->getChildTypeSections($t));
 			$this->addChildTypeSectionsAt($t, $offset, $sections);
@@ -895,7 +895,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	*/
 	public function setChildTypeRenderersArray(array $type_section_renderers) {
 		foreach ($type_section_renderers as $type => $section_renderers) {
-			$this->setChildTypeRenderersSectionArray($t, $section_renderers);
+			$this->setChildTypeRenderersSectionArray($type, $section_renderers);
 		}
 		return $this;
 	}
