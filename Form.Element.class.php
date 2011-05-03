@@ -82,7 +82,6 @@ abstract class FORM_ELEMENT {
 		'FORM_INFO' 					=> 'info',
 		'FORM_PASSWORD' 			=> 'password',
 		'FORM_RADIO' 					=> 'radio',
-		'FORM_RADIO_LIST' 		=> 'radio_list',
 		'FORM_SELECT' 				=> 'select',
 		'FORM_TEXT' 					=> 'text',
 		'FORM_TEXTAREA' 			=> 'textarea',
@@ -96,7 +95,7 @@ abstract class FORM_ELEMENT {
 	 * @var array
 	 */
 	protected static $field_types = array(
-		'info', 'button', 'checkbox', 'file', 'hidden', 'password', 'radio', 'radio_list', 'select', 'text', 'textarea', 'submit', 'reset'
+		'info', 'button', 'checkbox', 'file', 'hidden', 'password', 'radio', 'select', 'text', 'textarea', 'submit', 'reset'
 	);
 
 

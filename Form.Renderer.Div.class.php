@@ -23,12 +23,6 @@ class FORM_DIV_RENDERER extends FORM_RENDERER {
 				'text'			=> array("FORM_DIV_RENDERER", "renderInfoText")
 			),
 
-			'radio_list' => array(
-				'container' => array("FORM_DIV_RENDERER", "renderRadioListContainer"),
-				'label' 		=> array("FORM_DIV_RENDERER", "renderRadioListLabel"),
-				'radios'	 	=> array("FORM_DIV_RENDERER", "renderRadioListRadios")
-			),
-
 			'field' => array(
 				'container' => array("FORM_DIV_RENDERER", "renderFieldContainer"),
 				'label' 		=> array("FORM_DIV_RENDERER", "renderFieldLabel"),
@@ -133,33 +127,6 @@ class FORM_DIV_RENDERER extends FORM_RENDERER {
 		}
 
 		return "<div class='form-info'>{$texts}</div>";
-	}
-
-
-	/******************
-	 **  RADIO LIST  **
-	 ******************/
-
-	public static function renderRadioListContainer(FORM_RADIO_LIST $radio_list, $languages, $rendered_sections) {
-		$attributes = $radio_list->getAttributesArray();
-		$attributes['class'] .= " form-element-container form-radio_list-container form-element-name-{$radio_list->name()}";
-		$attributes_str = self::attr2str($attributes);
-
-		return "<div {$attributes_str}>{$rendered_sections}</div>";
-	}
-
-	public static function renderRadioListLabel(FORM_RADIO_LIST $radio_list, $languages) {
-		$labels = "";
-		foreach ($languages as $lang) {
-			$labels .= "<span class='form-element-label-{$lang} form-radio_list-label-{$lang}'>{$radio_list->getLabelByLang($lang)}</span>";
-		}
-
-		return "<label class='form-element-label form-radio_list-label'>{$labels}</label>";
-	}
-
-	public static function renderRadioListRadios(FORM_RADIO_LIST $radio_list, $languages) {
-		$radios = $radio_list->renderAllRadios($languages);
-		return "<div class='form-radio_list'>{$radios}</div>";
 	}
 
 

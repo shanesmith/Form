@@ -28,7 +28,7 @@ class FORM_RADIO extends FORM_FIELD {
 	/**
 	 * Constructor
 	 *
-	 * @param FORM_RADIO_LIST $parent
+	 * @param FORM_FIELDSET $parent
 	 * @param string $name
 	 * @param string $text
 	 * @param string|array $labels
