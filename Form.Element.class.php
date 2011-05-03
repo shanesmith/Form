@@ -170,6 +170,13 @@ abstract class FORM_ELEMENT {
 	public function parent() { return $this->parent; }
 
 	/**
+	 * Whether this element's parent is the FORM itself
+	 *
+	 * @return bool
+	 */
+	public function parentIsForm() { return ($this->parent() instanceof FORM); }
+
+	/**
 	 * Returns whether this element has a fieldset
 	 * of the given name as an ancestor
 	 *
