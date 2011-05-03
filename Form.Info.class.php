@@ -35,7 +35,7 @@ class FORM_INFO extends FORM_ELEMENT {
 	/**
 	* Return texts
 	*
-	* @returns array
+	* @return array
 	*/
 	public function getTexts() {
 		return $this->texts;
@@ -55,7 +55,7 @@ class FORM_INFO extends FORM_ELEMENT {
 	* Sets this info's texts
 	*
 	* @param string|array $texts
-	* @returns FORM_INFO
+	* @return FORM_INFO
 	*/
 	public function setTexts($texts) {
 		$this->process_languaged_argument($this->texts, $texts);

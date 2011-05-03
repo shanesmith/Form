@@ -230,7 +230,7 @@ abstract class FORM_ELEMENT {
 	*
 	* @param string $lang
 	* @param string $label
-	* @returns FORM_ELEMENT
+	* @return FORM_ELEMENT
 	*/
 	public function setLabelByLang($lang, $label) {
 		return $this->setLabels(array($lang => $label));
@@ -261,7 +261,7 @@ abstract class FORM_ELEMENT {
 	* Get the specified attribute
 	*
 	* @param string $key
-	* @returns string
+	* @return string
 	*/
 	public function getAttribute($key) {
 		return $this->attributes[$key];
@@ -272,7 +272,7 @@ abstract class FORM_ELEMENT {
 	*
 	* @param string $key
 	* @param string $value
-	* @returns FORM_ELEMENT
+	* @return FORM_ELEMENT
 	*/
 	public function setAttribute($key, $value) {
 		$this->attributes[$key] = $value;
@@ -305,7 +305,7 @@ abstract class FORM_ELEMENT {
 	/**
 	* Get the element's class attribute
 	*
-	* @returns string
+	* @return string
 	*/
 	public function getClass() {
 		return $this->getAttribute('class');

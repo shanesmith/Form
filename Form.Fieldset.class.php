@@ -204,7 +204,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* Add the given element as a child of this fieldset
 	*
 	* @param FORM_ELEMENT $elem
-	* @returns FORM_ELEMENT
+	* @return FORM_ELEMENT
 	*/
 	protected function addChild(FORM_ELEMENT $elem) {
 		$this->children[] = $elem->name();
@@ -215,7 +215,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * Returns whether this fieldset holds the named child
 	 *
 	 * @param string $name
-	 * @returns boolean
+	 * @return boolean
 	 */
 	public function hasChild($name) {
 		return in_array($name, $this->children);
@@ -238,7 +238,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * If there are no child of the given name, then null is returned
 	 *
 	 * @param string $name
-	 * @returns FORM_ELEMENT
+	 * @return FORM_ELEMENT
 	 */
 	public function removeChild($name) {
 		if (!$this->hasChild($name)) return null;
@@ -255,7 +255,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * If there are no child of the given name, then null is returned
 	 *
 	 * @param string $name
-	 * @returns FORM_ELEMENT
+	 * @return FORM_ELEMENT
 	 */
 	public function removeChildRecursive($name) {
 		$elem = $this->getChildRecursive($name);
@@ -271,7 +271,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * Return the named child element if it exists, null otherwise
 	 *
 	 * @param string $name
-	 * @returns FORM_ELEMENT
+	 * @return FORM_ELEMENT
 	 */
 	public function getChild($name) {
 		if (!$this->hasChild($name)) return null;
@@ -317,7 +317,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * @param string $name
 	 * @param string $type
 	 * @param boolean $recurse
-	 * @returns FORM_ELEMENT
+	 * @return FORM_ELEMENT
 	 */
 	public function getChildWithTypeCheck($name, $type, $recurse=false) {
 		$elem = $recurse ? $this->getChildRecursive($name) : $this->getChild($name);
@@ -333,7 +333,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *
 	 * @param string $name
 	 * @param string $type
-	 * @returns FORM_ELEMENT
+	 * @return FORM_ELEMENT
 	 */
 	public function getChildWithTypeCheckRecursive($name, $type) {
 		return $this->getChildWithTypeCheck($name, $type, true);
@@ -346,7 +346,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *
 	 * @param string $name
 	 * @param boolean $recurse
-	 * @returns FORM_FIELD
+	 * @return FORM_FIELD
 	 */
 	public function getField($name, $recurse=true) {
 		$elem = $recurse ? $this->getChildRecursive($name) : $this->getChild($name);
@@ -362,7 +362,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *
 	 * @param string $name
 	 * @param boolean $recurse
-	 * @returns FORM_FIELDSET
+	 * @return FORM_FIELDSET
 	 */
 	public function getFieldset($name, $recurse=true) {
 		return $this->getChildWithTypeCheck($name, 'fieldset', $recurse);
@@ -374,7 +374,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *
 	 * @param string $name
 	 * @param boolean $recurse
-	 * @returns FORM_TEXT
+	 * @return FORM_TEXT
 	 */
 	public function getText($name, $recurse=true) {
 		return $this->getChildWithTypeCheck($name, 'text', $recurse);
@@ -386,7 +386,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *
 	 * @param string $name
 	 * @param boolean $recurse
-	 * @returns FORM_BUTTON
+	 * @return FORM_BUTTON
 	 */
 	public function getButton($name, $recurse=true) {
 		return $this->getChildWithTypeCheck($name, 'button', $recurse);
@@ -398,7 +398,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *
 	 * @param string $name
 	 * @param boolean $recurse
-	 * @returns FORM_SUBMIT_BUTTON
+	 * @return FORM_SUBMIT_BUTTON
 	 */
 	public function getSubmitButton($name, $recurse=true) {
 		return $this->getChildWithTypeCheck($name, 'submit_button', $recurse);
@@ -410,7 +410,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *
 	 * @param string $name
 	 * @param boolean $recurse
-	 * @returns FORM_RESET_BUTTON
+	 * @return FORM_RESET_BUTTON
 	 */
 	public function getResetButton($name, $recurse=true) {
 		return $this->getChildWithTypeCheck($name, 'reset_button', $recurse);
@@ -422,7 +422,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *
 	 * @param string $name
 	 * @param boolean $recurse
-	 * @returns FORM_CHECKBOX
+	 * @return FORM_CHECKBOX
 	 */
 	public function getCheckbox($name, $recurse=true) {
 		return $this->getChildWithTypeCheck($name, 'checkbox', $recurse);
@@ -446,7 +446,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *
 	 * @param string $name
 	 * @param boolean $recurse
-	 * @returns FORM_FILE
+	 * @return FORM_FILE
 	 */
 	public function getFile($name, $recurse=true) {
 		return $this->getChildWithTypeCheck($name, 'file', $recurse);
@@ -458,7 +458,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *
 	 * @param string $name
 	 * @param boolean $recurse
-	 * @returns FORM_HIDDEN
+	 * @return FORM_HIDDEN
 	 */
 	public function getHidden($name, $recurse=true) {
 		return $this->getChildWithTypeCheck($name, 'hidden', $recurse);
@@ -470,7 +470,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *
 	 * @param string $name
 	 * @param boolean $recurse
-	 * @returns FORM_INFO
+	 * @return FORM_INFO
 	 */
 	public function getInfo($name, $recurse=true) {
 		return $this->getChildWithTypeCheck($name, 'info', $recurse);
@@ -482,7 +482,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *
 	 * @param string $name
 	 * @param boolean $recurse
-	 * @returns FORM_PASSWORD
+	 * @return FORM_PASSWORD
 	 */
 	public function getPassword($name, $recurse=true) {
 		return $this->getChildWithTypeCheck($name, 'password', $recurse);
@@ -494,7 +494,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *
 	 * @param string $name
 	 * @param boolean $recurse
-	 * @returns FORM_SELECT
+	 * @return FORM_SELECT
 	 */
 	public function getSelect($name, $recurse=true) {
 		return $this->getChildWithTypeCheck($name, 'select', $recurse);
@@ -506,7 +506,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 *
 	 * @param string $name
 	 * @param boolean $recurse
-	 * @returns FORM_TEXTAREA
+	 * @return FORM_TEXTAREA
 	 */
 	public function getTextarea($name, $recurse=true) {
 		return $this->getChildWithTypeCheck($name, 'textarea', $recurse);

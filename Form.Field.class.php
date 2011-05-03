@@ -406,7 +406,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	* Get the specified field attribute
 	*
 	* @param string $key
-	* @returns string
+	* @return string
 	*/
 	public function getFieldAttribute($key) {
 		return $this->field_attributes[$key];
@@ -430,7 +430,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	*
 	* @param string $key
 	* @param string $value
-	* @returns FORM_ELEMENT
+	* @return FORM_ELEMENT
 	*/
 	public function setFieldAttribute($key, $value) {
 		$this->field_attributes[$key] = $value;
@@ -450,7 +450,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	/**
 	* Get the element's field class attribute
 	*
-	* @returns string
+	* @return string
 	*/
 	public function getFieldClass() {
 		return $this->getFieldAttribute('class');

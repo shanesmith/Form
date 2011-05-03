@@ -40,7 +40,7 @@ class FORM_SELECT extends FORM_FIELD {
 	/**
 	* Return the collection of options
 	*
-	* @returns array[FORM_SELECT_OPTION|FORM_SELECT_GROUP]
+	* @return array[FORM_SELECT_OPTION|FORM_SELECT_GROUP]
 	*/
 	public function getOptions() {
 		return $this->options;
@@ -52,7 +52,7 @@ class FORM_SELECT extends FORM_FIELD {
 	* @param string $value
 	* @param array|string $labels
 	* @param boolean $enabled
-	* @returns FORM_SELECT
+	* @return FORM_SELECT
 	*/
 	public function addOption($value, $labels, $enabled=true) {
 		$this->options[] = new FORM_SELECT_OPTION($this, $value, $labels, $enabled);
@@ -70,7 +70,7 @@ class FORM_SELECT extends FORM_FIELD {
 	*
 	* @param array $options
 	* @param boolean $enabled
-	* @returns FORM_SELECT
+	* @return FORM_SELECT
 	*/
 	public function addOptionsArray(array $options, $enabled=true) {
 		foreach ($options as $value => $labels) {
@@ -85,7 +85,7 @@ class FORM_SELECT extends FORM_FIELD {
 	* @param string $name OPTIONAL using null will automatically create a name
 	* @param mixed $labels
 	* @param array $options
-	* @returns FORM_SELECT_GROUP
+	* @return FORM_SELECT_GROUP
 	*/
 	public function addGroup($name, $labels, $options=array()) {
 		if (!isset($name)) {
@@ -103,7 +103,7 @@ class FORM_SELECT extends FORM_FIELD {
 	* Get the named group, or null if none found
 	*
 	* @param string $name
-	* @returns FORM_SELECT_GROUP
+	* @return FORM_SELECT_GROUP
 	*/
 	public function getGroup($name) {
 		$group = $this->options[$name];
@@ -179,7 +179,7 @@ class FORM_SELECT_GROUP extends FORM_SELECT_OPT_BASE {
 	/**
 	* Return the full collection of options
 	*
-	* @returns array
+	* @return array
 	*/
 	public function getOptions() {
 		return $this->options;
@@ -188,7 +188,7 @@ class FORM_SELECT_GROUP extends FORM_SELECT_OPT_BASE {
 	/**
 	* Get the group's name
 	*
-	* @returns string
+	* @return string
 	*/
 	public function getName() {
 		return $this->name;
@@ -226,7 +226,7 @@ class FORM_SELECT_GROUP extends FORM_SELECT_OPT_BASE {
 	*
 	* @param array $options
 	* @param boolean $enabled
-	* @returns FORM_SELECT
+	* @return FORM_SELECT
 	*/
 	public function addOptionsArray(array $options, $enabled=true) {
 		foreach ($options as $value => $label) {
@@ -239,7 +239,7 @@ class FORM_SELECT_GROUP extends FORM_SELECT_OPT_BASE {
 	* Render the optgroup tag with all sub-options
 	*
 	* @param array $languages
-	* @returns string
+	* @return string
 	*/
 	public function render(array $languages) {
 		$labels = array();
@@ -297,7 +297,7 @@ class FORM_SELECT_OPTION extends FORM_SELECT_OPT_BASE {
 	/**
 	* Get the option's value
 	*
-	*	@returns string
+	*	@return string
 	*/
 	public function getValue() {
 		return $this->value;
@@ -335,7 +335,7 @@ class FORM_SELECT_OPTION extends FORM_SELECT_OPT_BASE {
 	* Render the option tag
 	*
 	* @param array $languages
-	* @returns string
+	* @return string
 	*/
 	public function render(array $languages) {
 		$labels = array();
@@ -405,7 +405,7 @@ abstract class FORM_SELECT_OPT_BASE {
 	/**
 	* The the direct parent of this option/group
 	*
-	* @returns FORM_SELECT|FORM_SELECT_GROUP
+	* @return FORM_SELECT|FORM_SELECT_GROUP
 	*/
 	public function getOptParent() {
 		return $this->parent;
@@ -431,7 +431,7 @@ abstract class FORM_SELECT_OPT_BASE {
 	/**
 	* Return whethere or not this option/group is enabled
 	*
-	* @returns booleans
+	* @return booleans
 	*/
 	public function isEnabled() {
 		return $this->enabled;
@@ -440,7 +440,7 @@ abstract class FORM_SELECT_OPT_BASE {
 	/**
 	* Return the labels array
 	*
-	* @returns array
+	* @return array
 	*/
 	public function getLabels() {
 		return $this->labels;
@@ -449,7 +449,7 @@ abstract class FORM_SELECT_OPT_BASE {
 	/**
 	* Return the parenting select
 	*
-	* @returns FORM_SELECT
+	* @return FORM_SELECT
 	*/
 	abstract public function backtoSelect();
 
@@ -457,7 +457,7 @@ abstract class FORM_SELECT_OPT_BASE {
 	* Render the tag
 	*
 	* @param array $languages
-	* @returns string
+	* @return string
 	*/
 	abstract public function render(array $languages);
 }
