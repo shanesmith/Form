@@ -447,9 +447,9 @@ class FORM extends FORM_FIELDSET {
 				}
 				$it->append(new ArrayIterator($more));
 			} else {
-				$elem = $this->getElement($name);
-				if ($elem && $elem instanceof FORM_FILE) {
-					$elem->setUploadedFileInfo($info);
+				$file  = $this->getFile($name);
+				if ($file) {
+					$file->setUploadedFileInfo($info);
 				}
 			}
 		}

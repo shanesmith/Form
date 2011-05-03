@@ -284,7 +284,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	* any descendant fieldsets, null otherwise
 	*
 	* @param string $name
-	* @return FORM_FIELDSET
+	* @return FORM_ELEMENT
 	*/
 	public function getChildRecursive($name) {
 		// checking ancestory should be faster than drilling down each fieldset
