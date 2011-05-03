@@ -6,10 +6,10 @@ abstract class FORM_RENDERER {
 	public abstract function init(FORM $form);
 
 	/**
-	* Returns the attributes array converted into and html attributes string
-	*
-	* @return string
-	*/
+	 * Returns the attributes array converted into and html attributes string
+	 *
+	 * @return string
+	 */
 	public static function attr2str(array $attributes) {
 		$str = "";
 		foreach($attributes as $key=>$value) {

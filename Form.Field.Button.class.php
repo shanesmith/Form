@@ -2,21 +2,21 @@
 require_once dirname(__FILE__) . "/Form.class.php";
 
 /**
-*
-* FORM_BUTTON
-*
-*
-* An HTML button
-*
-*/
+ *
+ * FORM_BUTTON
+ *
+ *
+ * An HTML button
+ *
+ */
 class FORM_BUTTON extends FORM_FIELD {
 
 	/**
-	* Render the button field, adding value attribute equal to labels.
-	*
-	* @param array $languages
-	* @return string
-	*/
+	 * Render the button field, adding value attribute equal to labels.
+	 *
+	 * @param array $languages
+	 * @return string
+	 */
 	public function fieldHTML(array $languages) {
 		$value = array();
 
@@ -34,26 +34,26 @@ class FORM_BUTTON extends FORM_FIELD {
 
 
 /**
-*
-* FORM_SUBMIT_BUTTON
-*
-*
-* An HTML submit button
-*
-*/
+ *
+ * FORM_SUBMIT_BUTTON
+ *
+ *
+ * An HTML submit button
+ *
+ */
 class FORM_SUBMIT_BUTTON extends FORM_BUTTON {
 
 }
 
 
 /**
-*
-* FORM_RESET_BUTTON
-*
-*
-* An HTML reset button
-*
-*/
+ *
+ * FORM_RESET_BUTTON
+ *
+ *
+ * An HTML reset button
+ *
+ */
 class FORM_RESET_BUTTON extends FORM_BUTTON {
 
 }

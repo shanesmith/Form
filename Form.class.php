@@ -87,18 +87,18 @@ class FORM extends FORM_FIELDSET {
 	protected $radio_posted_checked = array();
 
 	/**
-	* A list of all errors on this form,
-	* keyed by element names
-	*
-	* @var array
-	*/
+	 * A list of all errors on this form,
+	 * keyed by element names
+	 *
+	 * @var array
+	 */
 	protected $errors = array();
 
 	/**
-	* The default FORM_RENDERER class
-	*
-	* @var FORM_RENDERER
-	*/
+	 * The default FORM_RENDERER class
+	 *
+	 * @var FORM_RENDERER
+	 */
 	protected $default_renderer;
 
 
@@ -284,13 +284,13 @@ class FORM extends FORM_FIELDSET {
 	}
 
 	/**
-	* Add an error message for the given element name
-	* in the errors list
-	*
-	* @param string $element_name
-	* @param string|array $error
-	* @return FORM
-	*/
+	 * Add an error message for the given element name
+	 * in the errors list
+	 *
+	 * @param string $element_name
+	 * @param string|array $error
+	 * @return FORM
+	 */
 	public function addError($element_name, $error) {
 		$processed_error = array();
 		$this->process_languaged_argument($processed_error, $error);
@@ -299,74 +299,74 @@ class FORM extends FORM_FIELDSET {
 	}
 
 	/**
-	* Return the full list of errors,
-	* keyed by element names
-	*
-	* @return array
-	*/
+	 * Return the full list of errors,
+	 * keyed by element names
+	 *
+	 * @return array
+	 */
 	public function getAllErrors() {
 		return $this->errors;
 	}
 
 	/**
-	* Get the error message for the specified element, if any,
-	* keyed by language
-	*
-	* @param string $element
-	* @return array
-	*/
+	 * Get the error message for the specified element, if any,
+	 * keyed by language
+	 *
+	 * @param string $element
+	 * @return array
+	 */
 	public function getErrorByElementName($element) {
 		return $this->errors[$element];
 	}
 
 	/**
-	* Remove all previously set errors
-	*
-	* @return FORM
-	*/
+	 * Remove all previously set errors
+	 *
+	 * @return FORM
+	 */
 	public function clearAllErrors() {
 		$this->errors = array();
 		return $this;
 	}
 
 	/**
-	* Clear the error set for the specified element, if any
-	*
-	* @param string $element
-	* @return FORM
-	*/
+	 * Clear the error set for the specified element, if any
+	 *
+	 * @param string $element
+	 * @return FORM
+	 */
 	public function clearErrorByElementName($element) {
 		unset($this->errors[$element]);
 		return $this;
 	}
 
 	/**
-	* Returns whether the form has any errors set
-	*
-	* @return boolean
-	*/
+	 * Returns whether the form has any errors set
+	 *
+	 * @return boolean
+	 */
 	public function hasErrors() {
 		return !empty($this->errors);
 	}
 
 	/**
-	* Returns whether the specified element has an error set
-	*
-	* @param string $element
-	* @return boolean
-	*/
+	 * Returns whether the specified element has an error set
+	 *
+	 * @param string $element
+	 * @return boolean
+	 */
 	public function hasErrorByElementName($element) {
 		return !empty($this->errors[$element]);
 	}
 
 	/**
-	* Load all values from the passed array to the defined fields, optionally
-	* including a second parameter for uploaded files
-	*
-	* @param array $post
-	* @param array $files
-	* @return FORM
-	*/
+	 * Load all values from the passed array to the defined fields, optionally
+	 * including a second parameter for uploaded files
+	 *
+	 * @param array $post
+	 * @param array $files
+	 * @return FORM
+	 */
 	public function loadPostedValues(array $post, array $files=array()) {
 		$it = new AppendIterator();
 
@@ -396,39 +396,39 @@ class FORM extends FORM_FIELDSET {
 	}
 
 	/**
-	* Load all file information from an array formatted as $_FILES
-	*
-	*	Note that the $_FILES array is formatted oddly when field names
-	* are of the form arr[a]. arr[b][c], etc...
-	*
-	* $_FILES = array(
-	*
-	*		'basic' => array(
-	*			'name' => "...",
-	* 		'size' => "...",
-	* 		...
-	* 	),
-	*
-	* 	'arr' => array(
-	*			'name' => array(
-	*				'a' => "...",
-	* 			'b' => array(
-	*					'c' => "..."
-	* 			)
-	* 		),
-	*			'size' => array(
-	*				'a' => "...",
-	* 			'b' => array(
-	*					'c' => "..."
-	* 			)
-	* 		),
-	* 		...
-	* 	)
-	* )
-	*
-	* @param array $files
-	* @return FORM_FILE
-	*/
+	 * Load all file information from an array formatted as $_FILES
+	 *
+	 *	Note that the $_FILES array is formatted oddly when field names
+	 * are of the form arr[a]. arr[b][c], etc...
+	 *
+	 * $_FILES = array(
+	 *
+	 *		'basic' => array(
+	 *			'name' => "...",
+	 * 		'size' => "...",
+	 * 		...
+	 * 	),
+	 *
+	 * 	'arr' => array(
+	 *			'name' => array(
+	 *				'a' => "...",
+	 * 			'b' => array(
+	 *					'c' => "..."
+	 * 			)
+	 * 		),
+	 *			'size' => array(
+	 *				'a' => "...",
+	 * 			'b' => array(
+	 *					'c' => "..."
+	 * 			)
+	 * 		),
+	 * 		...
+	 * 	)
+	 * )
+	 *
+	 * @param array $files
+	 * @return FORM_FILE
+	 */
 	public function loadUploadedFiles(array $files) {
 		$it = new AppendIterator();
 
@@ -592,16 +592,16 @@ class FORM extends FORM_FIELDSET {
 	 *****************/
 
 	/**
-	* Set default sections and renderers for each type at the same time through an array, first keyed by type, then section
-	*
-	*	A special type of 'form' can be used to set sections and renderers for the form.
-	*
-	* A special type of 'field' can be used to set sections and renderers for each field child type (won't overwrite other field
-	* types that are specified).
-	*
-	* @param array $type_section_renderer
-	* @return FORM
-	*/
+	 * Set default sections and renderers for each type at the same time through an array, first keyed by type, then section
+	 *
+	 *	A special type of 'form' can be used to set sections and renderers for the form.
+	 *
+	 * A special type of 'field' can be used to set sections and renderers for each field child type (won't overwrite other field
+	 * types that are specified).
+	 *
+	 * @param array $type_section_renderer
+	 * @return FORM
+	 */
 	public function setDefaultSectionsAndRenderers(array $type_section_renderer) {
 
 		if (array_key_exists('form', $type_section_renderer)) {
@@ -627,13 +627,13 @@ class FORM extends FORM_FIELDSET {
 	 ***************/
 
 	/**
-	* Returns the given array with each key prefixed with
-	* the given string
-	*
-	* @param string $prefix
-	* @param array $array
-	* @return array
-	*/
+	 * Returns the given array with each key prefixed with
+	 * the given string
+	 *
+	 * @param string $prefix
+	 * @param array $array
+	 * @return array
+	 */
 	public static function prefix_keys($prefix, $array) {
 		$proc = array();
 

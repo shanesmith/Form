@@ -1,68 +1,68 @@
 <?php
 
 /**
-* Basic exception for Form
-*/
+ * Basic exception for Form
+ */
 class FormException extends Exception {
 
 	/**
-	* @var FORM_ELEMENT
-	*/
+	 * @var FORM_ELEMENT
+	 */
 	private $element;
 
 	/**
-	* @param string $message
-	* @param FORM_ELEMENT $element
-	* @return FormException
-	*/
+	 * @param string $message
+	 * @param FORM_ELEMENT $element
+	 * @return FormException
+	 */
 	public function __construct($message, $element=null) {
 		parent::__construct($message);
 		$this->element = $element;
 	}
 
 	/**
-	* @return FORM_ELEMENT
-	*/
+	 * @return FORM_ELEMENT
+	 */
 	public function getElement() { return $this->element; }
 
 }
 
 /**
-* Invlid language used for getting or setting
-*/
+ * Invlid language used for getting or setting
+ */
 class FormInvalidLanguageException extends FormException {
 
 	/**
-	* @var string
-	*/
+	 * @var string
+	 */
 	private $lang;
 
 	/**
-	* @param string $message
-	* @param string $lang
-	* @param FORM_ELEMENT $element
-	* @return FormInvalidLanguageException
-	*/
+	 * @param string $message
+	 * @param string $lang
+	 * @param FORM_ELEMENT $element
+	 * @return FormInvalidLanguageException
+	 */
 	public function __construct($message=null, $lang=null, $element=null) {
 		parent::__construct($message, $element);
 		$this->lang = $lang;
 	}
 
 	/**
-	* @return string
-	*/
+	 * @return string
+	 */
 	public function getLang() { return $this->lang; }
 
 }
 
 /**
-* No valid renderer found while attempting to run render()
-*/
+ * No valid renderer found while attempting to run render()
+ */
 class FormNoRendererFound extends FormException { }
 
 /**
-* An invalid validator was invoked
-*/
+ * An invalid validator was invoked
+ */
 class FormInvalidValidator extends FormException {
 
 	private $validator;
@@ -79,8 +79,8 @@ class FormInvalidValidator extends FormException {
 }
 
 /**
-* An invalid formatter was invoked
-*/
+ * An invalid formatter was invoked
+ */
 class FormInvalidFormatter extends FormException {
 
 	private $formatter;
@@ -97,8 +97,8 @@ class FormInvalidFormatter extends FormException {
 }
 
 /**
-* An invalid processor was invoked
-*/
+ * An invalid processor was invoked
+ */
 class FormInvalidProcessor extends FormException {
 
 	private $processor;
@@ -115,8 +115,8 @@ class FormInvalidProcessor extends FormException {
 }
 
 /**
-* An error occured while processing an uploaded file
-*/
+ * An error occured while processing an uploaded file
+ */
 class FormFileUploadError extends FormException { }
 
 class FormDuplicateElementName extends FormException { }

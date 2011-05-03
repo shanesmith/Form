@@ -12,10 +12,10 @@ require_once dirname(__FILE__) . "/Form.class.php";
 class FORM_RADIO extends FORM_FIELD {
 
 	/**
-	* The radio's 'value' field
-	*
-	* @var string
-	*/
+	 * The radio's 'value' field
+	 *
+	 * @var string
+	 */
 	protected $text;
 
 	/**
@@ -26,14 +26,14 @@ class FORM_RADIO extends FORM_FIELD {
 	protected $radio_name;
 
 	/**
-	* Constructor
-	*
-	* @param FORM_RADIO_LIST $parent
-	* @param string $name
-	* @param string $text
-	* @param string|array $labels
-	* @return FORM_RADIO
-	*/
+	 * Constructor
+	 *
+	 * @param FORM_RADIO_LIST $parent
+	 * @param string $name
+	 * @param string $text
+	 * @param string|array $labels
+	 * @return FORM_RADIO
+	 */
 	public function __construct(&$parent, $radio_name, $unique_name, $text, $labels=null, $default_checked=false) {
 		parent::__construct($parent, $unique_name, $labels);
 		$this->text = $text;
@@ -60,49 +60,49 @@ class FORM_RADIO extends FORM_FIELD {
 	}
 
 	/**
-	* Is this radio checked?
-	*
-	* @return boolean
-	*/
+	 * Is this radio checked?
+	 *
+	 * @return boolean
+	 */
 	public function isChecked() {
 		return $this->form()->getRadioCheckedText($this->getRadioName()) == $this->getText();
 	}
 
 	/**
-	* Is this radio checked by default?
-	*
-	* @return boolean
-	*/
+	 * Is this radio checked by default?
+	 *
+	 * @return boolean
+	 */
 	public function isDefaultChecked() {
 		return $this->form()->getRadioDefaultCheckedText($this->getRadioName()) == $this->getText();
 	}
 
 	/**
-	* Is the posted radio checked?
-	*
-	* @return boolean
-	*/
+	 * Is the posted radio checked?
+	 *
+	 * @return boolean
+	 */
 	public function isPostedChecked() {
 		return $this->form()->getRadioPostedCheckedText($this->getRadioName()) == $this->getText();
 	}
 
 	/**
-	* Set the radio checked by default
-	*
-	* @param boolean $checked
-	* @return FORM_RADIO
-	*/
+	 * Set the radio checked by default
+	 *
+	 * @param boolean $checked
+	 * @return FORM_RADIO
+	 */
 	public function setDefaultChecked() {
 		$this->form()->setRadioDefaultChecked($this->getRadioName(), $this->getText());
 		return $this;
 	}
 
 	/**
-	* Set the posted radio checked
-	*
-	* @param boolean $checked
-	* @return FORM_RADIO
-	*/
+	 * Set the posted radio checked
+	 *
+	 * @param boolean $checked
+	 * @return FORM_RADIO
+	 */
 	public function setPostedChecked() {
 		$this->form()->setRadioPostedChecked($this->getRadioName(), $this->getText());
 		return $this;

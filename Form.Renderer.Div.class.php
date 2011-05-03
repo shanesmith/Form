@@ -93,16 +93,16 @@ class FORM_DIV_RENDERER extends FORM_RENDERER {
 	public static function renderFieldsetLabel(FORM_FIELDSET $fieldset, $languages) {
 		$labels = "";
 		foreach ($languages as $lang) {
-			 $labels .= "<span class='form-element-label-{$lang} form-fieldset-label-{$lang}'>{$fieldset->getLabelByLang($lang)}</span>";
+			$labels .= "<span class='form-element-label-{$lang} form-fieldset-label-{$lang}'>{$fieldset->getLabelByLang($lang)}</span>";
 		}
 
 		return "<label class='form-element-label form-fieldset-label'>{$labels}</label>";
 	}
 
-	 public static function renderFieldsetChildren(FORM_FIELDSET $fieldset, $languages) {
-		 $children = $fieldset->renderAllChildren($languages);
-		 return "<div class='form-fieldset-children'>{$children}</div>";
-	 }
+	public static function renderFieldsetChildren(FORM_FIELDSET $fieldset, $languages) {
+		$children = $fieldset->renderAllChildren($languages);
+		return "<div class='form-fieldset-children'>{$children}</div>";
+	}
 
 
 	/************
@@ -120,20 +120,20 @@ class FORM_DIV_RENDERER extends FORM_RENDERER {
 	public static function renderInfoLabel(FORM_INFO $info, $languages) {
 		$labels = "";
 		foreach ($languages as $lang) {
-			 $labels .= "<span class='form-element-label-{$lang} form-info-label-{$lang}'>{$info->getLabelByLang($lang)}</span>";
+			$labels .= "<span class='form-element-label-{$lang} form-info-label-{$lang}'>{$info->getLabelByLang($lang)}</span>";
 		}
 
 		return "<label class='form-element-label form-info-label'>{$labels}</label>";
 	}
 
-	 public static function renderInfoText(FORM_INFO $info, $languages) {
+	public static function renderInfoText(FORM_INFO $info, $languages) {
 		$texts = "";
 		foreach ($languages as $lang) {
 			$texts .= "<span class='form-info-{$lang}'>{$info->getTextByLang($lang)}</span>";
 		}
 
-		 return "<div class='form-info'>{$texts}</div>";
-	 }
+		return "<div class='form-info'>{$texts}</div>";
+	}
 
 
 	/******************
@@ -151,16 +151,16 @@ class FORM_DIV_RENDERER extends FORM_RENDERER {
 	public static function renderRadioListLabel(FORM_RADIO_LIST $radio_list, $languages) {
 		$labels = "";
 		foreach ($languages as $lang) {
-			 $labels .= "<span class='form-element-label-{$lang} form-radio_list-label-{$lang}'>{$radio_list->getLabelByLang($lang)}</span>";
+			$labels .= "<span class='form-element-label-{$lang} form-radio_list-label-{$lang}'>{$radio_list->getLabelByLang($lang)}</span>";
 		}
 
 		return "<label class='form-element-label form-radio_list-label'>{$labels}</label>";
 	}
 
-	 public static function renderRadioListRadios(FORM_RADIO_LIST $radio_list, $languages) {
-		 $radios = $radio_list->renderAllRadios($languages);
-		 return "<div class='form-radio_list'>{$radios}</div>";
-	 }
+	public static function renderRadioListRadios(FORM_RADIO_LIST $radio_list, $languages) {
+		$radios = $radio_list->renderAllRadios($languages);
+		return "<div class='form-radio_list'>{$radios}</div>";
+	}
 
 
 	/*************
@@ -184,7 +184,7 @@ class FORM_DIV_RENDERER extends FORM_RENDERER {
 
 		$labels = "";
 		foreach ($languages as $lang) {
-			 $labels .= "<span class='form-element-label-{$lang} form-field-label-{$lang} form-field-label-{$field->type()}-{$lang}'>{$field->getLabelByLang($lang)}</span>";
+			$labels .= "<span class='form-element-label-{$lang} form-field-label-{$lang} form-field-label-{$field->type()}-{$lang}'>{$field->getLabelByLang($lang)}</span>";
 		}
 
 		return "<label {$attributes_str}>{$labels}</label>";
