@@ -18,6 +18,7 @@ require_once "Form.Validator.class.php";
 require_once "Form.Formatter.class.php";
 require_once "Form.Renderer.class.php";
 require_once "Form.Renderer.Div.class.php";
+require_once "Form.Renderer.Table.class.php";
 require_once "lib/upload/class.upload.php";
 restore_include_path();
 
