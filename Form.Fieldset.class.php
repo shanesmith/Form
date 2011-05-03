@@ -136,16 +136,18 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	}
 
 	/**
-	* Creates a new radio list, inserts it into the current fieldset, and returns the new radio list
+	* Creates a new radio, inserts it into the current fieldset, and returns the new radio
 	*
-	* @param string $name
-	* @param string $label
-	* @param string $default
-	* @return FORM_RADIO_LIST
+	* @param string $radio_name
+	* @param string $unique_name
+	* @param string $text
+	* @param string $labels
+	* @param string $default_checked
+	* @return FORM_RADIO
 	*/
-	public function radio($unique_name, $radio_name, $labels=null, $default=null) {
-		$radio = $this->addChild(new FORM_RADIO($this, $unique_name, $radio_name, $labels, $default));
-		$this->form()->addToRadioList($radio_name, $unique_name);
+	public function radio($radio_name, $unique_name, $text, $labels=null, $default_checked=false) {
+		$radio = $this->addChild(new FORM_RADIO($this, $radio_name, $unique_name, $text, $labels, $default_checked));
+		$this->form()->addToRadioList($radio_name, $unique_name, $text);
 		return $radio;
 	}
 
@@ -428,14 +430,14 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 
 	/**
 	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
-	 * and if it's of the type FORM_RADIO_LIST, null otherwise
+	 * and if it's of the type FORM_RADIO, null otherwise
 	 *
-	 * @param string $name
+	 * @param string $unique_name
 	 * @param boolean $recurse
-	 * @returns FORM_RADIO_LIST
+	 * @return FORM_RADIO
 	 */
-	public function getRadioList($name, $recurse=true) {
-		return $this->getChildWithTypeCheck($name, 'radio_list', $recurse);
+	public function getRadio($unique_name, $recurse=true) {
+		return $this->getChildWithTypeCheck($unique_name, 'radio', $recurse);
 	}
 
 	/**

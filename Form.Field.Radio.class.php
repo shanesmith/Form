@@ -19,6 +19,13 @@ class FORM_RADIO extends FORM_FIELD {
 	protected $text;
 
 	/**
+	 * The radio's shared name
+	 *
+	 * @var string
+	 */
+	protected $radio_name;
+
+	/**
 	* Constructor
 	*
 	* @param FORM_RADIO_LIST $parent
@@ -27,9 +34,29 @@ class FORM_RADIO extends FORM_FIELD {
 	* @param string|array $labels
 	* @return FORM_RADIO
 	*/
-	public function __construct(&$parent, $name, $text, $labels=null) {
-		parent::__construct($parent, $name, $labels);
+	public function __construct(&$parent, $radio_name, $unique_name, $text, $labels=null, $default_checked=false) {
+		parent::__construct($parent, $unique_name, $labels);
 		$this->text = $text;
+		$this->radio_name = $radio_name;
+		$this->setDefaultChecked($default_checked);
+	}
+
+	/**
+	 * Get the name of the radio list that this belongs to
+	 *
+	 * @return string
+	 */
+	public function getRadioName() {
+		return $this->radio_name;
+	}
+
+	/**
+	 * Get the text
+	 *
+	 * @return string
+	 */
+	public function getText() {
+		return $this->text;
 	}
 
 	/**
@@ -38,7 +65,7 @@ class FORM_RADIO extends FORM_FIELD {
 	* @return boolean
 	*/
 	public function isChecked() {
-		return $this->parent()->getValue() == $this->text;
+		return $this->form()->getRadioCheckedText($this->getRadioName()) == $this->getText();
 	}
 
 	/**
@@ -47,7 +74,7 @@ class FORM_RADIO extends FORM_FIELD {
 	* @return boolean
 	*/
 	public function isDefaultChecked() {
-		return $this->parent()->getDefaultValue() == $this->text;
+		return $this->form()->getRadioDefaultCheckedText($this->getRadioName()) == $this->getText();
 	}
 
 	/**
@@ -56,7 +83,7 @@ class FORM_RADIO extends FORM_FIELD {
 	* @return boolean
 	*/
 	public function isPostedChecked() {
-		return $this->parent()->getPostedValue() == $this->text;
+		return $this->form()->getRadioPostedCheckedText($this->getRadioName()) == $this->getText();
 	}
 
 	/**
@@ -65,8 +92,8 @@ class FORM_RADIO extends FORM_FIELD {
 	* @param boolean $checked
 	* @return FORM_RADIO
 	*/
-	public function setDefaultChecked($checked) {
-		$this->setDefault($checked ? self::$text : "");
+	public function setDefaultChecked() {
+		$this->form()->setRadioDefaultChecked($this->getRadioName(), $this->getText());
 		return $this;
 	}
 
@@ -76,8 +103,8 @@ class FORM_RADIO extends FORM_FIELD {
 	* @param boolean $checked
 	* @return FORM_RADIO
 	*/
-	public function setPostedChecked($checked) {
-		$this->setPostedChecked($checked ? self::$text : "");
+	public function setPostedChecked() {
+		$this->form()->setRadioPostedChecked($this->getRadioName(), $this->getText());
 		return $this;
 	}
 
@@ -87,23 +114,19 @@ class FORM_RADIO extends FORM_FIELD {
 	 * @param array $languages
 	 * @return string
 	 */
-	public function render_field(array $languages) {
+	public function fieldHTML(array $languages) {
 		$this->setFieldAttribute('value', $this->text);
 
 		if ($this->isChecked()) {
 			$this->setFieldAttribute('checked', 'checked');
 		}
 
-		return parent::render_field($languages);
-	}
+		$attributes = $this->getFieldAttributesString(array(
+			 'type' => $this->type(),
+			 'name' => $this->getRadioName(),
+		));
 
-	/**
-	* Override for phpdoc change of return type...
-	*
-	* @return FORM_RADIO_LIST
-	*/
-	public function parent() {
-		return parent::parent();
+		return "<input {$attributes} />";
 	}
 
 }

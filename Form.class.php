@@ -3,7 +3,6 @@ set_include_path(dirname(__FILE__)."/");
 require_once "Form.Element.class.php";
 require_once "Form.Info.class.php";
 require_once "Form.Fieldset.class.php";
-require_once "Form.RadioList.class.php";
 require_once "Form.Field.class.php";
 require_once "Form.Field.Text.class.php";
 require_once "Form.Field.Textarea.class.php";
@@ -63,6 +62,29 @@ class FORM extends FORM_FIELDSET {
 	 * @var array
 	 */
 	protected $elements = array();
+
+	/**
+	 * All radio lists, keyed first by radio name, then keys of unique names whith values of radio text
+	 *
+	 * radio_name => ( unique_name => text, ... ), ...
+	 *
+	 * @var array
+	 */
+	protected $radio_lists = array();
+
+	/**
+	 * The text of the default checked radio, keyed by radio name
+	 *
+	 * @var array
+	 */
+	protected $radio_default_checked = array();
+
+	/**
+	 * The text of the posted checked radio, keyed by radio name
+	 *
+	 * @var array
+	 */
+	protected $radio_posted_checked = array();
 
 	/**
 	* A list of all errors on this form,
@@ -354,10 +376,14 @@ class FORM extends FORM_FIELDSET {
 			if (is_array($value)) {
 				$value = self::prefix_keys($name, $value);
 				$it->append(new ArrayIterator($value));
-			} else {
-				$elem = $this->getElement($name);
-				if ($elem) {
-					$elem->setPostedValue($value);
+			}
+			elseif ($this->isRadioList($name)) {
+				$this->setRadioPostedChecked($name, $value);
+			}
+			else {
+				$field = $this->getField($name);
+				if ($field) {
+					$field->setPostedValue($value);
 				}
 			}
 		}
@@ -429,6 +455,135 @@ class FORM extends FORM_FIELDSET {
 		}
 
 		return $this;
+	}
+
+
+	/**************
+	 **  RADIOS  **
+	 **************/
+
+	/**
+	 * Add a unique radio name and value to a list of radios
+	 *
+	 * @param string $radio_name
+	 * @param string $unique_name
+	 * @param string $value
+	 * @return FORM
+	 */
+	public function addToRadioList($radio_name, $unique_name, $value) {
+		$this->radio_lists[$radio_name][$unique_name] = $value;
+		return $this;
+	}
+
+	/**
+	 * Get the list of radios under the given radio name,
+	 * where keys are unique names and values are the text
+	 *
+	 * @param string $radio_name
+	 * @return array
+	 */
+	public function getRadioList($radio_name) {
+		return $this->radio_lists[$radio_name];
+	}
+
+	/**
+	 * Return all unique names from the given radio name
+	 *
+	 * @param string $radio_name
+	 * @return array
+	 */
+	public function getRadioListUniqueNames($radio_name) {
+		return array_keys($this->radio_lists[$radio_name]);
+	}
+
+	/**
+	 * Return all radio names (ie: the names of each radio lists)
+	 *
+	 * @return array
+	 */
+	public function getRadioListNames() {
+		return array_keys($this->radio_lists);
+	}
+
+	/**
+	 * Whether the name is a radio list name
+	 *
+	 * @param string $name
+	 * @return boolean
+	 */
+	public function isRadioList($name) {
+		return in_array($name, $this->getRadioListNames());
+	}
+
+	/**
+	 * Set the default checked radio value for the radio list
+	 *
+	 * @param string $radio_name
+	 * @param string $value
+	 * @return FORM
+	 */
+	public function setRadioDefaultChecked($radio_name, $value) {
+		$this->radio_default_checked[$radio_name] = $value;
+		return $this;
+	}
+
+	/**
+	 * Set the posted checked radio value for the radio list
+	 *
+	 * @param string $radio_name
+	 * @param string $value
+	 * @return FORM
+	 */
+	public function setRadioPostedChecked($radio_name, $value) {
+		$this->radio_posted_checked[$radio_name] = $value;
+		return $this;
+	}
+
+	/**
+	 * Get the text of the default checked radio from the given radio list
+	 *
+	 * @param string $radio_name
+	 * @return string
+	 */
+	public function getRadioDefaultCheckedText($radio_name) {
+		return $this->radio_default_checked[$radio_name];
+	}
+
+	/**
+	 * Get the text of the posted checked radio from the given radio list
+	 *
+	 * @param string $radio_name
+	 * @return string
+	 */
+	public function getRadioPostedCheckedText($radio_name) {
+		return $this->radio_posted_checked[$radio_name];
+	}
+
+	/**
+	 * Get the posted checked radio text, or the default if none found
+	 *
+	 * @param string $radio_name
+	 * @return string
+	 */
+	public function getRadioCheckedText($radio_name) {
+		if (isset($this->radio_posted_checked[$radio_name])) {
+			return $this->radio_posted_checked[$radio_name];
+		} else {
+			return $this->radio_default_checked[$radio_name];
+		}
+	}
+
+	/**
+	 * Get the radio element from the given radio list by looking up the text
+	 *
+	 * @param string $radio_name
+	 * @param string $text
+	 * @return FORM_RADIO
+	 */
+	public function getRadioByText($radio_name, $text) {
+		$unique_name = array_search($text, $this->radio_lists[$radio_name]);
+
+		return $this->getRadio($unique_name);
 	}
 
 
