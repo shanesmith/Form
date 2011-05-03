@@ -226,7 +226,7 @@ class FORM_SELECT_GROUP extends FORM_SELECT_OPT_BASE {
 	 *
 	 * @param array $options
 	 * @param boolean $enabled
-	 * @return FORM_SELECT
+	 * @return FORM_SELECT_GROUP
 	 */
 	public function addOptionsArray(array $options, $enabled=true) {
 		foreach ($options as $value => $label) {

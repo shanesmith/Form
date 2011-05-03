@@ -708,6 +708,9 @@ abstract class FORM_ELEMENT {
 	 *
 	 * @return string
 	 */
-	public function __toString() { return $this->render(); }
+	public function __toString() {
+		$languages = $this->form()->getLanguages();
+		return $this->render($languages);
+	}
 
 }

@@ -277,7 +277,7 @@ class FORM_FILE extends FORM_FIELD {
 				throw new FormInvalidProcessor("The processor is not a callable", $this, $processor);
 			}
 
-			$arguments = array_merge(array($this, $this->getTargetDir(), $this->getHandle()), (array)$func['args']);
+			$arguments = array_merge(array($this, $this->getTargetDir(), $this->getHandle()), (array)$processor['args']);
 
 			$error = call_user_func_array($processor['func'], $arguments);
 

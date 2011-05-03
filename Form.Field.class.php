@@ -373,7 +373,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	 * @param mixed $charlist
 	 */
 	public function formatTrim($left=true, $right=true, $charlist=null) {
-		$arguments = func_get_args();
+		$arguments = array($left, $right, $charlist);
 		$this->addFormatter(FORM_FORMATTER::$trim, $arguments);
 		return $this;
 	}
@@ -485,7 +485,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	 */
 	public function getFieldID($create=false) {
 		$id = $this->getFieldAttribute('id');
-		if (empty($id)) {
+		if (empty($id) && $create) {
 			$id = uniqid("form-{$this->type()}-");
 			$this->setFieldID($id);
 		}

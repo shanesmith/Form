@@ -528,6 +528,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 		$valid = true;
 		foreach ($this->getAllChildren() as $child) {
 			if (!($child instanceof FORM_INFO)) {
+				/** @var FORM_FIELD|FORM_FIELDSET $child */
 				$valid |= $child->validate();
 			}
 		}
@@ -544,9 +545,11 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	public function hasErrors($recurse=true) {
 		foreach ($this->getAllChildren() as $child) {
 			if ($child instanceof FORM_FIELDSET && $recurse) {
+				/** @var FORM_FIELDSET $child */
 				if ($child->hasError()) return true;
 			}
 			elseif ($child instanceof FORM_FIELD)  {
+				/** @var FORM_FIELD $child */
 				if ($child->hasError()) return true;
 			}
 		}
@@ -589,9 +592,11 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 
 		foreach ($this->getAllChildren() as $child) {
 			if ($child instanceof FORM_FIELDSET && $recurse) {
+				/** @var FORM_FIELDSET $child */
 				$errors = array_merge($errors, $child->getAllErrors(true));
 			}
 			elseif ($child instanceof FORM_FIELD) {
+				/** @var FORM_FIELD $child */
 				$errors[$child->name()] = $child->getError();
 			}
 		}
@@ -636,9 +641,11 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	public function processUploadedFiles($recurse=true) {
 		foreach ($this->getAllChildren() as $child) {
 			if ($child instanceof FORM_FILE) {
+				/** @var FORM_FILE $child */
 				$child->process();
 			}
 			elseif ($child instanceof FORM_FIELDSET && $recurse) {
+				/** @var FORM_FIELDSET $child */
 				$child->processUploadedFiles(true);
 			}
 		}
@@ -1024,6 +1031,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 		$render = "";
 
 		foreach ($this->getAllChildren() as $child) {
+			/** @var FORM_ELEMENT $child */
 			$render .= $child->render($lang);
 		}
 
