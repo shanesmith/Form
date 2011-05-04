@@ -77,8 +77,10 @@ class FORM_DIV_RENDERER extends FORM_RENDERER {
 	 ****************/
 
 	public static function renderFieldsetContainer(FORM_FIELDSET $fieldset, $languages, $rendered_sections) {
+		$name = str_replace(array('[', ']'), array('_', ''), $fieldset->name());
+
 		$attributes = $fieldset->getAttributesArray();
-		$attributes['class'] .= " form-element-container form-fieldset-container form-fieldset-name-{$fieldset->name()}";
+		$attributes['class'] .= " form-element-container form-fieldset-container form-fieldset-name-{$name}";
 		$attributes_str = self::attr2str($attributes);
 
 		return "<div {$attributes_str}>{$rendered_sections}</div>";
@@ -104,8 +106,10 @@ class FORM_DIV_RENDERER extends FORM_RENDERER {
 	 ************/
 
 	public static function renderInfoContainer(FORM_INFO $info, $languages, $rendered_sections) {
+		$name = str_replace(array('[', ']'), array('_', ''), $info->name());
+
 		$attributes = $info->getAttributesArray();
-		$attributes['class'] .= " form-element-container form-info-container form-element-name-{$info->name()}";
+		$attributes['class'] .= " form-element-container form-info-container form-element-name-{$name}";
 		$attributes_str = self::attr2str($attributes);
 
 		return "<div {$attributes_str}>{$rendered_sections}</div>";
@@ -135,8 +139,10 @@ class FORM_DIV_RENDERER extends FORM_RENDERER {
 	 *************/
 
 	public static function renderFieldContainer(FORM_FIELD $field, $languages, $rendered_sections) {
+		$name = str_replace(array('[', ']'), array('_', ''), $field->name());
+
 		$attributes = $field->getAttributesArray();
-		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$field->type()} form-element-name-{$field->name()}";
+		$attributes['class'] .= " form-element-container form-field-container form-field-container-{$field->type()} form-element-name-{$name}";
 		if ($field->hasError()) $attributes['class'] .= " form-element-has-error";
 		$attributes_str = self::attr2str($attributes);
 
