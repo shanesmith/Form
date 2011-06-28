@@ -12,6 +12,18 @@ require_once dirname(__FILE__) . "/Form.class.php";
 class FORM_HIDDEN extends FORM_FIELD {
 
 	/**
+	 * Constructor.
+	 *
+	 * @param FORM_FIELDSET $parent
+	 * @param string $name
+	 * @param string $default
+	 * @return FORM_HIDDEN
+	 */
+	public function __construct(&$parent, $name, $default=null) {
+		parent::__construct($parent, $name, null, $default);
+	}
+
+	/**
 	 * Render the hidden element
 	 *
 	 * @param array $languages
