@@ -297,7 +297,6 @@ class FORM_FILE extends FORM_FIELD {
 	 *
 	 * @param FORM_FILE $elem
 	 * @param string $target_dir
-	 * @param array $options
 	 * @param UPLOAD $handle
 	 * @return string
 	 */

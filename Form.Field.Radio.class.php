@@ -29,10 +29,11 @@ class FORM_RADIO extends FORM_FIELD {
 	 * Constructor
 	 *
 	 * @param FORM_FIELDSET $parent
-	 * @param string $name
+	 * @param string $radio_name
+	 * @param string $unique_name
 	 * @param string $text
 	 * @param string|array $labels
-	 * @return FORM_RADIO
+	 * @param bool $default_checked
 	 */
 	public function __construct(&$parent, $radio_name, $unique_name, $text, $labels=null, $default_checked=false) {
 		parent::__construct($parent, $unique_name, $labels);
@@ -89,7 +90,6 @@ class FORM_RADIO extends FORM_FIELD {
 	/**
 	 * Set the radio checked by default
 	 *
-	 * @param boolean $checked
 	 * @return FORM_RADIO
 	 */
 	public function setDefaultChecked() {
@@ -100,7 +100,6 @@ class FORM_RADIO extends FORM_FIELD {
 	/**
 	 * Set the posted radio checked
 	 *
-	 * @param boolean $checked
 	 * @return FORM_RADIO
 	 */
 	public function setPostedChecked() {

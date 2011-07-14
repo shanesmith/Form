@@ -56,7 +56,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	 *
 	 * @param FORM_FIELDSET $parent
 	 * @param string $name
-	 * @param string $label
+	 * @param string $labels
 	 * @param string $default
 	 * @return FORM_FIELD
 	 */
@@ -160,6 +160,7 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	 * @param callable $validator
 	 * @param array $args
 	 * @param string $message
+	 * @return FORM_FIELD
 	 */
 	public function addValidator($validator, $args=array(), $message=null) {
 		$this->validators[] = array(
@@ -368,9 +369,12 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	}
 
 	/**
+	 * Trim formatter
+	 *
 	 * @param mixed $left
 	 * @param mixed $right
 	 * @param mixed $charlist
+	 * @return FORM_FIELD
 	 */
 	public function formatTrim($left=true, $right=true, $charlist=null) {
 		$arguments = array($left, $right, $charlist);

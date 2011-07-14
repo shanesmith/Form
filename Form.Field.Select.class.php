@@ -27,7 +27,7 @@ class FORM_SELECT extends FORM_FIELD {
 	 * @param string $name
 	 * @param array|string $labels
 	 * @param array $options
-	 * @return FORM_SELECT
+	 * @param string $default
 	 */
 	public function __construct($parent, $name, $labels=null, $options=null, $default=null) {
 		parent::__construct($parent, $name, $labels, $default);
@@ -209,6 +209,7 @@ class FORM_SELECT_GROUP extends FORM_SELECT_OPT_BASE {
 	 * @param string $value
 	 * @param array|string $labels
 	 * @param boolean $enabled
+	 * @return FORM_SELECT_GROUP
 	 */
 	public function addOption($value, $labels, $enabled=true) {
 		$this->options[] = new FORM_SELECT_OPTION($this, $value, $labels, $enabled);

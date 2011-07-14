@@ -110,7 +110,7 @@ abstract class FORM_ELEMENT {
 	 *
 	 * @param FORM_FIELDSET $parent
 	 * @param string $name
-	 * @param string $label
+	 * @param string $labels
 	 * @return FORM_ELEMENT
 	 */
 	public function __construct(&$parent, $name, $labels=null) {

@@ -132,6 +132,7 @@ class FORM extends FORM_FIELDSET {
 	 * @param string $action
 	 * @param string $method
 	 * @param array $languages
+	 * @param FORM_RENDERER $default_renderer
 	 */
 	function __construct($id, $action=null, $method='post', $languages=array(), FORM_RENDERER $default_renderer=null) {
 		$this->id = $id;

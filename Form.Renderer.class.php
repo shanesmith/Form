@@ -8,6 +8,7 @@ abstract class FORM_RENDERER {
 	/**
 	 * Returns the attributes array converted into and html attributes string
 	 *
+	 * @param array $attributes
 	 * @return string
 	 */
 	public static function attr2str(array $attributes) {
