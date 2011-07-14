@@ -138,6 +138,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	/**
 	 * Creates a new radio, inserts it into the current fieldset, and returns the new radio
 	 *
+	 * The unique name parameter can be set to null, in which case a name will be automatically generated
+	 *
 	 * @param string $radio_name
 	 * @param string $unique_name
 	 * @param string $text
@@ -146,6 +148,9 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * @return FORM_RADIO
 	 */
 	public function radio($radio_name, $unique_name, $text, $labels=null, $default_checked=false) {
+		if (is_null($unique_name)) {
+			$unique_name = "radio_" . substr(md5(uniqid()), 0, 5);
+		}
 		$radio = $this->addChild(new FORM_RADIO($this, $radio_name, $unique_name, $text, $labels, $default_checked));
 		$this->form()->addToRadioList($radio_name, $unique_name, $text);
 		return $radio;
