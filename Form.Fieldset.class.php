@@ -157,6 +157,25 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	}
 
 	/**
+	 * Add multiple radio elements by use of an array.
+	 *
+	 * Each entry of the array should be an array mimicking the
+	 * parameters of Fieldset->radio(), without the radio_name parameter.
+	 *
+	 * @see radio()
+	 * @param string $radio_name
+	 * @param array $radio_list
+	 * @return FORM_FIELDSET
+	 */
+	public function radio_array($radio_name, array $radio_list) {
+		foreach ($radio_list as $radio) {
+			array_unshift($radio, $radio_name);
+			call_user_func_array(array($this, 'radio'), $radio);
+		}
+		return $this;
+	}
+
+	/**
 	 * Creates a new button, inserts it into the current fieldset, and returns the new button
 	 *
 	 * @param string $name
