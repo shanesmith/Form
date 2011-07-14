@@ -42,7 +42,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * Creates a new fieldset, inserts it into the current fieldset, and return the new fieldset
 	 *
 	 * @param string $name
-	 * @param string $label
+	 * @param string $labels
 	 * @return FORM_FIELDSET
 	 */
 	public function fieldset($name, $labels=null) {
@@ -53,7 +53,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * Creates a new text field, inserts it into the current fieldset, and returns the new text field
 	 *
 	 * @param string $name
-	 * @param string $label
+	 * @param string $labels
 	 * @param string $default
 	 * @return FORM_TEXT
 	 */
@@ -65,7 +65,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * Creates a new textarea field, inserts it into the current fieldset, and returns the new textarea field
 	 *
 	 * @param string $name
-	 * @param string $label
+	 * @param string $labels
 	 * @param string $default
 	 * @return FORM_TEXTAREA
 	 */
@@ -88,7 +88,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * Creates a new password field, inserts it into the current fieldset, and returns the new password field
 	 *
 	 * @param string $name
-	 * @param string $label
+	 * @param string $labels
 	 * @param string $default
 	 * @return FORM_PASSWORD
 	 */
@@ -100,7 +100,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * Creates a new file field, inserts it into the current fieldset, and returns the new file field
 	 *
 	 * @param string $name
-	 * @param string $label
+	 * @param string $labels
 	 * @param string $target_dir
 	 * @param array $options
 	 * @return FORM_FILE
@@ -114,7 +114,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * Creates a new select field, inserts it into the current fieldset, and returns the new select field
 	 *
 	 * @param string $name
-	 * @param string $label
+	 * @param string $labels
 	 * @param array $options an array of options in the $value=>$text format
 	 * @param string $default
 	 * @return FORM_SELECT
@@ -127,7 +127,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * Creates a new checkbox field, inserts it into the current fieldset, and returns the new checkbox field
 	 *
 	 * @param string $name
-	 * @param string $label
+	 * @param string $labels
 	 * @param string $default
 	 * @return FORM_CHECKBOX
 	 */
@@ -142,7 +142,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * @param string $unique_name
 	 * @param string $text
 	 * @param string $labels
-	 * @param string $default_checked
+	 * @param bool $default_checked
 	 * @return FORM_RADIO
 	 */
 	public function radio($radio_name, $unique_name, $text, $labels=null, $default_checked=false) {
@@ -155,7 +155,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * Creates a new button, inserts it into the current fieldset, and returns the new button
 	 *
 	 * @param string $name
-	 * @param string $text
+	 * @param string $texts
 	 * @return FORM_BUTTON
 	 */
 	public function button($name, $texts=null) {
@@ -166,7 +166,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * Creates a new submit button, inserts it into the current fieldset, and returns the new submit button
 	 *
 	 * @param string $name
-	 * @param string $text
+	 * @param string $texts
 	 * @return FORM_SUBMIT_BUTTON
 	 */
 	public function submit_button($name, $texts=null) {
@@ -177,7 +177,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * Creates a new reset button, inserts it into the current fieldset, and returns the new reset button
 	 *
 	 * @param string $name
-	 * @param string $text
+	 * @param string $texts
 	 * @return FORM_RESET_BUTTON
 	 */
 	public function reset_button($name, $texts=null) {
@@ -188,8 +188,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * Creates a new info field, inserts it into the current fieldset, and returns the new info field
 	 *
 	 * @param string $name
-	 * @param string $label
-	 * @param string $text
+	 * @param string $labels
+	 * @param string $texts
 	 * @return FORM_INFO
 	 */
 	public function info($name, $labels=null, $texts=null) {
@@ -867,6 +867,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	/**
 	 * Return the array of child type sections lists, keyed by child type
 	 *
+	 * @return array
 	 */
 	public function getAllChildTypeSections() {
 		return $this->child_type_sections;
@@ -881,9 +882,10 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * Set a section renderer for all child elements of the specified type,
 	 * which can optionally be an array of types
 	 *
-	 * @param string|array $type
-	 * @param string $section
+	 * @param string|array $types
+	 * @param string $sections
 	 * @param callable $renderer
+	 * @return Form_Fieldset
 	 */
 	public function setChildTypeRenderer($types, $sections, $renderer) {
 		foreach ((array)$types as $t) {
@@ -897,7 +899,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	/**
 	 * Set multiple child renderers by an array, keyed by type, then section
 	 *
-	 * @param array $renderers
+	 * @param array $type_section_renderers
 	 * @return FORM_FIELDSET
 	 */
 	public function setChildTypeRenderersArray(array $type_section_renderers) {
@@ -947,7 +949,8 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	 * determined by self and recursive calls to parents until one is found
 	 *
 	 * @param string $type
-	 * @param string section
+	 * @param string $section
+	 * @return string
 	 */
 	public function getChildTypeRendererRecurse($type, $section) {
 		$renderer = $this->getChildTypeRenderer($type, $section);
@@ -1025,6 +1028,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	/**
 	 * Renders all children and return the concat
 	 *
+	 * @param string $lang
 	 * @return string
 	 */
 	public function renderAllChildren($lang=null) {
