@@ -381,6 +381,23 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	}
 
 	/**
+	 * Return the value of the named child field is it exists (null otherwise).
+	 *
+	 * @param string $name
+	 * @param bool $recurse
+	 * @return string
+	 */
+	public function getValue($name, $recurse=true) {
+		$field = $this->getField($name, $recurse);
+
+		if (isset($field)) {
+			return $field->getValue();
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * Returns the named child element if it exists (possibly under descendant fieldsets if recurse)
 	 * and if it's of the type FORM_FIELDSET, null otherwise
 	 *
