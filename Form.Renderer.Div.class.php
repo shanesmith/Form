@@ -89,10 +89,13 @@ class FORM_DIV_RENDERER extends FORM_RENDERER {
 	public static function renderFieldsetLabel(FORM_FIELDSET $fieldset, $languages) {
 		$labels = "";
 		foreach ($languages as $lang) {
-			$labels .= "<span class='form-element-label-{$lang} form-fieldset-label-{$lang}'>{$fieldset->getLabelByLang($lang)}</span>";
+			$lbl = $fieldset->getLabelByLang($lang);
+			if (!is_null($lbl)) {
+				$labels .= "<span class='form-element-label-{$lang} form-fieldset-label-{$lang}'>{$lbl}</span>";
+			}
 		}
 
-		return "<label class='form-element-label form-fieldset-label'>{$labels}</label>";
+		return empty($labels) ? "" : "<label class='form-element-label form-fieldset-label'>{$labels}</label>";
 	}
 
 	public static function renderFieldsetChildren(FORM_FIELDSET $fieldset, $languages) {
@@ -118,10 +121,13 @@ class FORM_DIV_RENDERER extends FORM_RENDERER {
 	public static function renderInfoLabel(FORM_INFO $info, $languages) {
 		$labels = "";
 		foreach ($languages as $lang) {
-			$labels .= "<span class='form-element-label-{$lang} form-info-label-{$lang}'>{$info->getLabelByLang($lang)}</span>";
+			$lbl = $info->getLabelByLang($lang);
+			if (!is_null($lbl)) {
+				$labels .= "<span class='form-element-label-{$lang} form-info-label-{$lang}'>{$lbl}</span>";
+			}
 		}
 
-		return "<label class='form-element-label form-info-label'>{$labels}</label>";
+		return empty($labels) ? "" : "<label class='form-element-label form-info-label'>{$labels}</label>";
 	}
 
 	public static function renderInfoText(FORM_INFO $info, $languages) {
@@ -157,10 +163,13 @@ class FORM_DIV_RENDERER extends FORM_RENDERER {
 
 		$labels = "";
 		foreach ($languages as $lang) {
-			$labels .= "<span class='form-element-label-{$lang} form-field-label-{$lang} form-field-label-{$field->type()}-{$lang}'>{$field->getLabelByLang($lang)}</span>";
+			$lbl = $field->getLabelByLang($lang);
+			if (!is_null($lbl)) {
+				$labels .= "<span class='form-element-label-{$lang} form-field-label-{$lang} form-field-label-{$field->type()}-{$lang}'>{$lbl}</span>";
+			}
 		}
 
-		return "<label {$attributes_str}>{$labels}</label>";
+		return empty($labels) ? "" : "<label {$attributes_str}>{$labels}</label>";
 	}
 
 	public static function renderFieldError(FORM_FIELD $field, $languages) {
