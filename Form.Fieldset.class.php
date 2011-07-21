@@ -570,7 +570,7 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 		foreach ($this->getAllChildren() as $child) {
 			if (!($child instanceof FORM_INFO)) {
 				/** @var FORM_FIELD|FORM_FIELDSET $child */
-				$valid |= $child->validate();
+				$valid &= $child->validate();
 			}
 		}
 		return $valid;
