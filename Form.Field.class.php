@@ -38,6 +38,20 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	protected $validators = array();
 
 	/**
+	 * Whether this field is required
+	 *
+	 * @var bool
+	 */
+	protected $required = false;
+
+	/**
+	 * The error texts in case of a 'required' check failure.
+	 *
+	 * @var array
+	 */
+	protected $required_error = array();
+
+	/**
 	 * An array of formatters to be run on loadPostedValue()
 	 *
 	 * Each element is an array with the keys 'func' and 'args'
@@ -193,6 +207,35 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	}
 
 	/**
+	 * Set whether this field is required
+	 *
+	 * @param bool $required
+	 * @param array $message
+	 * @return FORM_FIELD
+	 */
+	public function setRequired($required=true, $message=null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				"en" => ucfirst($label['en']) . " is required.",
+				"fr" => ucfirst($label['fr']) . " est requis."
+			);
+		}
+		$this->required = $required;
+		$this->required_error = $message;
+		return $this;
+	}
+
+	/**
+	 * Whether this field is required
+	 *
+	 * @return bool
+	 */
+	public function isRequired() {
+		return $this->required;
+	}
+
+	/**
 	 * Run all validators
 	 *
 	 * Returns true if all validators return cleanly, false otherwise.
@@ -205,6 +248,15 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 		$this->clearError();
 
 		$value = $this->getValue();
+
+		if (empty($value)) {
+			if ($this->isRequired()) {
+				$this->setError($this->required_error);
+				return false;
+			} else {
+				return true;
+			}
+		}
 
 		foreach ($this->getAllValidators() as $validator) {
 			if (!is_callable($validator['func'])) {
