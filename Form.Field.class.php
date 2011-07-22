@@ -186,6 +186,18 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	}
 
 	/**
+	 * Negate a given validator
+	 *
+	 * @param callable $validator
+	 * @param array $args
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorNot($validator, $args=array(), $message=null) {
+		return $this->addValidator(FORM_VALIDATOR::$not, array($validator, $args), $message);
+	}
+
+	/**
 	 * Remove all validators
 	 *
 	 * @return FORM_FIELD
@@ -455,8 +467,8 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 		if (!isset($message)) {
 			$label = $this->getLabels();
 			$message = array(
-				'en' => ucfirst($label['en']) . " is not a decimal-point number.",
-				'fr' => ucfirst($label['fr']) . " n'est pas un nombre à point décimal."
+				'en' => ucfirst($label['en']) . " is not a valid decimal-point number.",
+				'fr' => ucfirst($label['fr']) . " n'est pas un nombre à point décimal valide."
 			);
 		}
 		$this->addValidator(FORM_VALIDATOR::$decimal, array($min_decimal, $max_decimal), $message);

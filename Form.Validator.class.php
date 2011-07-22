@@ -8,6 +8,13 @@ class FORM_VALIDATOR {
 	 *****************/
 
 	/**
+	 * Negates a given validator
+	 *
+	 * @var array
+	 */
+	public static $not = array("FORM_VALIDATOR", "_not");
+
+	/**
 	 * Value must be a valid email
 	 *
 	 * @var array
@@ -140,6 +147,19 @@ class FORM_VALIDATOR {
 	/*****************
 	 **  FUNCTIONS  **
 	 *****************/
+
+	/**
+	 * Negate a given validator
+	 *
+	 * @param string $value
+	 * @param FORM_FIELD $field
+	 * @param callable $validator
+	 * @param array $arguments
+	 * @return bool
+	 */
+	public static function _not($value, $field, $validator, $arguments=array()) {
+		return !(bool)call_user_func_array($validator, array_merge(array($value, $field), $arguments));
+	}
 
 	/**
 	 * Value must be a valid email
