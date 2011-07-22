@@ -15,7 +15,6 @@ require_once "Form.Field.Radio.class.php";
 require_once "Form.Field.Button.class.php";
 require_once "Form.exceptions.php";
 require_once "Form.Validator.class.php";
-require_once "Form.Formatter.class.php";
 require_once "Form.Renderer.class.php";
 require_once "Form.Renderer.Div.class.php";
 require_once "Form.Renderer.Table.class.php";

@@ -20,13 +20,20 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	protected $field_attributes = array();
 
 	/**
-	 * Values
+	 * Default Value
 	 *
 	 * @TODO override in Radio, Button, Checkbox, File?
 	 *
 	 * @var string
 	 */
-	protected $default_value, $posted_value, $posted_raw_value;
+	protected $default_value;
+
+	/**
+	 * Posted Value
+	 *
+	 * @var string
+	 */
+	protected $posted_value;
 
 	/**
 	 * An array of validators to be run on validate()
@@ -52,13 +59,18 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	protected $required_error = array();
 
 	/**
-	 * An array of formatters to be run on loadPostedValue()
-	 *
-	 * Each element is an array with the keys 'func' and 'args'
+	 * Trim the default value during 'get'
 	 *
 	 * @var array
 	 */
-	protected $formatters = array();
+	protected $trim_default_value = array(true, true);
+
+	/**
+	 * Trim the posted value during 'get'
+	 *
+	 * @var array
+	 */
+	protected $trim_posted_value = array(true, true);
 
 
 	/*******************
@@ -91,9 +103,9 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	 */
 	public function getValue() {
 		if (isset($this->posted_value)) {
-			return $this->posted_value;
+			return $this->getPostedValue();
 		} else {
-			return $this->default_value;
+			return $this->getDefaultValue();
 		}
 	}
 
@@ -103,7 +115,15 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	 * @return string
 	 */
 	public function getDefaultValue() {
-		return $this->default_value;
+		$value = $this->default_value;
+
+		list($ltrim, $rtrim) = $this->getTrimDefault();
+
+		if ($ltrim) $value = ltrim($value);
+
+		if ($rtrim) $value = rtrim($value);
+
+		return $value;
 	}
 
 	/**
@@ -112,16 +132,15 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	 * @return string
 	 */
 	public function getPostedValue() {
-		return $this->posted_value;
-	}
+		$value = $this->posted_value;
 
-	/**
-	 * Return the posted raw (before formatting) value
-	 *
-	 * @return string
-	 */
-	public function getPostedRawValue() {
-		return $this->posted_raw_value;
+		list($ltrim, $rtrim) = $this->getTrimPosted();
+
+		if ($ltrim) $value = ltrim($value);
+
+		if ($rtrim) $value = rtrim($value);
+
+		return $value;
 	}
 
 	/**
@@ -142,27 +161,80 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	 * @return FORM_FIELD
 	 */
 	public function setPostedValue($value) {
-		$this->posted_raw_value = $value;
-
-		$formatted_value = $value;
-
-		foreach ($this->formatters as $formatter) {
-			if (!is_callable($formatter['func'])) {
-				$formatter_str = !is_string($formatter['func']) ? var_export($formatter['func'], true) : $formatter['func'];
-				throw new FormInvalidFormatter("Formatter is not callable: {$formatter_str}", $this, $formatter);
-			}
-
-			$arguments = array_merge(array($formatted_value, $this), (array)$formatter['args']);
-
-			$formatted_value = call_user_func_array($formatter['func'], $arguments);
-		}
-
-		$this->posted_value = $formatted_value;
-
-
+		$this->posted_value = $value;
 		return $this;
 	}
 
+	/****************
+	 **  TRIMMING  **
+	 ****************/
+
+	/**
+	 * Set trimming option on both Default and Posted values
+	 *
+	 * If $right is null it will take the same value as $left
+	 *
+	 * @param bool $left
+	 * @param bool $right
+	 * @return FORM_FIELD
+	 */
+	public function setTrim($left, $right=null) {
+		$this->setTrimDefault($left, $right);
+		$this->setTrimPosted($left, $right);
+		return $this;
+	}
+
+	/**
+	 * Set default value trimming option
+	 *
+	 * If $right is null it will take the same value as $left
+	 *
+	 * @param bool $left
+	 * @param bool $right
+	 * @return FORM_FIELD
+	 */
+	public function setTrimDefault($left, $right=null) {
+		$this->trim_default_value = array($left, isset($right) ? $right : $left );
+		return $this;
+	}
+
+	/**
+	 * Set posted value trimming option
+	 *
+	 * If $right is null it will take the same value as $left
+	 *
+	 * @param bool $left
+	 * @param bool $right
+	 * @return FORM_FIELD
+	 */
+	public function setTrimPosted($left, $right=null) {
+		$this->trim_posted_value = array($left, isset($right) ? $right : $left);
+		return $this;
+	}
+
+	/**
+	 * Get default value trimming option
+	 *
+	 * Returned is an array with two boolean values describing
+	 * whether to trim the left and right sides, respectively
+	 *
+	 * @return array
+	 */
+	public function getTrimDefault() {
+		return $this->trim_default_value;
+	}
+
+	/**
+	 * Get posted value trimming option
+	 *
+	 * Returned is an array with two boolean values describing
+	 * whether to trim the left and right sides, respectively
+	 *
+	 * @return array
+	 */
+	public function getTrimPosted() {
+		return $this->trim_posted_value;
+	}
 
 	/******************
 	 **  VALIDATORS  **
@@ -703,57 +775,6 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 		return $this;
 	}
 
-	/******************
-	 **  FORMATTERS  **
-	 ******************/
-
-	/**
-	 * Add a formatter to this field, including option arguments array
-	 *
-	 * @param callable $formatter
-	 * @param array $args
-	 * @return FORM_FIELD
-	 */
-	public function addFormatter($formatter, $args=array()) {
-		$this->formatters[] = array(
-			'func' => $formatter,
-			'args' => $args
-		);
-		return $this;
-	}
-
-	/**
-	 * Remove all formatters associated to this field
-	 *
-	 * @return FORM_FIELD
-	 */
-	public function clearFormatters() {
-		$this->formatters = array();
-		return $this;
-	}
-
-	/**
-	 * Return all formatters
-	 *
-	 * @return array
-	 */
-	public function getAllFormatters() {
-		return $this->formatters;
-	}
-
-	/**
-	 * Trim formatter
-	 *
-	 * @param mixed $left
-	 * @param mixed $right
-	 * @param mixed $charlist
-	 * @return FORM_FIELD
-	 */
-	public function formatTrim($left=true, $right=true, $charlist=null) {
-		$arguments = array($left, $right, $charlist);
-		$this->addFormatter(FORM_FORMATTER::$trim, $arguments);
-		return $this;
-	}
 
 	/************************
 	 **  FIELD ATTRIBUTES  **
