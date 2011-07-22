@@ -346,34 +346,17 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 	}
 
 	/**
-	 * Set a validator to make the field required
+	 * Value must be a valid email
 	 *
 	 * @param array|string $message
 	 * @return FORM_FIELD
 	 */
-	public function validateRequired($message=null) {
+	public function addValidatorEmail($message=null) {
 		if (!isset($message)) {
+			$label = $this->getLabels();
 			$message = array(
-				'en' => "Field {$this->name()} is required.",
-				'fr' => "Le champ {$this->name()} est requis."
-			);
-		}
-
-		$this->addValidator(FORM_VALIDATOR::$required, null, $message);
-		return $this;
-	}
-
-	/**
-	 * Set a validator for email matching
-	 *
-	 * @param array|string $message
-	 * @return FORM_FIELD
-	 */
-	public function validateEmail($message=null) {
-		if (!isset($message)) {
-			$message = array(
-				'en' => "Field {$this->name()} is not a valid email.",
-				'fr' => "Le champ {$this->name()} n'est pas un courriel valide."
+				'en' => ucfirst($label['en']) . " is not a valid email.",
+				'fr' => ucfirst($label['fr']) . " n'est pas un courriel valide."
 			);
 		}
 
@@ -381,6 +364,332 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 		return $this;
 	}
 
+	/**
+	 * Value must be between min and max values (inclusive)
+	 *
+	 * @param float $min
+	 * @param float $max
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorRange($min, $max, $message=null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " is not between {$min} and {$max}.",
+				'fr' => ucfirst($label['fr']) . " n'est pas entre {$min} et {$max}."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$range, array($min, $max), $message);
+		return $this;
+	}
+
+	/**
+	 * Value must not be more than max
+	 *
+	 * @param float $max
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorMax($max, $message=null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " cannot be higher than {$max}.",
+				'fr' => ucfirst($label['fr']) . " ne peut être plus haut que {$max}."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$max, array($max), $message);
+		return $this;
+	}
+
+	/**
+	 * Value must not be less than min
+	 *
+	 * @param float $min
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorMin($min, $message=null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " cannot be lower than {$min}.",
+				'fr' => ucfirst($label['fr']) . " ne peut être plus bas que {$min}."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$min, array($min), $message);
+		return $this;
+	}
+
+	/**
+	 * Value must be an integer (a whole number)
+	 *
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorInteger($message = null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " is not a integer number.",
+				'fr' => ucfirst($label['fr']) . " n'est pas un nombre entier."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$integer, null, $message);
+		return $this;
+	}
+
+	/**
+	 * Value must be a decimal number with at least min_decimal decimal positions
+	 * and no more than max_decimal.
+	 *
+	 * If max_decimal is null then there is no upper limit.
+	 *
+	 * @param int $min_decimal
+	 * @param int $max_decimal
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorDecimal($min_decimal=1, $max_decimal=null, $message=null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " is not a decimal-point number.",
+				'fr' => ucfirst($label['fr']) . " n'est pas un nombre à point décimal."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$decimal, array($min_decimal, $max_decimal), $message);
+		return $this;
+	}
+
+	/**
+	 * Value must be a number (integer or decimal)
+	 *
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorNumber($message=null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " is not a number.",
+				'fr' => ucfirst($label['fr']) . " n'est pas un nombre."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$number, null, $message);
+		return $this;
+	}
+
+	/**
+	 * Value must be made of only alphanumeric characters (and whitespaces if allow_whitespaces)
+	 *
+	 * @param bool $allow_whitespaces
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorAlphaNum($allow_whitespaces = true, $message=null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " is not alphanumeric.",
+				'fr' => ucfirst($label['fr']) . " n'est pas alphanumérique."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$alphanum, array($allow_whitespaces), $message);
+		return $this;
+	}
+
+	/**
+	 * Value must be made of only alphabetic characters (and whitespaces if allow_whitespace)
+	 *
+	 * @param bool $allow_whitespaces
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorAlpha($allow_whitespaces = true, $message=null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " is not only letters.",
+				'fr' => ucfirst($label['fr']) . " n'est pas juste des lettres."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$alpha, array($allow_whitespaces), $message);
+		return $this;
+	}
+
+	/**
+	 * Value must be between min_length and max_length characters long
+	 *
+	 * @param int $min_length
+	 * @param int $max_length
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorLength($min_length, $max_length, $message = null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " is not between {$min_length} and {$max_length} characters long.",
+				'fr' => ucfirst($label['fr']) . " n'est pas entre {$min_length} et {$max_length} charactères."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$length, array( $min_length, $max_length ), $message);
+		return $this;
+	}
+
+	/**
+	 * Value must be no more than max_length characters long
+	 *
+	 * @param int $max_length
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorMaxLength($max_length, $message = null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " cannot be more than {$max_length} characters long.",
+				'fr' => ucfirst($label['fr']) . " new peut être plus de {$max_length} charactères."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$maxlength, array( $max_length ), $message);
+		return $this;
+	}
+
+	/**
+	 * Value must be no less than min_length characters long
+	 *
+	 * @param int $min_length
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorMinLength($min_length, $message = null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " cannot be less than {$min_length} characters long.",
+				'fr' => ucfirst($label['fr']) . " new peut être moin de {$min_length} charactères."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$minlength, array( $min_length ), $message);
+		return $this;
+	}
+
+	/**
+	 * Value must match given regex
+	 *
+	 * @param string $regex
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorRegex($regex, $message=null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " is not valid.",
+				'fr' => ucfirst($label['fr']) . " n'est pas valide."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$regex, array($regex), $message);
+		return $this;
+	}
+
+	/**
+	 * Value must be between min_lines and max_lines number of lines (inclusive)
+	 *
+	 * @param int $min_lines
+	 * @param int $max_lines
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorLines($min_lines, $max_lines, $message = null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " is not between {$min_lines} and {$max_lines} lines.",
+				'fr' => ucfirst($label['fr']) . " n'est pas entre {$min_lines} et {$max_lines} lignes."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$lines, array( $min_lines, $max_lines ), $message);
+		return $this;
+	}
+
+	/**
+	 * Value must be no more than max_lines number of lines
+	 *
+	 * @param int $max_lines
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorMaxLines($max_lines, $message = null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " cannot be more than {$max_lines} lines.",
+				'fr' => ucfirst($label['fr']) . " ne peut être plus de {$max_lines} lignes."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$maxlines, array( $max_lines ), $message);
+		return $this;
+	}
+
+	/**
+	 * Value must be no less than min_lines number of lines
+	 *
+	 * @param int $min_lines
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorMinLines($min_lines, $message = null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " cannot be less than {$min_lines} lines.",
+				'fr' => ucfirst($label['fr']) . " ne peut être moin de {$min_lines} lignes."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$minlines, array( $min_lines ), $message);
+		return $this;
+	}
+
+	/**
+	 * Value must be a valid postal code (seperating space optional)
+	 *
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorPostalCode($message=null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " is not a valid postal code.",
+				'fr' => ucfirst($label['fr']) . " n'est pas une code postale."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$postalcode, null, $message);
+		return $this;
+	}
+
+	/**
+	 * Value must be on of the entries in the given array
+	 *
+	 * @param array $array
+	 * @param array|string $message
+	 * @return FORM_FIELD
+	 */
+	public function addValidatorIsOneOf(array $array, $message=null) {
+		if (!isset($message)) {
+			$label = $this->getLabels();
+			$message = array(
+				'en' => ucfirst($label['en']) . " is not valid.",
+				'fr' => ucfirst($label['fr']) . " n'est pas valide."
+			);
+		}
+		$this->addValidator(FORM_VALIDATOR::$isoneof, array($array), $message);
+		return $this;
+	}
 
 	/******************
 	 **  FORMATTERS  **
