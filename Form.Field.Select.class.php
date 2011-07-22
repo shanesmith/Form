@@ -111,6 +111,29 @@ class FORM_SELECT extends FORM_FIELD {
 	}
 
 	/**
+	 * Set this select to show multiple options
+	 *
+	 * @param bool $multiple
+	 * @param int $size
+	 * @return FORM_SELECT
+	 */
+	public function setFieldMultiple($multiple=true, $size=4) {
+		$this->setFieldAttribute('multiple', $multiple ? 'multiple' : null);
+		$this->setFieldMultipleSize($multiple ? $size : null);
+		return $this;
+	}
+
+	/**
+	 * Set the number of multiple options to show
+	 *
+	 * @param int $size
+	 * @return FORM_SELECT
+	 */
+	public function setFieldMultipleSize($size) {
+		return $this->setFieldAttribute('size', $size);
+	}
+
+	/**
 	 * Render the select tag and its groups and options
 	 *
 	 * @param array $languages

@@ -900,6 +900,26 @@ abstract class FORM_FIELD extends FORM_ELEMENT {
 		return $this->setFieldAttribute('id', $id);
 	}
 
+	/**
+	 * Set whether the field is disabled
+	 *
+	 * @param bool $disabled
+	 * @return FORM_ELEMENT
+	 */
+	public function setFieldDisabled($disabled=true) {
+		return $this->setFieldAttribute('disabled', $disabled ? 'disabled' : null );
+	}
+
+	/**
+	 * Set whether the field is read-only
+	 *
+	 * @param bool $readonly
+	 * @return FORM_ELEMENT
+	 */
+	public function setFieldReadOnly($readonly=true) {
+		return $this->setFieldAttribute('readonly', $readonly ? 'readonly' : null);
+	}
+
 
 	/*****************
 	 **  RENDERING  **

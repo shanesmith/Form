@@ -152,10 +152,6 @@ class FORM extends FORM_FIELDSET {
 		$this->default_renderer = $default_renderer;
 		$this->default_renderer->init($this);
 
-		//$this->options = array_merge($options, array(
-		//	'trim' => true,
-		//));
-
 		//$this->hidden(self::FORM_ATTR_FIELD_PREFIX."id", $id);
 
 		//$this->hidden(self::FORM_ATTR_FIELD_PREFIX."lang", $this->options['lang']);
