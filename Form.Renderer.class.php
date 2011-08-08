@@ -15,6 +15,7 @@ abstract class FORM_RENDERER {
 		$str = "";
 		foreach($attributes as $key=>$value) {
 			if (is_array($value)) $value = implode(' ', $value);
+			$value = htmlspecialchars($value, ENT_QUOTES);
 			$str .= " {$key}='{$value}' ";
 		}
 		return $str;
