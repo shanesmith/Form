@@ -313,7 +313,11 @@ class FORM_FIELDSET extends FORM_ELEMENT {
 	public function getChildRecursive($name) {
 		// checking ancestory should be faster than drilling down each fieldset
 		$elem = $this->form()->getElement($name);
-		return $elem->hasAncestor($this->name()) ? $elem : null;
+		if ($elem && $elem->hasAncestor($this->name())) {
+			return $elem;
+		} else {
+			return null;
+		}
 	}
 
 	/**
